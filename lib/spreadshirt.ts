@@ -1,22 +1,37 @@
 import { PRODUCTS, type StaticProduct } from "./products-data"
 
+export type ViewImage = { id: string; name: string; image: string }
+
+export type AppearanceData = {
+  id: string
+  name: string
+  color: string
+  image: string
+  views: ViewImage[]
+}
+
 export type ProductTypeData = {
   id: string
   name: string
   price: number
   defaultViewId: string
-  appearances: { id: string; name: string; color: string; image: string }[]
+  defaultAppearanceId: string
+  appearances: AppearanceData[]
   sizes: { id: string; name: string }[]
 }
 
 export function getProductType(id: string): ProductTypeData | null {
   const p: StaticProduct | undefined = PRODUCTS.find(x => x.id === id)
   if (!p) return null
+  const defaultViewId = p.appearances[0]?.views[0]?.id ?? "1"
+  const defaultAppearance =
+    p.appearances.find(a => a.image === p.preview) ?? p.appearances[0]
   return {
     id: p.id,
     name: p.name,
     price: p.price,
-    defaultViewId: "1",
+    defaultViewId,
+    defaultAppearanceId: defaultAppearance?.id ?? "",
     appearances: p.appearances,
     sizes: p.sizes.map((name, i) => ({ id: String(i), name })),
   }

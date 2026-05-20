@@ -38,8 +38,12 @@ export default function Designer({
   const [activePanel, setActivePanel] = useState<DesignerPanel | null>(null)
 
   useEffect(() => {
-    setActiveColorIndex(0)
-  }, [productId])
+    if (!productData) return
+    const idx = productData.appearances.findIndex(
+      a => a.id === productData.defaultAppearanceId
+    )
+    setActiveColorIndex(idx >= 0 ? idx : 0)
+  }, [productData])
 
   const appearances = productData?.appearances ?? []
   const sizes = useMemo(
