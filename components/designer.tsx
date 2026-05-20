@@ -57,17 +57,21 @@ export default function Designer({
   )
   const togglePanel = (panel: DesignerPanel) =>
     setActivePanel(p => (p === panel ? null : panel))
-  const [isBooting, setIsBooting] = useState(true)
+  const [bootAnimated, setBootAnimated] = useState(false)
   useEffect(() => {
-    const t = setTimeout(() => setIsBooting(false), 500)
-    return () => clearTimeout(t)
+    const t = requestAnimationFrame(() => setBootAnimated(true))
+    return () => cancelAnimationFrame(t)
   }, [])
   useEffect(() => {
     if (!initialPanel) return
-    // wait for: 500ms loader + 300ms column animation + 100ms buffer
-    const t = setTimeout(() => setActivePanel(initialPanel), 900)
+    // wait for staggered column reveal (1.5s) + small buffer
+    const t = setTimeout(() => setActivePanel(initialPanel), 1600)
     return () => clearTimeout(t)
   }, [initialPanel])
+
+  const colReveal = "transition-[opacity,filter] duration-[600ms] ease-out"
+  const colHidden = "opacity-0 blur-2xl"
+  const colShown = "opacity-100 blur-0"
 
   const productImages = appearances.map(a => ({
     src: a.image,
@@ -191,7 +195,7 @@ export default function Designer({
         <div id="creatomat-container" className="flex items-stretch gap-2 w-full h-full justify-center">
           <div
             id="left-section"
-            className={`${isBooting ? "w-0 p-0 overflow-hidden" : "w-[100px] p-[6px] px-1.5"} h-full bg-[#F4F4F4] rounded-[12px] flex flex-col transition-[width,padding] duration-300 ease-out`}
+            className={`w-[100px] p-[6px] px-1.5 h-full bg-[#F4F4F4] rounded-[12px] flex flex-col ${colReveal} delay-0 ${bootAnimated ? colShown : colHidden}`}
           >
             {/* Top Section - Products */}
             <div id="left-section-top-side" className="flex-shrink-0">
@@ -389,26 +393,19 @@ export default function Designer({
 
           <div
             id="canvas-section"
-            className="relative overflow-hidden min-w-[700px] max-w-[1000px] flex-1 h-full bg-[#F4F4F4] rounded-[12px] flex items-center justify-center"
+            className={`relative overflow-hidden min-w-[700px] max-w-[1000px] flex-1 h-full bg-[#F4F4F4] rounded-[12px] flex items-center justify-center ${colReveal} delay-[450ms] ${bootAnimated ? colShown : colHidden}`}
             onClick={e => {
               if (activePanel && e.target === e.currentTarget) {
                 setActivePanel(null)
               }
             }}
           >
-            {isBooting ? (
-              <div
-                aria-label="Loading"
-                className="h-10 w-10 rounded-full border-4 border-neutral-300 border-t-neutral-600 animate-spin"
-              />
-            ) : (
-              <img
-                src={productImages[activeColorIndex]?.src || "/placeholder.svg"}
-                alt={productImages[activeColorIndex]?.alt || ""}
-                className="h-[70%] w-auto object-contain"
-                onClick={() => activePanel && setActivePanel(null)}
-              />
-            )}
+            <img
+              src={productImages[activeColorIndex]?.src || "/placeholder.svg"}
+              alt={productImages[activeColorIndex]?.alt || ""}
+              className="h-[70%] w-auto object-contain"
+              onClick={() => activePanel && setActivePanel(null)}
+            />
             {(["graphics", "uploads", "ai"] as const).map(panel => (
               <div
                 key={panel}
@@ -457,7 +454,7 @@ export default function Designer({
           <div
             ref={rightSectionRef}
             id="right-section"
-            className={`${isBooting ? "w-0 p-0 overflow-hidden" : "w-[460px] p-[24px] pb-3 overflow-y-auto"} h-full bg-[#F4F4F4] rounded-[12px] flex flex-col transition-[width,padding] duration-300 ease-out`}
+            className={`w-[460px] p-[24px] pb-3 overflow-y-auto h-full bg-[#F4F4F4] rounded-[12px] flex flex-col ${colReveal} delay-[900ms] ${bootAnimated ? colShown : colHidden}`}
           >
             <div id="top-part" className="flex-shrink-0">
               <div className="flex items-start justify-between mb-[8px]">

@@ -23,7 +23,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "2940",
     "name": "Unisex Premium Oversized Organic T-Shirt",
     "price": 19.74,
-    "preview": "/products/2940/1251.webp",
+    "preview": "/products/2940/1257.webp",
     "appearances": [
       {
         "id": "1251",
@@ -82,7 +82,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "6",
     "name": "Men's T-shirt",
     "price": 16.24,
-    "preview": "/products/6/403.webp",
+    "preview": "/products/6/2.webp",
     "appearances": [
       {
         "id": "403",
@@ -207,7 +207,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "631",
     "name": "Women's T-Shirt",
     "price": 16.24,
-    "preview": "/products/631/1458.webp",
+    "preview": "/products/631/2.webp",
     "appearances": [
       {
         "id": "1458",
@@ -276,7 +276,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "724",
     "name": "Kids' T-Shirt",
     "price": 15.99,
-    "preview": "/products/724/813.webp",
+    "preview": "/products/724/2.webp",
     "appearances": [
       {
         "id": "813",
@@ -361,7 +361,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "1047",
     "name": "Unisex Hoodie",
     "price": 30.49,
-    "preview": "/products/1047/424.webp",
+    "preview": "/products/1047/2.webp",
     "appearances": [
       {
         "id": "424",
@@ -522,7 +522,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "20",
     "name": "Men’s Premium Organic Hoodie",
     "price": 37.74,
-    "preview": "/products/20/1247.webp",
+    "preview": "/products/20/2.webp",
     "appearances": [
       {
         "id": "1247",
@@ -631,7 +631,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "1505",
     "name": "Kids Hoodie",
     "price": 26.49,
-    "preview": "/products/1505/394.webp",
+    "preview": "/products/1505/2.webp",
     "appearances": [
       {
         "id": "394",
@@ -752,7 +752,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "3980",
     "name": "Striped tennis socks",
     "price": 12.49,
-    "preview": "/products/3980/586.webp",
+    "preview": "/products/3980/70.webp",
     "appearances": [
       {
         "id": "586",
@@ -854,7 +854,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "56",
     "name": "Tote Bag",
     "price": 12.74,
-    "preview": "/products/56/404.webp",
+    "preview": "/products/56/2.webp",
     "appearances": [
       {
         "id": "404",
@@ -925,7 +925,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "4133",
     "name": "Midweight Recycled Tote Bag by Stanley/Stella",
     "price": 15.49,
-    "preview": "/products/4133/718.webp",
+    "preview": "/products/4133/2.webp",
     "appearances": [
       {
         "id": "718",
@@ -1008,7 +1008,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "2973",
     "name": "Stanley/Stella Organic Tote Bag",
     "price": 15.49,
-    "preview": "/products/2973/741.webp",
+    "preview": "/products/2973/2.webp",
     "appearances": [
       {
         "id": "741",
@@ -1073,7 +1073,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "1040",
     "name": "Trucker Cap",
     "price": 17.49,
-    "preview": "/products/1040/942.webp",
+    "preview": "/products/1040/1320.webp",
     "appearances": [
       {
         "id": "942",
@@ -1126,7 +1126,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "4562",
     "name": "Kids’ Trucker Cap",
     "price": 10.49,
-    "preview": "/products/4562/820.webp",
+    "preview": "/products/4562/1280.webp",
     "appearances": [
       {
         "id": "820",
@@ -1179,7 +1179,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "15",
     "name": "Baseball Cap",
     "price": 20.74,
-    "preview": "/products/15/1253.webp",
+    "preview": "/products/15/14.webp",
     "appearances": [
       {
         "id": "1253",
@@ -1370,7 +1370,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "943",
     "name": "Women’s Premium Organic Top",
     "price": 21.74,
-    "preview": "/products/943/1250.webp",
+    "preview": "/products/943/2.webp",
     "appearances": [
       {
         "id": "1250",
@@ -1435,7 +1435,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "916",
     "name": "Men's Premium Organic Tank Top",
     "price": 16.99,
-    "preview": "/products/916/648.webp",
+    "preview": "/products/916/2.webp",
     "appearances": [
       {
         "id": "648",
@@ -1490,7 +1490,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "917",
     "name": "Women’s Premium Organic Tank top",
     "price": 16.99,
-    "preview": "/products/917/1251.webp",
+    "preview": "/products/917/2.webp",
     "appearances": [
       {
         "id": "1251",
@@ -1543,7 +1543,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "1434",
     "name": "Kids Premium Organic Sweatshirt",
     "price": 33.99,
-    "preview": "/products/1434/1249.webp",
+    "preview": "/products/1434/2.webp",
     "appearances": [
       {
         "id": "1249",
@@ -1595,7 +1595,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "4504",
     "name": "Unisex Organic Zip Sweatshirt by Stanley/Stella",
     "price": 50.49,
-    "preview": "/products/4504/718.webp",
+    "preview": "/products/4504/2.webp",
     "appearances": [
       {
         "id": "718",
@@ -1648,7 +1648,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "2962",
     "name": "Women’s Premium Organic Sweatshorts",
     "price": 21.99,
-    "preview": "/products/2962/1254.webp",
+    "preview": "/products/2962/1257.webp",
     "appearances": [
       {
         "id": "1254",
@@ -1683,7 +1683,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "3928",
     "name": "Framed poster (27 × 37 cm)",
     "price": 17.49,
-    "preview": "/products/3928/1.webp",
+    "preview": "/products/3928/2.webp",
     "appearances": [
       {
         "id": "1",
@@ -1706,7 +1706,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "3929",
     "name": "Framed poster (37 × 27 cm)",
     "price": 17.49,
-    "preview": "/products/3929/1.webp",
+    "preview": "/products/3929/2.webp",
     "appearances": [
       {
         "id": "1",
@@ -1729,7 +1729,7 @@ export const PRODUCTS: StaticProduct[] = [
     "id": "3930",
     "name": "Framed poster (49 × 69 cm)",
     "price": 27.49,
-    "preview": "/products/3930/1.webp",
+    "preview": "/products/3930/2.webp",
     "appearances": [
       {
         "id": "1",

@@ -2,7 +2,7 @@
 // Fetch product types + images from Spreadshirt once and store statically.
 // Run: `node scripts/fetch-products.mjs`
 
-import { mkdir, writeFile } from "node:fs/promises"
+import { mkdir, stat, writeFile } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -37,6 +37,10 @@ async function fetchJson(url) {
 }
 
 async function downloadImage(url, path) {
+  try {
+    await stat(path)
+    return // already downloaded
+  } catch {}
   await mkdir(dirname(path), { recursive: true })
   const res = await fetch(url)
   if (!res.ok) throw new Error(`${res.status} ${url}`)
@@ -91,12 +95,16 @@ async function main() {
       }
     }
 
-    // First appearance image doubles as the preview thumbnail.
+    // Prefer the black variant as the drawer thumbnail when one exists.
+    const black =
+      appearances.find(a => /\bblack\b/i.test(a.name)) ??
+      appearances.find(a => /^#?0{6}$/i.test(a.color.replace("#", ""))) ??
+      appearances[0]
     products.push({
       id,
       name: detail.name,
       price: detail.price?.vatIncluded ?? 0,
-      preview: appearances[0]?.image ?? "",
+      preview: black?.image ?? "",
       appearances,
       sizes: (detail.sizes ?? []).map(s => s.name),
     })
