@@ -2,6 +2,14 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
+import ProductsDrawer, { type SelectedProduct } from "@/components/products-drawer"
+import SiteHeader from "@/components/site-header"
+import {
+  buildOutOfStockMap,
+  fetchProductType,
+  productImageUrl,
+  type ProductTypeData,
+} from "@/lib/spreadshirt"
 
 /**
  * Changes made (minimal):
@@ -13,52 +21,74 @@ import { createPortal } from "react-dom"
  * - ✅ Kept "30-Day easy returns" and Shipping rows in place
  */
 
-export default function SimpleNumericInput() {
-  const sizes = ["S", "M", "L", "XL", "XXL", "3XL", "4XL", "5XL"]
+type DesignerPanel = "graphics" | "uploads" | "ai"
 
-  const BASE_PRICE = 22.96
+const DEFAULT_PRODUCT_ID = "2940" // Unisex Premium Oversized Organic T-Shirt
 
-  const colorSizeAvailability: Record<number, string[]> = {
-    0: ["M", "3XL"], // White
-    1: ["S", "XXL", "4XL"], // Light Blue
-    2: ["L", "5XL"], // Gray
-    3: ["XL", "3XL", "4XL"], // Olive
-    4: ["S", "M"], // Red
-    5: ["XXL", "3XL", "5XL"], // Black
-    6: ["L", "4XL"], // Pink
-    7: ["M", "XL", "XXL"], // Mint
-    8: ["S", "3XL"], // Charcoal
-    9: ["L", "XL", "4XL", "5XL"], // Cream
-    10: ["M", "XXL"], // Crimson
-    11: ["S", "3XL", "4XL"], // Navy
-    12: ["XL", "5XL"], // Slate
-    13: ["L", "M", "XXL"], // Periwinkle
-    14: ["S", "4XL"], // Kelly Green
-    15: ["M", "XL", "3XL"], // Army Green
-    16: ["L", "XXL", "5XL"], // Orange
-  }
+type DesignerProps = {
+  initialPanel?: DesignerPanel
+  selectedProduct?: SelectedProduct | null
+  onSelectProduct?: (product: SelectedProduct) => void
+}
 
-  const [activeColorIndex, setActiveColorIndex] = useState(13)
+export default function Designer({
+  initialPanel,
+  selectedProduct,
+  onSelectProduct,
+}: DesignerProps) {
+  const productId = selectedProduct?.id ?? DEFAULT_PRODUCT_ID
+  const [productData, setProductData] = useState<ProductTypeData | null>(null)
+  const [activeColorIndex, setActiveColorIndex] = useState(0)
+  const [productsDrawerOpen, setProductsDrawerOpen] = useState(false)
+  const [activePanel, setActivePanel] = useState<DesignerPanel | null>(null)
 
-  const productImages = [
-    { src: "/images/product-20image.png", alt: "White" },
-    { src: "/images/product-20image-1.png", alt: "Light Blue" },
-    { src: "/images/product-20image-2.png", alt: "Gray" },
-    { src: "/images/product-20image-3.png", alt: "Olive" },
-    { src: "/images/product-20image-4.png", alt: "Red" },
-    { src: "/images/product-20image-5.png", alt: "Black" },
-    { src: "/images/product-20image-6.png", alt: "Pink" },
-    { src: "/images/product-20image-7.png", alt: "Mint" },
-    { src: "/images/product-20image-8.png", alt: "Charcoal" },
-    { src: "/images/product-20image-9.png", alt: "Cream" },
-    { src: "/images/product-20image-10.png", alt: "Crimson" },
-    { src: "/images/product-20image-11.png", alt: "Navy" },
-    { src: "/images/product-20image-12.png", alt: "Slate" },
-    { src: "/images/product-20image-13.png", alt: "Periwinkle" },
-    { src: "/images/product-20image-14.png", alt: "Kelly Green" },
-    { src: "/images/product-20image-15.png", alt: "Army Green" },
-    { src: "/images/product-20image-16.png", alt: "Orange" },
-  ]
+  useEffect(() => {
+    let cancelled = false
+    setProductData(null)
+    setActiveColorIndex(0)
+    fetchProductType(productId).then(d => {
+      if (!cancelled) setProductData(d)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [productId])
+
+  const appearances = productData?.appearances ?? []
+  const sizes = useMemo(
+    () => (productData?.sizes ?? []).map(s => s.name),
+    [productData]
+  )
+  const BASE_PRICE = productData?.price ?? 0
+
+  const outOfStockMap = useMemo(
+    () =>
+      productData
+        ? buildOutOfStockMap(productData.id, productData.appearances, productData.sizes)
+        : {},
+    [productData]
+  )
+  const togglePanel = (panel: DesignerPanel) =>
+    setActivePanel(p => (p === panel ? null : panel))
+  const [isBooting, setIsBooting] = useState(true)
+  useEffect(() => {
+    const t = setTimeout(() => setIsBooting(false), 500)
+    return () => clearTimeout(t)
+  }, [])
+  useEffect(() => {
+    if (!initialPanel) return
+    // wait for: 500ms loader + 300ms column animation + 100ms buffer
+    const t = setTimeout(() => setActivePanel(initialPanel), 900)
+    return () => clearTimeout(t)
+  }, [initialPanel])
+
+  const productImages = appearances.map(a => ({
+    src: productData
+      ? productImageUrl(productData.id, productData.defaultViewId, a.id, 800)
+      : "",
+    alt: a.name,
+    color: a.color,
+  }))
 
   // Total selected quantity across all sizes (sum of numeric inputs).
   const [totalSelected, setTotalSelected] = useState(0)
@@ -160,7 +190,7 @@ export default function SimpleNumericInput() {
     row.scrollBy({ left: dx, behavior: "smooth" })
   }
 
-  const selectedColor = productImages[activeColorIndex].alt
+  const selectedColor = productImages[activeColorIndex]?.alt ?? ""
 
   return (
     <>
@@ -169,11 +199,14 @@ export default function SimpleNumericInput() {
         #color-buttons-row{scrollbar-width:none;}
       `}</style>
 
-      <div className="min-h-screen w-full flex items-center justify-center p-[16px]">
-        <div id="creatomat-container" className="flex items-stretch gap-2 w-full justify-center">
+      <div className="h-screen w-full flex flex-col">
+        <SiteHeader />
+        <div className="flex flex-1 flex-col px-16 py-[16px] min-h-0">
+        <div className="flex flex-1 items-center justify-center min-h-0">
+        <div id="creatomat-container" className="flex items-stretch gap-2 w-full h-full justify-center">
           <div
             id="left-section"
-            className="w-[100px] h-[calc(100vh-32px)] max-h-[800px] p-[6px] bg-[#F4F4F4] flex flex-col px-1.5"
+            className={`${isBooting ? "w-0 p-0 overflow-hidden" : "w-[100px] p-[6px] px-1.5"} h-full bg-[#F4F4F4] rounded-[12px] flex flex-col transition-[width,padding] duration-300 ease-out`}
           >
             {/* Top Section - Products */}
             <div id="left-section-top-side" className="flex-shrink-0">
@@ -181,32 +214,35 @@ export default function SimpleNumericInput() {
                 type="button"
                 onMouseEnter={() => setHoveredButton("products")}
                 onMouseLeave={() => setHoveredButton(null)}
+                onClick={() => setProductsDrawerOpen(true)}
                 className={
-                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[6px] transition-all duration-200 cursor-pointer " +
+                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
                   (hoveredButton === "products" ? "bg-[#DEDEDE]" : "bg-transparent")
                 }
               >
-                <img src="/images/catalogue.png" alt="Products" className="size-14" />
+                <img src="/images/blankproduct.png" alt="Products" className="size-14" />
                 <div className="text-[12px] font-[600] text-black text-center">Products</div>
               </button>
             </div>
 
             {/* Middle Section - Action Buttons */}
-            <div id="left-section-middle-side" className="flex-1 flex flex-col justify-center gap-[16px]">
+            <div id="left-section-middle-side" className="flex-1 flex flex-col justify-center gap-[8px]">
               {/* AI Image Button */}
               <button
                 type="button"
                 onMouseEnter={() => setHoveredButton("ai")}
                 onMouseLeave={() => setHoveredButton(null)}
+                onClick={() => togglePanel("ai")}
                 className={
-                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[6px] transition-all duration-200 cursor-pointer " +
-                  (hoveredButton === "ai" ? "bg-[#DEDEDE]" : "bg-transparent")
+                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
+                  (activePanel === "ai"
+                    ? "bg-white"
+                    : hoveredButton === "ai"
+                      ? "bg-[#DEDEDE]"
+                      : "bg-transparent")
                 }
               >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M17.293 2.29297C17.6535 1.93248 18.221 1.90494 18.6133 2.20996L18.707 2.29297L21.707 5.29297C22.0675 5.65345 22.0951 6.22099 21.79 6.61328L21.707 6.70703L6.70703 21.707C6.55691 21.8572 6.37102 21.9497 6.17676 21.9844L6.05859 21.998H5.94141C5.74482 21.9865 5.55017 21.9171 5.38672 21.79L5.29297 21.707L2.29297 18.707C1.93249 18.3465 1.90494 17.779 2.20996 17.3867L2.29297 17.293L17.293 2.29297ZM4.41504 18L6 19.585L16.585 8.99902L15 7.41406L4.41504 18ZM19.1162 12.0068C19.5753 12.0602 19.9398 12.4247 19.9932 12.8838L20 13C20 13.5128 20.3865 13.9354 20.8838 13.9932L21 14C22.2874 14 22.3314 15.8646 21.1328 15.9932L21 16C20.4872 16 20.0646 16.3865 20.0068 16.8838L20 17C20 18.2874 18.1354 18.3314 18.0068 17.1328L18 17C18 16.4872 17.6135 16.0646 17.1162 16.0068L17 16C15.7126 16 15.6686 14.1354 16.8672 14.0068L17 14C17.5128 14 17.9354 13.6135 17.9932 13.1162L18 13C18 12.4872 18.3865 12.0646 18.8838 12.0068L19 12L19.1162 12.0068ZM9.11621 2.00684C9.57529 2.06016 9.93984 2.42471 9.99316 2.88379L10 3C10 3.51284 10.3865 3.9354 10.8838 3.99316L11 4C12.2874 4 12.3314 5.86458 11.1328 5.99316L11 6C10.4872 6 10.0646 6.38645 10.0068 6.88379L10 7C10 8.28736 8.13542 8.33139 8.00684 7.13281L8 7C8 6.48716 7.61355 6.0646 7.11621 6.00684L7 6C5.71264 6 5.66861 4.13542 6.86719 4.00684L7 4C7.51284 4 7.9354 3.61355 7.99316 3.11621L8 3C8 2.48716 8.38645 2.0646 8.88379 2.00684L9 2L9.11621 2.00684ZM16.4141 6L17.999 7.58496L19.585 6L18 4.41504L16.4141 6Z"
-                    fill="black"/>
-                </svg>
+                <img src="/icons/icon-sparkles-ai.svg" alt="" className="h-6 w-6" />
 
                 <div className="text-[12px] font-[600] text-black text-center">AI Image</div>
               </button>
@@ -216,9 +252,14 @@ export default function SimpleNumericInput() {
                 type="button"
                 onMouseEnter={() => setHoveredButton("upload")}
                 onMouseLeave={() => setHoveredButton(null)}
+                onClick={() => togglePanel("uploads")}
                 className={
-                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[6px] transition-all duration-200 cursor-pointer " +
-                  (hoveredButton === "upload" ? "bg-[#DEDEDE]" : "bg-transparent")
+                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
+                  (activePanel === "uploads"
+                    ? "bg-white"
+                    : hoveredButton === "upload"
+                      ? "bg-[#DEDEDE]"
+                      : "bg-transparent")
                 }
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -256,7 +297,7 @@ export default function SimpleNumericInput() {
                 onMouseEnter={() => setHoveredButton("text")}
                 onMouseLeave={() => setHoveredButton(null)}
                 className={
-                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[6px] transition-all duration-200 cursor-pointer " +
+                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
                   (hoveredButton === "text" ? "bg-[#DEDEDE]" : "bg-transparent")
                 }
               >
@@ -274,9 +315,14 @@ export default function SimpleNumericInput() {
                 type="button"
                 onMouseEnter={() => setHoveredButton("graphics")}
                 onMouseLeave={() => setHoveredButton(null)}
+                onClick={() => togglePanel("graphics")}
                 className={
-                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[6px] transition-all duration-200 cursor-pointer " +
-                  (hoveredButton === "graphics" ? "bg-[#DEDEDE]" : "bg-transparent")
+                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
+                  (activePanel === "graphics"
+                    ? "bg-white"
+                    : hoveredButton === "graphics"
+                      ? "bg-[#DEDEDE]"
+                      : "bg-transparent")
                 }
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -311,61 +357,127 @@ export default function SimpleNumericInput() {
             </div>
 
             {/* Bottom Section - Undo/Redo */}
-            <div id="left-section-bottom-side" className="flex-shrink-0 flex flex-col gap-[16px]">
+            <div id="left-section-bottom-side" className="flex-shrink-0 flex flex-col gap-[2px]">
               {/* Undo Button - Disabled */}
-              <button
-                type="button"
-                disabled
-                className="w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] cursor-not-allowed opacity-50"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
-                    d="M9.70711 13.2929C10.0676 13.6534 10.0953 14.2206 9.7903 14.6129L9.70711 14.7071C9.34662 15.0676 8.77939 15.0953 8.3871 14.7903L8.29289 14.7071L4.29289 10.7071C4.2575 10.6717 4.22531 10.6343 4.19633 10.5953L4.12467 10.4841L4.07123 10.3713L4.03585 10.266L4.01102 10.1485L4.00398 10.0898L4 10L4.00279 9.92476L4.02024 9.79927L4.04974 9.68786L4.09367 9.57678L4.146 9.47929L4.2097 9.3871L4.29289 9.29289L8.29289 5.29289C8.68342 4.90237 9.31658 4.90237 9.70711 5.29289C10.0676 5.65338 10.0953 6.22061 9.7903 6.6129L9.70711 6.70711L7.415 9H16C18.7614 9 21 11.2386 21 14C21 16.6888 18.8777 18.8818 16.2169 18.9954L16 19H15C14.4477 19 14 18.5523 14 18C14 17.4872 14.386 17.0645 14.8834 17.0067L15 17H16C17.6569 17 19 15.6569 19 14C19 12.4023 17.7511 11.0963 16.1763 11.0051L16 11H7.415L9.70711 13.2929Z"
-                    fill="#989898"
-                  />
-                </svg>
-                <div className="text-[12px] font-[600] text-[#989898] text-center">Undo</div>
-              </button>
+              <div className="relative group/tooltip flex justify-center">
+                <button
+                  type="button"
+                  disabled
+                  aria-label="Undo"
+                  className="w-[88px] h-auto flex flex-col items-center p-[8px] cursor-not-allowed opacity-50 pointer-events-none"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      fillRule="evenodd"
+                      clipRule="evenodd"
+                      d="M9.70711 13.2929C10.0676 13.6534 10.0953 14.2206 9.7903 14.6129L9.70711 14.7071C9.34662 15.0676 8.77939 15.0953 8.3871 14.7903L8.29289 14.7071L4.29289 10.7071C4.2575 10.6717 4.22531 10.6343 4.19633 10.5953L4.12467 10.4841L4.07123 10.3713L4.03585 10.266L4.01102 10.1485L4.00398 10.0898L4 10L4.00279 9.92476L4.02024 9.79927L4.04974 9.68786L4.09367 9.57678L4.146 9.47929L4.2097 9.3871L4.29289 9.29289L8.29289 5.29289C8.68342 4.90237 9.31658 4.90237 9.70711 5.29289C10.0676 5.65338 10.0953 6.22061 9.7903 6.6129L9.70711 6.70711L7.415 9H16C18.7614 9 21 11.2386 21 14C21 16.6888 18.8777 18.8818 16.2169 18.9954L16 19H15C14.4477 19 14 18.5523 14 18C14 17.4872 14.386 17.0645 14.8834 17.0067L15 17H16C17.6569 17 19 15.6569 19 14C19 12.4023 17.7511 11.0963 16.1763 11.0051L16 11H7.415L9.70711 13.2929Z"
+                      fill="#989898"
+                    />
+                  </svg>
+                </button>
+                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 whitespace-nowrap rounded bg-black px-2 py-1 text-[14px] font-medium text-white opacity-0 group-hover/tooltip:opacity-100 transition-opacity z-50 before:content-[''] before:absolute before:right-full before:top-1/2 before:-translate-y-1/2 before:w-0 before:h-0 before:border-y-[4px] before:border-y-transparent before:border-r-[4px] before:border-r-black">
+                  Undo
+                </span>
+              </div>
 
               {/* Redo Button - Disabled */}
-              <button
-                type="button"
-                disabled
-                className="w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] cursor-not-allowed opacity-50"
-              >
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M10 19H9C6.23 19 4 16.7618 4 14.0039C4 11.2361 6.23 9.00785 9 9.00785H17.59L15.29 6.71965V6.71865C14.89 6.31896 14.89 5.68946 15.29 5.29976C15.68 4.90008 16.31 4.90008 16.71 5.29976L20.71 9.29662V9.29563C20.8 9.38555 20.87 9.49547 20.92 9.62537C20.97 9.74527 20.99 9.86518 21 10.0051C20.99 10.135 20.97 10.2549 20.92 10.3848C20.87 10.5047 20.8 10.6146 20.71 10.7145L16.71 14.7114C16.31 15.1011 15.68 15.1011 15.29 14.7114C14.89 14.3117 14.89 13.6822 15.289 13.2925L17.589 11.0043H8.99C7.33 11.0043 5.99 12.3432 5.99 14.0019C5.99 15.6506 7.33 16.9996 8.99 16.9996H9.99C10.54 16.9996 10.99 17.4392 10.99 17.9988C10.99 18.5484 10.54 18.998 9.99 18.998L10 19Z"
-                    fill="#989898"
-                  />
-                </svg>
-                <div className="text-[12px] font-[600] text-[#989898] text-center">Redo</div>
-              </button>
+              <div className="relative group/tooltip flex justify-center">
+                <button
+                  type="button"
+                  disabled
+                  aria-label="Redo"
+                  className="w-[88px] h-auto flex flex-col items-center p-[8px] cursor-not-allowed opacity-50 pointer-events-none"
+                >
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M10 19H9C6.23 19 4 16.7618 4 14.0039C4 11.2361 6.23 9.00785 9 9.00785H17.59L15.29 6.71965V6.71865C14.89 6.31896 14.89 5.68946 15.29 5.29976C15.68 4.90008 16.31 4.90008 16.71 5.29976L20.71 9.29662V9.29563C20.8 9.38555 20.87 9.49547 20.92 9.62537C20.97 9.74527 20.99 9.86518 21 10.0051C20.99 10.135 20.97 10.2549 20.92 10.3848C20.87 10.5047 20.8 10.6146 20.71 10.7145L16.71 14.7114C16.31 15.1011 15.68 15.1011 15.29 14.7114C14.89 14.3117 14.89 13.6822 15.289 13.2925L17.589 11.0043H8.99C7.33 11.0043 5.99 12.3432 5.99 14.0019C5.99 15.6506 7.33 16.9996 8.99 16.9996H9.99C10.54 16.9996 10.99 17.4392 10.99 17.9988C10.99 18.5484 10.54 18.998 9.99 18.998L10 19Z"
+                      fill="#989898"
+                    />
+                  </svg>
+                </button>
+                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 whitespace-nowrap rounded bg-black px-2 py-1 text-[14px] font-medium text-white opacity-0 group-hover/tooltip:opacity-100 transition-opacity z-50 before:content-[''] before:absolute before:right-full before:top-1/2 before:-translate-y-1/2 before:w-0 before:h-0 before:border-y-[4px] before:border-y-transparent before:border-r-[4px] before:border-r-black">
+                  Redo
+                </span>
+              </div>
             </div>
           </div>
 
           <div
-            id="middle-section"
-            className="min-w-[700px] max-w-[1000px] flex-1 h-[calc(100vh-32px)] max-h-[800px] bg-[#F4F4F4] flex items-center justify-center"
+            id="canvas-section"
+            className="relative overflow-hidden min-w-[700px] max-w-[1000px] flex-1 h-full bg-[#F4F4F4] rounded-[12px] flex items-center justify-center"
+            onClick={e => {
+              if (activePanel && e.target === e.currentTarget) {
+                setActivePanel(null)
+              }
+            }}
           >
-            <img
-              src={productImages[activeColorIndex].src || "/placeholder.svg"}
-              alt={productImages[activeColorIndex].alt}
-              className="h-[70%] w-auto object-contain"
-            />
+            {isBooting ? (
+              <div
+                aria-label="Loading"
+                className="h-10 w-10 rounded-full border-4 border-neutral-300 border-t-neutral-600 animate-spin"
+              />
+            ) : (
+              <img
+                src={productImages[activeColorIndex]?.src || "/placeholder.svg"}
+                alt={productImages[activeColorIndex]?.alt || ""}
+                className="h-[70%] w-auto object-contain"
+                onClick={() => activePanel && setActivePanel(null)}
+              />
+            )}
+            {(["graphics", "uploads", "ai"] as const).map(panel => (
+              <div
+                key={panel}
+                className={`absolute inset-y-[2px] left-[2px] w-[300px] rounded-[12px] bg-white shadow-[32px_0px_50px_0px_rgba(0,0,0,0.05)] flex flex-col transition-transform duration-300 ease-out ${
+                  activePanel === panel ? "translate-x-0" : "-translate-x-[calc(100%+100px)]"
+                }`}
+              >
+                <h2 className="font-display text-[18px] font-medium text-black px-6 pt-6 pb-4 capitalize flex-shrink-0">
+                  {panel === "ai" ? "AI Image" : panel}
+                </h2>
+                {panel === "graphics" && (
+                  <div className="flex-1 overflow-y-auto">
+                    <div className="grid grid-cols-3 gap-0">
+                      {[
+                        "/img/graphics/croco.png",
+                        ...Array.from({ length: 16 }, (_, i) => `/img/graphics/graphics${i + 1}.png`),
+                        ...Array.from({ length: 32 }, (_, i) => `/img/graphics/graphics${i + 17}.webp`),
+                      ].map(src => (
+                        <button
+                          key={src}
+                          type="button"
+                          className="aspect-square flex items-center justify-center p-3 cursor-pointer overflow-hidden border-r border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
+                        >
+                          <img
+                            src={src}
+                            alt=""
+                            className="max-h-full max-w-full object-contain select-none"
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  aria-label={`Close ${panel} panel`}
+                  onClick={() => setActivePanel(null)}
+                  className="absolute -right-3.5 top-1/2 -translate-y-1/2 cursor-pointer rounded-2xl border border-neutral-200 bg-white px-0.5 py-3 hover:bg-neutral-50"
+                >
+                  <img src="/icons/icon-chevron-left.svg" alt="" className="size-5" />
+                </button>
+              </div>
+            ))}
           </div>
 
           <div
             ref={rightSectionRef}
             id="right-section"
-            className="w-[460px] h-[calc(100vh-32px)] max-h-[800px] p-[24px] bg-[#F4F4F4] flex flex-col pb-3"
+            className={`${isBooting ? "w-0 p-0 overflow-hidden" : "w-[460px] p-[24px] pb-3 overflow-y-auto"} h-full bg-[#F4F4F4] rounded-[12px] flex flex-col transition-[width,padding] duration-300 ease-out`}
           >
             <div id="top-part" className="flex-shrink-0">
               <div className="flex items-start justify-between mb-[8px]">
-                <h1 className="text-[24px] font-[800] text-black leading-tight line-clamp-2">
-                  Unisex T-Shirt Fruit of the Loom Sustainable 
+                <h1 className="font-display text-[20px] font-[800] text-black leading-tight line-clamp-2">
+                  {productData?.name ?? ""}
                 </h1>
               </div>
               <div className="text-[14px] text-black underline cursor-pointer">See product details</div>
@@ -544,7 +656,7 @@ export default function SimpleNumericInput() {
                   <SizeSelectorButton
                     key={`${label}-${activeColorIndex}`}
                     label={label}
-                    disabled={colorSizeAvailability[activeColorIndex]?.includes(label)}
+                    disabled={outOfStockMap[appearances[activeColorIndex]?.id]?.includes(label)}
                     onQuantityChange={(delta) => setTotalSelected((t) => Math.max(0, t + delta))}
                     showCaret={totalSelected > 0}
                   />
@@ -620,6 +732,8 @@ export default function SimpleNumericInput() {
             </div>
           </div>
         </div>
+        </div>
+        </div>
       </div>
 
       {/* Toast notification */}
@@ -628,6 +742,12 @@ export default function SimpleNumericInput() {
           <span className="text-[14px] font-medium">Successfully added to basket</span>
         </div>
       )}
+
+      <ProductsDrawer
+        open={productsDrawerOpen}
+        onOpenChange={setProductsDrawerOpen}
+        onSelect={p => onSelectProduct?.(p)}
+      />
     </>
   )
 }

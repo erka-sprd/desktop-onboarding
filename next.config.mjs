@@ -6,6 +6,21 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  devIndicators: false,
+  async redirects() {
+    return [
+      {
+        source: '/designer/:path*',
+        destination: '/',
+        permanent: false,
+      },
+      {
+        source: '/designer',
+        destination: '/',
+        permanent: false,
+      },
+    ]
+  },
 }
 
 export default nextConfig

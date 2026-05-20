@@ -1,6 +1,24 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+@font-face {
+  font-family: "MADEOuterSans";
+  src: url("/fonts/MADE-Outer-Sans-Medium.woff2") format("woff2"),
+       url("/fonts/MADE-Outer-Sans-Medium.otf") format("opentype");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "MADEOuterSans";
+  src: url("/fonts/MADE-Outer-Sans-Black.otf") format("opentype");
+  font-weight: 900;
+  font-display: swap;
+}
+
+@theme {
+  --font-display: "MADEOuterSans", sans-serif;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
