@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, useState } from "react"
 import { Drawer } from "vaul"
+import { PRODUCTS } from "@/lib/products-data"
 
 export type SelectedProduct = { id: string; src: string; name: string }
 
@@ -11,65 +11,13 @@ type ProductsDrawerProps = {
   onSelect: (product: SelectedProduct) => void
 }
 
-type ApiProduct = {
-  id: string
-  name: string
-  resources: { type: string; href: string }[]
-}
-
-function categorize(name: string): string | null {
-  if (/hoodie|hooded/i.test(name)) return "Hoodies"
-  if (/cap|hat|visor|beanie/i.test(name)) return "Caps & Hats"
-  if (/t-shirt|tee\b/i.test(name)) return "T-Shirts"
-  if (/sweat/i.test(name)) return "Sweatshirts"
-  if (/mug|cup|bottle|flask/i.test(name)) return "Drinkware"
-  if (/bag|backpack|tote/i.test(name)) return "Bags"
-  if (/sticker/i.test(name)) return "Stickers"
-  if (/poster|canvas/i.test(name)) return "Wall Art"
-  if (/tank|top/i.test(name)) return "Tank Tops"
-  if (/sock/i.test(name)) return "Socks"
-  return null
-}
-
-const API_URL = "/api/products"
-
-const FEATURED_PRODUCT: SelectedProduct = {
-  id: "2940",
-  name: "Unisex Premium Oversized Organic T-Shirt",
-  src: "https://image.spreadshirtmedia.net/image-server/v1/productTypes/2940/views/1/appearances/1257?width=300",
-}
+const PRODUCT_TILES: SelectedProduct[] = PRODUCTS.map(p => ({
+  id: p.id,
+  name: p.name,
+  src: p.preview,
+}))
 
 export default function ProductsDrawer({ open, onOpenChange, onSelect }: ProductsDrawerProps) {
-  const [products, setProducts] = useState<SelectedProduct[]>([])
-  const [loading, setLoading] = useState(false)
-
-  useEffect(() => {
-    if (!open || products.length > 0) return
-    setLoading(true)
-    fetch(API_URL)
-      .then(r => r.json())
-      .then((data: { productTypes: ApiProduct[] }) => {
-        const buckets: Record<string, SelectedProduct[]> = {}
-        for (const p of data.productTypes) {
-          const c = categorize(p.name)
-          if (!c) continue
-          const preview = p.resources.find(r => r.type === "preview")
-          if (!preview) continue
-          if (!buckets[c]) buckets[c] = []
-          if (buckets[c].length >= 3) continue
-          buckets[c].push({ id: p.id, name: p.name, src: `${preview.href}?width=300` })
-        }
-        const merged = [
-          FEATURED_PRODUCT,
-          ...Object.values(buckets)
-            .flat()
-            .filter(p => p.id !== FEATURED_PRODUCT.id),
-        ]
-        setProducts(merged)
-      })
-      .finally(() => setLoading(false))
-  }, [open, products.length])
-
   return (
     <Drawer.Root open={open} onOpenChange={onOpenChange}>
       <Drawer.Portal>
@@ -88,25 +36,22 @@ export default function ProductsDrawer({ open, onOpenChange, onSelect }: Product
             </button>
           </div>
           <div className="flex-1 overflow-y-auto px-6 pb-6">
-            {loading && products.length === 0 && (
-              <div className="text-[14px] text-neutral-500">Loading products…</div>
-            )}
             <div className="grid grid-cols-5 gap-4">
-              {products.map(({ id, name: pName, src }) => (
+              {PRODUCT_TILES.map(({ id, name, src }) => (
                 <button
                   key={id}
                   type="button"
                   onClick={() => {
-                    onSelect({ id, src, name: pName })
+                    onSelect({ id, src, name })
                     onOpenChange(false)
                   }}
                   className="cursor-pointer text-left"
                 >
                   <div className="flex aspect-[3/4] w-full items-center justify-center overflow-hidden bg-[#f5f5f5]">
-                    <img src={src} alt={pName} className="block h-full w-full object-contain" />
+                    <img src={src} alt={name} className="block h-full w-full object-contain" />
                   </div>
                   <div className="overflow-hidden text-ellipsis whitespace-nowrap pt-1.5 text-[12px] font-medium leading-tight text-[#6a6a6a]">
-                    {pName}
+                    {name}
                   </div>
                 </button>
               ))}

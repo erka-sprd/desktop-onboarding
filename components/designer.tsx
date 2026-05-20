@@ -4,12 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import ProductsDrawer, { type SelectedProduct } from "@/components/products-drawer"
 import SiteHeader from "@/components/site-header"
-import {
-  buildOutOfStockMap,
-  fetchProductType,
-  productImageUrl,
-  type ProductTypeData,
-} from "@/lib/spreadshirt"
+import { buildOutOfStockMap, getProductType, type ProductTypeData } from "@/lib/spreadshirt"
 
 /**
  * Changes made (minimal):
@@ -37,21 +32,13 @@ export default function Designer({
   onSelectProduct,
 }: DesignerProps) {
   const productId = selectedProduct?.id ?? DEFAULT_PRODUCT_ID
-  const [productData, setProductData] = useState<ProductTypeData | null>(null)
+  const productData: ProductTypeData | null = useMemo(() => getProductType(productId), [productId])
   const [activeColorIndex, setActiveColorIndex] = useState(0)
   const [productsDrawerOpen, setProductsDrawerOpen] = useState(false)
   const [activePanel, setActivePanel] = useState<DesignerPanel | null>(null)
 
   useEffect(() => {
-    let cancelled = false
-    setProductData(null)
     setActiveColorIndex(0)
-    fetchProductType(productId).then(d => {
-      if (!cancelled) setProductData(d)
-    })
-    return () => {
-      cancelled = true
-    }
   }, [productId])
 
   const appearances = productData?.appearances ?? []
@@ -83,9 +70,7 @@ export default function Designer({
   }, [initialPanel])
 
   const productImages = appearances.map(a => ({
-    src: productData
-      ? productImageUrl(productData.id, productData.defaultViewId, a.id, 800)
-      : "",
+    src: a.image,
     alt: a.name,
     color: a.color,
   }))
