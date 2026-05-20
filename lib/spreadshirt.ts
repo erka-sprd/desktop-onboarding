@@ -7,8 +7,6 @@ export type ProductTypeData = {
   sizes: { id: string; name: string }[]
 }
 
-const SHOP_ID = "205909"
-
 export const IMAGE_BASE = "https://image.spreadshirtmedia.net/image-server/v1"
 
 export function productImageUrl(
@@ -30,8 +28,7 @@ type ApiProductType = {
 }
 
 export async function fetchProductType(id: string): Promise<ProductTypeData> {
-  const url = `https://api.spreadshirt.net/api/v1/shops/${SHOP_ID}/productTypes/${id}?mediaType=json&fullData=true`
-  const res = await fetch(url)
+  const res = await fetch(`/api/products/${id}`)
   if (!res.ok) throw new Error(`Failed to fetch product type ${id}: ${res.status}`)
   const data: ApiProductType = await res.json()
   return {

@@ -31,8 +31,7 @@ function categorize(name: string): string | null {
   return null
 }
 
-const SHOP_ID = "205909"
-const API_URL = `https://api.spreadshirt.net/api/v1/shops/${SHOP_ID}/productTypes?mediaType=json&limit=1000`
+const API_URL = "/api/products"
 
 const FEATURED_PRODUCT: SelectedProduct = {
   id: "2940",
