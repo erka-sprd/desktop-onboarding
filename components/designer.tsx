@@ -219,7 +219,7 @@ export default function Designer() {
         <div ref={creatomatRef} id="creatomat-container" className="relative flex items-stretch gap-2 w-full h-full justify-center">
           <div
             id="left-section"
-            className="w-[100px] p-[6px] px-1.5 h-full bg-[#F4F4F4] rounded-[12px] flex flex-col"
+            className="shrink-0 w-[100px] p-[6px] px-1.5 h-full bg-[#F4F4F4] rounded-[12px] flex flex-col"
           >
             {/* Top Section - Products */}
             <div id="left-section-top-side" className="flex-shrink-0">
@@ -449,7 +449,7 @@ export default function Designer() {
 
           <div
             id="canvas-section"
-            className="relative overflow-hidden min-w-[700px] max-w-[1000px] flex-1 h-full bg-[#F4F4F4] rounded-[12px] flex items-center justify-center"
+            className="relative overflow-hidden flex-1 min-w-0 h-full bg-[#F4F4F4] rounded-[12px] flex items-center justify-center"
             onClick={e => {
               if (activePanel && e.target === e.currentTarget) {
                 setActivePanel(null)
@@ -510,7 +510,7 @@ export default function Designer() {
           <div
             ref={rightSectionRef}
             id="right-section"
-            className="w-[460px] p-[24px] pb-3 overflow-y-auto h-full bg-[#F4F4F4] rounded-[12px] flex flex-col"
+            className="shrink-0 w-[460px] p-[24px] pb-3 overflow-y-auto h-full bg-[#F4F4F4] rounded-[12px] flex flex-col"
           >
             <div id="top-part" className="flex-shrink-0">
               <div className="flex items-start justify-between mb-[8px]">
