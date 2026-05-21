@@ -4,6 +4,11 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import ProductsDrawer, { type SelectedProduct } from "@/components/products-drawer"
 import SiteHeader from "@/components/site-header"
+import {
+  ScopedDialog,
+  ScopedDialogClose,
+  ScopedDialogTitle,
+} from "@/components/ui/scoped-dialog"
 import { buildOutOfStockMap, getProductType, type ProductTypeData } from "@/lib/spreadshirt"
 
 /**
@@ -20,22 +25,53 @@ type DesignerPanel = "graphics" | "uploads" | "ai"
 
 const DEFAULT_PRODUCT_ID = "2940" // Unisex Premium Oversized Organic T-Shirt
 
-type DesignerProps = {
-  initialPanel?: DesignerPanel
-  selectedProduct?: SelectedProduct | null
-  onSelectProduct?: (product: SelectedProduct) => void
-}
-
-export default function Designer({
-  initialPanel,
-  selectedProduct,
-  onSelectProduct,
-}: DesignerProps) {
+export default function Designer() {
+  const [selectedProduct, setSelectedProduct] = useState<SelectedProduct | null>(null)
   const productId = selectedProduct?.id ?? DEFAULT_PRODUCT_ID
   const productData: ProductTypeData | null = useMemo(() => getProductType(productId), [productId])
   const [activeColorIndex, setActiveColorIndex] = useState(0)
   const [productsDrawerOpen, setProductsDrawerOpen] = useState(false)
   const [activePanel, setActivePanel] = useState<DesignerPanel | null>(null)
+  const [welcomeOpen, setWelcomeOpen] = useState(true)
+  const creatomatRef = useRef<HTMLDivElement>(null)
+  const [creatomatContainer, setCreatomatContainer] = useState<HTMLElement | null>(null)
+  useLayoutEffect(() => {
+    setCreatomatContainer(creatomatRef.current)
+  }, [])
+
+  // Collapse the desktop dock (left column) labels into tooltips when the
+  // creatomat container gets narrow.
+  const [isDockCompact, setIsDockCompact] = useState(false)
+  useEffect(() => {
+    const el = creatomatRef.current
+    if (!el) return
+    const ro = new ResizeObserver(entries => {
+      const height = entries[0]?.contentRect.height ?? 0
+      setIsDockCompact(height < 521)
+    })
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
+  // Pressing the browser back button after entering a panel/drawer from the
+  // onboarding popup reverts to the popup. We push a history entry when the
+  // user picks an action; popstate restores state.
+  const openFromOnboarding = (action: () => void) => {
+    setWelcomeOpen(false)
+    setTimeout(() => {
+      action()
+      window.history.pushState({ from: "onboarding" }, "")
+    }, 200)
+  }
+  useEffect(() => {
+    const onPop = () => {
+      setActivePanel(null)
+      setProductsDrawerOpen(false)
+      setWelcomeOpen(true)
+    }
+    window.addEventListener("popstate", onPop)
+    return () => window.removeEventListener("popstate", onPop)
+  }, [])
 
   useEffect(() => {
     if (!productData) return
@@ -61,22 +97,6 @@ export default function Designer({
   )
   const togglePanel = (panel: DesignerPanel) =>
     setActivePanel(p => (p === panel ? null : panel))
-  const [bootAnimated, setBootAnimated] = useState(false)
-  useEffect(() => {
-    const t = requestAnimationFrame(() => setBootAnimated(true))
-    return () => cancelAnimationFrame(t)
-  }, [])
-  useEffect(() => {
-    if (!initialPanel) return
-    // wait for staggered column reveal (1.5s) + small buffer
-    const t = setTimeout(() => setActivePanel(initialPanel), 1600)
-    return () => clearTimeout(t)
-  }, [initialPanel])
-
-  const colReveal = "transition-[opacity,filter] duration-[600ms] ease-out"
-  const colHidden = "opacity-0 blur-2xl"
-  const colShown = "opacity-100 blur-0"
-
   const productImages = appearances.map(a => ({
     src: a.image,
     alt: a.name,
@@ -193,13 +213,13 @@ export default function Designer({
       `}</style>
 
       <div className="h-screen w-full flex flex-col">
-        <SiteHeader />
+        <SiteHeader hidden={productsDrawerOpen} />
         <div className="flex flex-1 flex-col px-16 py-[16px] min-h-0">
         <div className="flex flex-1 items-center justify-center min-h-0">
-        <div id="creatomat-container" className="flex items-stretch gap-2 w-full h-full justify-center">
+        <div ref={creatomatRef} id="creatomat-container" className="relative flex items-stretch gap-2 w-full h-full justify-center">
           <div
             id="left-section"
-            className={`w-[100px] p-[6px] px-1.5 h-full bg-[#F4F4F4] rounded-[12px] flex flex-col ${colReveal} delay-0 ${bootAnimated ? colShown : colHidden}`}
+            className="w-[100px] p-[6px] px-1.5 h-full bg-[#F4F4F4] rounded-[12px] flex flex-col"
           >
             {/* Top Section - Products */}
             <div id="left-section-top-side" className="flex-shrink-0">
@@ -210,7 +230,7 @@ export default function Designer({
                 onClick={() => setProductsDrawerOpen(true)}
                 className={
                   "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
-                  (hoveredButton === "products" ? "bg-[#DEDEDE]" : "bg-transparent")
+                  (hoveredButton === "products" ? "bg-[#E9E9E9]" : "bg-transparent")
                 }
               >
                 <img src="/images/blankproduct.png" alt="Products" className="size-14" />
@@ -227,17 +247,25 @@ export default function Designer({
                 onMouseLeave={() => setHoveredButton(null)}
                 onClick={() => togglePanel("ai")}
                 className={
-                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
+                  "relative w-[88px] h-auto flex flex-col items-center gap-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
+                  (isDockCompact ? "px-[8px] py-[10px] " : "p-[8px] ") +
                   (activePanel === "ai"
                     ? "bg-white"
                     : hoveredButton === "ai"
-                      ? "bg-[#DEDEDE]"
+                      ? "bg-[#E9E9E9]"
                       : "bg-transparent")
                 }
               >
                 <img src="/icons/icon-sparkles-ai.svg" alt="" className="h-6 w-6" />
 
-                <div className="text-[12px] font-[600] text-black text-center">AI Image</div>
+                {!isDockCompact && (
+                  <div className="text-[12px] font-[600] text-black text-center">AI Image</div>
+                )}
+                {isDockCompact && hoveredButton === "ai" && (
+                  <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 whitespace-nowrap rounded bg-black px-2 py-1 text-[14px] font-medium text-white z-50 before:content-[''] before:absolute before:right-full before:top-1/2 before:-translate-y-1/2 before:w-0 before:h-0 before:border-y-[4px] before:border-y-transparent before:border-r-[4px] before:border-r-black">
+                    AI Image
+                  </span>
+                )}
               </button>
 
               {/* Uploads Button */}
@@ -247,11 +275,12 @@ export default function Designer({
                 onMouseLeave={() => setHoveredButton(null)}
                 onClick={() => togglePanel("uploads")}
                 className={
-                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
+                  "relative w-[88px] h-auto flex flex-col items-center gap-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
+                  (isDockCompact ? "px-[8px] py-[10px] " : "p-[8px] ") +
                   (activePanel === "uploads"
                     ? "bg-white"
                     : hoveredButton === "upload"
-                      ? "bg-[#DEDEDE]"
+                      ? "bg-[#E9E9E9]"
                       : "bg-transparent")
                 }
               >
@@ -281,7 +310,14 @@ export default function Designer({
                     fill="black"
                   />
                 </svg>
-                <div className="text-[12px] font-[600] text-black text-center">Uploads</div>
+                {!isDockCompact && (
+                  <div className="text-[12px] font-[600] text-black text-center">Uploads</div>
+                )}
+                {isDockCompact && hoveredButton === "upload" && (
+                  <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 whitespace-nowrap rounded bg-black px-2 py-1 text-[14px] font-medium text-white z-50 before:content-[''] before:absolute before:right-full before:top-1/2 before:-translate-y-1/2 before:w-0 before:h-0 before:border-y-[4px] before:border-y-transparent before:border-r-[4px] before:border-r-black">
+                    Uploads
+                  </span>
+                )}
               </button>
 
               {/* Text Button */}
@@ -290,8 +326,9 @@ export default function Designer({
                 onMouseEnter={() => setHoveredButton("text")}
                 onMouseLeave={() => setHoveredButton(null)}
                 className={
-                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
-                  (hoveredButton === "text" ? "bg-[#DEDEDE]" : "bg-transparent")
+                  "relative w-[88px] h-auto flex flex-col items-center gap-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
+                  (isDockCompact ? "px-[8px] py-[10px] " : "p-[8px] ") +
+                  (hoveredButton === "text" ? "bg-[#E9E9E9]" : "bg-transparent")
                 }
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -300,7 +337,14 @@ export default function Designer({
                     fill="black"
                   />
                 </svg>
-                <div className="text-[12px] font-[600] text-black text-center">Text</div>
+                {!isDockCompact && (
+                  <div className="text-[12px] font-[600] text-black text-center">Text</div>
+                )}
+                {isDockCompact && hoveredButton === "text" && (
+                  <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 whitespace-nowrap rounded bg-black px-2 py-1 text-[14px] font-medium text-white z-50 before:content-[''] before:absolute before:right-full before:top-1/2 before:-translate-y-1/2 before:w-0 before:h-0 before:border-y-[4px] before:border-y-transparent before:border-r-[4px] before:border-r-black">
+                    Text
+                  </span>
+                )}
               </button>
 
               {/* Graphics Button */}
@@ -310,11 +354,12 @@ export default function Designer({
                 onMouseLeave={() => setHoveredButton(null)}
                 onClick={() => togglePanel("graphics")}
                 className={
-                  "w-[88px] h-auto flex flex-col items-center gap-[8px] p-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
+                  "relative w-[88px] h-auto flex flex-col items-center gap-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
+                  (isDockCompact ? "px-[8px] py-[10px] " : "p-[8px] ") +
                   (activePanel === "graphics"
                     ? "bg-white"
                     : hoveredButton === "graphics"
-                      ? "bg-[#DEDEDE]"
+                      ? "bg-[#E9E9E9]"
                       : "bg-transparent")
                 }
               >
@@ -345,7 +390,14 @@ export default function Designer({
                   />
                 </svg>
 
-                <div className="text-[12px] font-[600] text-black text-center">Graphics</div>
+                {!isDockCompact && (
+                  <div className="text-[12px] font-[600] text-black text-center">Graphics</div>
+                )}
+                {isDockCompact && hoveredButton === "graphics" && (
+                  <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-2 whitespace-nowrap rounded bg-black px-2 py-1 text-[14px] font-medium text-white z-50 before:content-[''] before:absolute before:right-full before:top-1/2 before:-translate-y-1/2 before:w-0 before:h-0 before:border-y-[4px] before:border-y-transparent before:border-r-[4px] before:border-r-black">
+                    Graphics
+                  </span>
+                )}
               </button>
             </div>
 
@@ -397,7 +449,7 @@ export default function Designer({
 
           <div
             id="canvas-section"
-            className={`relative overflow-hidden min-w-[700px] max-w-[1000px] flex-1 h-full bg-[#F4F4F4] rounded-[12px] flex items-center justify-center ${colReveal} delay-[450ms] ${bootAnimated ? colShown : colHidden}`}
+            className="relative overflow-hidden min-w-[700px] max-w-[1000px] flex-1 h-full bg-[#F4F4F4] rounded-[12px] flex items-center justify-center"
             onClick={e => {
               if (activePanel && e.target === e.currentTarget) {
                 setActivePanel(null)
@@ -413,7 +465,7 @@ export default function Designer({
             {(["graphics", "uploads", "ai"] as const).map(panel => (
               <div
                 key={panel}
-                className={`absolute inset-y-[2px] left-[2px] w-[300px] rounded-[12px] bg-white shadow-[32px_0px_50px_0px_rgba(0,0,0,0.05)] flex flex-col transition-transform duration-300 ease-out ${
+                className={`absolute inset-y-[2px] left-[2px] w-[375px] rounded-[12px] bg-white shadow-[32px_0px_50px_0px_rgba(0,0,0,0.05)] flex flex-col transition-transform duration-300 ease-out ${
                   activePanel === panel ? "translate-x-0" : "-translate-x-[calc(100%+100px)]"
                 }`}
               >
@@ -449,7 +501,7 @@ export default function Designer({
                   onClick={() => setActivePanel(null)}
                   className="absolute -right-3.5 top-1/2 -translate-y-1/2 cursor-pointer rounded-2xl border border-neutral-200 bg-white px-0.5 py-3 hover:bg-neutral-50"
                 >
-                  <img src="/icons/icon-chevron-left.svg" alt="" className="size-5" />
+                  <img src="/icons/icon-chevron-left.svg" alt="" className="size-6" />
                 </button>
               </div>
             ))}
@@ -458,7 +510,7 @@ export default function Designer({
           <div
             ref={rightSectionRef}
             id="right-section"
-            className={`w-[460px] p-[24px] pb-3 overflow-y-auto h-full bg-[#F4F4F4] rounded-[12px] flex flex-col ${colReveal} delay-[900ms] ${bootAnimated ? colShown : colHidden}`}
+            className="w-[460px] p-[24px] pb-3 overflow-y-auto h-full bg-[#F4F4F4] rounded-[12px] flex flex-col"
           >
             <div id="top-part" className="flex-shrink-0">
               <div className="flex items-start justify-between mb-[8px]">
@@ -487,7 +539,7 @@ export default function Designer({
                             "shrink-0 w-[46px] h-[50px] p-[6px] box-border rounded-[6px] flex items-center justify-center overflow-hidden cursor-pointer select-none border " +
                             (activeColorIndex === index
                               ? "bg-white border-black rounded-[8px]"
-                              : "bg-transparent border-transparent hover:bg-[#DEDEDE]")
+                              : "bg-transparent border-transparent hover:bg-[#E9E9E9]")
                           }
                           onClick={() => setActiveColorIndex(index)}
                           onKeyDown={(e) => {
@@ -587,7 +639,7 @@ export default function Designer({
                           "w-[46px] h-[50px] p-[6px] box-border flex items-center justify-center overflow-hidden cursor-pointer select-none border rounded-md " +
                           (activeColorIndex === index
                             ? "bg-white border-black rounded-[8px]"
-                            : "bg-transparent border-transparent hover:bg-[#DEDEDE]")
+                            : "bg-transparent border-transparent hover:bg-[#E9E9E9]")
                         }
                         onClick={() => setActiveColorIndex(index)}
                         onKeyDown={(e) => {
@@ -624,7 +676,7 @@ export default function Designer({
     {getVolumeDiscountText(totalSelected)}
   </span>
 
-  <div className="h-[4px] rounded-full bg-[#DEDEDE] w-1 mx-2.5" />
+  <div className="h-[4px] rounded-full bg-[#E9E9E9] w-1 mx-2.5" />
 
   <button
     type="button"
@@ -690,7 +742,7 @@ export default function Designer({
               
 
               {/* Divider */}
-              <div className="w-full h-px bg-[#DEDEDE] mb-3" />
+              <div className="w-full h-px bg-[#E9E9E9] mb-3" />
               
 
               {/* Shipping section */}
@@ -717,6 +769,73 @@ export default function Designer({
 
             </div>
           </div>
+
+          <ScopedDialog
+            open={welcomeOpen}
+            onOpenChange={open => {
+              if (!open) window.history.pushState({ from: "onboarding" }, "")
+              setWelcomeOpen(open)
+            }}
+            container={creatomatContainer}
+            overlayClassName="rounded-[12px]"
+            className="w-[440px] max-w-[90%] rounded-2xl bg-white p-[24px] shadow-xl"
+          >
+            <div className="flex items-center justify-between">
+              <ScopedDialogTitle
+                className="font-display text-[16px] font-medium leading-tight bg-clip-text text-transparent"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(90deg, #DC2626 -0.88%, #1D4ED8 49.94%, #16A34A 101.36%)",
+                }}
+              >
+                Start here to customize
+              </ScopedDialogTitle>
+              <ScopedDialogClose aria-label="Close" className="cursor-pointer outline-none focus:outline-none focus-visible:outline-none">
+                <img src="/icons/icon-close-x.svg" alt="" className="h-6 w-6" />
+              </ScopedDialogClose>
+            </div>
+
+            <div className="mt-5 flex flex-col items-center gap-3">
+              <button
+                type="button"
+                onClick={() => openFromOnboarding(() => setProductsDrawerOpen(true))}
+                className="flex flex-col items-center gap-[10px] rounded-[12px] bg-neutral-100 px-[29px] py-[17px] cursor-pointer transition-colors hover:bg-neutral-200"
+              >
+                <img
+                  src="/images/blankproduct.png"
+                  alt=""
+                  className="h-14 w-14 object-contain"
+                />
+                <span className="text-[14px] font-semibold text-black">Choose Product</span>
+              </button>
+
+              <span className="text-[14px] font-medium text-[#6A6A6A]">or</span>
+
+              <div className="flex gap-1 rounded-[12px] bg-neutral-100 p-2">
+                {(
+                  [
+                    { id: "graphics", label: "Graphics", icon: "/icons/icon-graphics.svg", panel: "graphics" as const },
+                    { id: "upload", label: "Upload", icon: "/icons/icon-upload.svg", panel: "uploads" as const },
+                    { id: "text", label: "Text", icon: "/icons/icon-text.svg" },
+                    { id: "ai", label: "AI Image", icon: "/icons/icon-sparkles-ai.svg", panel: "ai" as const },
+                  ] as const
+                ).map(a => (
+                  <button
+                    key={a.id}
+                    type="button"
+                    onClick={() => {
+                      if (!("panel" in a)) return
+                      openFromOnboarding(() => setActivePanel(a.panel))
+                    }}
+                    className="flex flex-col items-center gap-[6px] min-w-[88px] cursor-pointer rounded-[8px] px-3 py-2 transition-colors hover:bg-white"
+                  >
+                    <img src={a.icon} alt="" className="h-6 w-6" />
+                    <span className="text-[14px] font-semibold text-black">{a.label}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </ScopedDialog>
         </div>
         </div>
         </div>
@@ -732,8 +851,9 @@ export default function Designer({
       <ProductsDrawer
         open={productsDrawerOpen}
         onOpenChange={setProductsDrawerOpen}
-        onSelect={p => onSelectProduct?.(p)}
+        onSelect={setSelectedProduct}
       />
+
     </>
   )
 }
@@ -1154,7 +1274,7 @@ export function XLButton({ label, value, onValueChange, isRemoved, setIsRemoved,
                     className={
                       "px-[8px] h-[28px] flex items-center cursor-pointer gap-[6px] " +
                       "text-[14px] font-medium font-sans " +
-                      (selected ? "bg-[#DEDEDE] text-black " : isRemove ? "text-[#D92D20] " : "text-black ") +
+                      (selected ? "bg-[#E9E9E9] text-black " : isRemove ? "text-[#D92D20] " : "text-black ") +
                       "hover:bg-[#F4F4F4] hover:text-black transition-colors duration-200 ease-out"
                     }
                   >
