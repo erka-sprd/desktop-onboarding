@@ -8,7 +8,16 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
   title: "Onboarding Revamp",
-  description: "Onboarding Revamp",
+  description: "Made with Claude",
+  openGraph: {
+    title: "Onboarding Revamp",
+    description: "Made with Claude",
+  },
+  twitter: {
+    card: "summary",
+    title: "Onboarding Revamp",
+    description: "Made with Claude",
+  },
 }
 
 export default function RootLayout({
