@@ -7,6 +7,14 @@ const nextConfig = {
     unoptimized: true,
   },
   devIndicators: false,
+  async headers() {
+    return [
+      {
+        source: '/',
+        headers: [{ key: 'Cache-Control', value: 'no-store' }],
+      },
+    ]
+  },
   async redirects() {
     return [
       {
