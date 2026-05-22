@@ -102,6 +102,10 @@ export default function Designer() {
   const [selectedTextId, setSelectedTextId] = useState<string | null>(null)
   const [textColorPanelOpen, setTextColorPanelOpen] = useState(false)
   const [fontPanelOpen, setFontPanelOpen] = useState(false)
+  const [snapGuides, setSnapGuides] = useState<{ h: boolean; v: boolean }>({
+    h: false,
+    v: false,
+  })
   const selectedText = textElements.find(t => t.id === selectedTextId) ?? null
   const [printAreaPxSize, setPrintAreaPxSize] = useState({ width: 0, height: 0 })
   const printAreaBoxRef = useRef<HTMLDivElement>(null)
@@ -300,22 +304,31 @@ export default function Designer() {
       if (Math.abs(dx) > 3 || Math.abs(dy) > 3) ds.moved = true
       const newXPct = ds.elX + (dx / paRect.width) * 100
       const newYPct = ds.elY + (dy / paRect.height) * 100
+      const SNAP_THRESHOLD_PX = 8
+      const draggedNode = textElementRefs.current[ds.id]
+      const elWidthPct = draggedNode
+        ? (draggedNode.getBoundingClientRect().width / paRect.width) * 100
+        : 0
+      const elHeightPct = draggedNode
+        ? (draggedNode.getBoundingClientRect().height / paRect.height) * 100
+        : 0
+      const clampedX = Math.max(0, Math.min(100 - elWidthPct, newXPct))
+      const clampedY = Math.max(0, Math.min(100 - elHeightPct, newYPct))
+      const centerXpct = clampedX + elWidthPct / 2
+      const centerYpct = clampedY + elHeightPct / 2
+      const snapVThresholdPct = (SNAP_THRESHOLD_PX / paRect.width) * 100
+      const snapHThresholdPct = (SNAP_THRESHOLD_PX / paRect.height) * 100
+      const snapV = Math.abs(centerXpct - 50) < snapVThresholdPct
+      const snapH = Math.abs(centerYpct - 50) < snapHThresholdPct
+      setSnapGuides(prev =>
+        prev.h === snapH && prev.v === snapV ? prev : { h: snapH, v: snapV }
+      )
+      const snappedX = snapV ? (100 - elWidthPct) / 2 : clampedX
+      const snappedY = snapH ? (100 - elHeightPct) / 2 : clampedY
       setTextElements(prev =>
         prev.map(t => {
           if (t.id !== ds.id) return t
-          const node = textElementRefs.current[t.id]
-          let maxX = 100
-          let maxY = 100
-          if (node) {
-            const elRect = node.getBoundingClientRect()
-            maxX = Math.max(0, 100 - (elRect.width / paRect.width) * 100)
-            maxY = Math.max(0, 100 - (elRect.height / paRect.height) * 100)
-          }
-          return {
-            ...t,
-            x: Math.max(0, Math.min(maxX, newXPct)),
-            y: Math.max(0, Math.min(maxY, newYPct)),
-          }
+          return { ...t, x: snappedX, y: snappedY }
         })
       )
     }
@@ -328,6 +341,7 @@ export default function Designer() {
       if (!ds) return
       // Always select the text on mouseup so dragging it keeps it as the active selection.
       setSelectedTextId(ds.id)
+      setSnapGuides({ h: false, v: false })
       dragStateRef.current = null
     }
     document.addEventListener("mousemove", onMove)
@@ -762,7 +776,7 @@ export default function Designer() {
         />
         <div className="flex flex-1 flex-col px-8 py-[16px] min-h-0">
         <div className="flex flex-1 items-center justify-center min-h-0">
-        <div ref={creatomatRef} id="creatomat-container" className="relative flex items-stretch gap-2 w-full h-full justify-center">
+        <div ref={creatomatRef} id="creatomat-container" className="relative flex items-stretch gap-2 w-full max-w-[1920px] h-full justify-center">
           <div
             id="left-section"
             className="shrink-0 w-[100px] p-[6px] px-1.5 h-full bg-[#F4F4F4] rounded-[12px] flex flex-col"
@@ -1052,6 +1066,12 @@ export default function Designer() {
                     height: `${printAreaOverlay.height}%`,
                   }}
                 >
+                  {snapGuides.v && (
+                    <div className="pointer-events-none absolute left-1/2 top-0 bottom-0 w-px bg-[#FF3B30] -translate-x-1/2" />
+                  )}
+                  {snapGuides.h && (
+                    <div className="pointer-events-none absolute top-1/2 left-0 right-0 h-px bg-[#FF3B30] -translate-y-1/2" />
+                  )}
                   {textElements.map(el =>
                     editingTextId === el.id ? (
                       (() => {
@@ -1094,10 +1114,9 @@ export default function Designer() {
                             }}
                             ref={node => {
                               if (!node) return
-                              if (node.dataset.cursorAtEnd === "1") return
-                              const len = node.value.length
-                              node.setSelectionRange(len, len)
-                              node.dataset.cursorAtEnd = "1"
+                              if (node.dataset.initialSelectDone === "1") return
+                              node.setSelectionRange(0, node.value.length)
+                              node.dataset.initialSelectDone = "1"
                             }}
                             data-text-element="true"
                             className="pointer-events-auto bg-transparent outline-none leading-none"
