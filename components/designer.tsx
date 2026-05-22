@@ -2,14 +2,24 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
+import * as Popover from "@radix-ui/react-popover"
+import { Basket, type BasketItem } from "@/components/basket"
 import ProductsDrawer, { type SelectedProduct } from "@/components/products-drawer"
 import SiteHeader from "@/components/site-header"
+import { IconsScroller } from "@/components/ui/icons-scroller"
+import { EditorBar } from "@/components/ui/editor-bar"
 import {
   ScopedDialog,
   ScopedDialogClose,
   ScopedDialogTitle,
 } from "@/components/ui/scoped-dialog"
-import { buildOutOfStockMap, getProductType, type ProductTypeData } from "@/lib/spreadshirt"
+import { TextColorPanel } from "@/components/ui/text-color-panel/TextColorPanel"
+import {
+  buildOutOfStockMap,
+  getPrintAreaOverlay,
+  getProductType,
+  type ProductTypeData,
+} from "@/lib/spreadshirt"
 
 /**
  * Changes made (minimal):
@@ -30,9 +40,185 @@ export default function Designer() {
   const productId = selectedProduct?.id ?? DEFAULT_PRODUCT_ID
   const productData: ProductTypeData | null = useMemo(() => getProductType(productId), [productId])
   const [activeColorIndex, setActiveColorIndex] = useState(0)
+  const [activeViewId, setActiveViewId] = useState("1")
   const [productsDrawerOpen, setProductsDrawerOpen] = useState(false)
   const [activePanel, setActivePanel] = useState<DesignerPanel | null>(null)
   const [welcomeOpen, setWelcomeOpen] = useState(true)
+  const [sizePopoverOpen, setSizePopoverOpen] = useState(false)
+  const [basketItems, setBasketItems] = useState<BasketItem[]>([])
+  const [basketOpen, setBasketOpen] = useState(false)
+  const [addingToBasket, setAddingToBasket] = useState(false)
+  const ADD_TO_BASKET_DELAY = 2000
+  const LOADING_TEXTS = [
+    "Getting things ready…",
+    "Checking details…",
+    "Just a moment…",
+    "Wrapping it up…",
+    "Getting closer…",
+  ]
+  const [loadingTextIdx, setLoadingTextIdx] = useState(0)
+  useEffect(() => {
+    if (!addingToBasket) return
+    setLoadingTextIdx(0)
+    const interval = setInterval(() => {
+      setLoadingTextIdx(i => (i + 1) % LOADING_TEXTS.length)
+    }, 900)
+    return () => clearInterval(interval)
+  }, [addingToBasket])
+  const [flashSize, setFlashSize] = useState(false)
+
+  // Text elements placed inside the print area. Positions are % of the print area.
+  type TextElement = {
+    id: string
+    content: string
+    x: number
+    y: number
+    color: string
+    fontSize: number
+  }
+  const [textElements, setTextElements] = useState<TextElement[]>([])
+  const [editingTextId, setEditingTextId] = useState<string | null>(null)
+  const [selectedTextId, setSelectedTextId] = useState<string | null>(null)
+  const [textColorPanelOpen, setTextColorPanelOpen] = useState(false)
+  const selectedText = textElements.find(t => t.id === selectedTextId) ?? null
+  const [printAreaPxSize, setPrintAreaPxSize] = useState({ width: 0, height: 0 })
+  const printAreaBoxRef = useRef<HTMLDivElement>(null)
+  const textElementRefs = useRef<Record<string, HTMLElement>>({})
+  const dragStateRef = useRef<{
+    id: string
+    startX: number
+    startY: number
+    elX: number
+    elY: number
+    moved: boolean
+  } | null>(null)
+
+  const addTextElement = () => {
+    const id = `text-${Date.now()}`
+    setTextElements(prev => [
+      ...prev,
+      { id, content: "Your text here", x: 20, y: 40, color: "#000000", fontSize: 32 },
+    ])
+    setEditingTextId(id)
+    setSelectedTextId(id)
+  }
+
+  const updateSelectedText = (patch: Partial<TextElement>) => {
+    if (!selectedTextId) return
+    setTextElements(prev =>
+      prev.map(t => (t.id === selectedTextId ? { ...t, ...patch } : t))
+    )
+  }
+
+  const duplicateSelectedText = () => {
+    if (!selectedTextId) return
+    const src = textElements.find(t => t.id === selectedTextId)
+    if (!src) return
+    const newId = `text-${Date.now()}`
+    const newEl: TextElement = {
+      ...src,
+      id: newId,
+      x: Math.min(100, src.x + 5),
+      y: Math.min(100, src.y + 5),
+    }
+    setTextElements(prev => [...prev, newEl])
+    setSelectedTextId(newId)
+  }
+
+  const deleteSelectedText = () => {
+    if (!selectedTextId) return
+    setTextElements(prev => prev.filter(t => t.id !== selectedTextId))
+    setSelectedTextId(null)
+    setTextColorPanelOpen(false)
+  }
+
+  // Deselect text on clicks anywhere outside the text element / editor bar / color panel.
+  useEffect(() => {
+    const onDocClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement | null
+      if (!target) return
+      if (
+        target.closest("[data-text-element]") ||
+        target.closest("[data-editor-bar]") ||
+        target.closest("[data-text-color-panel]")
+      ) {
+        return
+      }
+      setSelectedTextId(null)
+      setTextColorPanelOpen(false)
+    }
+    document.addEventListener("click", onDocClick)
+    return () => document.removeEventListener("click", onDocClick)
+  }, [])
+
+  // Reset texts when switching products.
+  useEffect(() => {
+    setTextElements([])
+    setEditingTextId(null)
+  }, [productData])
+
+  // Document-level mousemove/up so dragging keeps working when cursor leaves the element.
+  useEffect(() => {
+    const onMove = (e: MouseEvent) => {
+      const ds = dragStateRef.current
+      if (!ds) return
+      const pa = printAreaBoxRef.current
+      if (!pa) return
+      const paRect = pa.getBoundingClientRect()
+      const dx = e.clientX - ds.startX
+      const dy = e.clientY - ds.startY
+      if (Math.abs(dx) > 3 || Math.abs(dy) > 3) ds.moved = true
+      const newXPct = ds.elX + (dx / paRect.width) * 100
+      const newYPct = ds.elY + (dy / paRect.height) * 100
+      setTextElements(prev =>
+        prev.map(t => {
+          if (t.id !== ds.id) return t
+          const node = textElementRefs.current[t.id]
+          let maxX = 100
+          let maxY = 100
+          if (node) {
+            const elRect = node.getBoundingClientRect()
+            maxX = Math.max(0, 100 - (elRect.width / paRect.width) * 100)
+            maxY = Math.max(0, 100 - (elRect.height / paRect.height) * 100)
+          }
+          return {
+            ...t,
+            x: Math.max(0, Math.min(maxX, newXPct)),
+            y: Math.max(0, Math.min(maxY, newYPct)),
+          }
+        })
+      )
+    }
+    const onUp = () => {
+      const ds = dragStateRef.current
+      if (!ds) return
+      if (!ds.moved) setSelectedTextId(ds.id)
+      dragStateRef.current = null
+    }
+    document.addEventListener("mousemove", onMove)
+    document.addEventListener("mouseup", onUp)
+    return () => {
+      document.removeEventListener("mousemove", onMove)
+      document.removeEventListener("mouseup", onUp)
+    }
+  }, [])
+
+  const startTextDrag = (e: React.MouseEvent, el: TextElement) => {
+    if (editingTextId === el.id) return
+    e.preventDefault()
+    dragStateRef.current = {
+      id: el.id,
+      startX: e.clientX,
+      startY: e.clientY,
+      elX: el.x,
+      elY: el.y,
+      moved: false,
+    }
+  }
+  const [hasMounted, setHasMounted] = useState(false)
+  useEffect(() => {
+    setHasMounted(true)
+  }, [])
   const creatomatRef = useRef<HTMLDivElement>(null)
   const [creatomatContainer, setCreatomatContainer] = useState<HTMLElement | null>(null)
   useLayoutEffect(() => {
@@ -61,7 +247,7 @@ export default function Designer() {
     setTimeout(() => {
       action()
       window.history.pushState({ from: "onboarding" }, "")
-    }, 200)
+    }, 280)
   }
   useEffect(() => {
     const onPop = () => {
@@ -79,6 +265,7 @@ export default function Designer() {
       a => a.id === productData.defaultAppearanceId
     )
     setActiveColorIndex(idx >= 0 ? idx : 0)
+    setActiveViewId(productData.defaultViewId)
   }, [productData])
 
   const appearances = productData?.appearances ?? []
@@ -103,13 +290,131 @@ export default function Designer() {
     color: a.color,
   }))
 
-  // Total selected quantity across all sizes (sum of numeric inputs).
-  const [totalSelected, setTotalSelected] = useState(0)
+  // Active view determines the canvas image and the print-area overlay.
+  const currentAppearance = appearances[activeColorIndex]
+  const currentViewImage =
+    currentAppearance?.views.find(v => v.id === activeViewId)?.image ??
+    currentAppearance?.image ??
+    ""
+  const currentView = productData?.views.find(v => v.id === activeViewId)
+  const canvasAspect = currentView
+    ? `${currentView.canvas.width} / ${currentView.canvas.height}`
+    : "1 / 1"
+  const printAreaOverlay = productData ? getPrintAreaOverlay(productData, activeViewId) : null
 
-  // Reset totalSelected when color changes
   useEffect(() => {
-    setTotalSelected(0)
+    const el = printAreaBoxRef.current
+    if (!el) return
+    const update = () => {
+      const r = el.getBoundingClientRect()
+      setPrintAreaPxSize(prev =>
+        prev.width === r.width && prev.height === r.height
+          ? prev
+          : { width: r.width, height: r.height }
+      )
+    }
+    update()
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    window.addEventListener("resize", update)
+    return () => {
+      ro.disconnect()
+      window.removeEventListener("resize", update)
+    }
+  }, [productId, activeViewId])
+  // Computes the largest font size at which `text` fits in `areaWidth × areaHeight`.
+  const computeMaxFontSize = (text: string, areaWidth: number, areaHeight: number) => {
+    if (areaWidth <= 0 || areaHeight <= 0) return 14
+    const safeText = text || "A"
+    if (typeof document === "undefined") return Math.floor(areaHeight)
+    const canvas = document.createElement("canvas")
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return Math.floor(areaHeight)
+    ctx.font = '100px "Inter", sans-serif'
+    const widthAt100 = ctx.measureText(safeText).width
+    if (widthAt100 <= 0) return Math.floor(areaHeight)
+    const maxByWidth = (areaWidth / widthAt100) * 100
+    return Math.max(14, Math.floor(Math.min(maxByWidth, areaHeight)))
+  }
+  const maxFontSize = useMemo(
+    () =>
+      computeMaxFontSize(
+        selectedText?.content ?? "",
+        printAreaPxSize.width,
+        printAreaPxSize.height
+      ),
+    [selectedText?.content, printAreaPxSize.width, printAreaPxSize.height]
+  )
+
+  // Auto-clamp the selected text's fontSize if its content makes the current size overflow.
+  useEffect(() => {
+    if (!selectedTextId) return
+    setTextElements(prev => {
+      const t = prev.find(x => x.id === selectedTextId)
+      if (!t || t.fontSize <= maxFontSize) return prev
+      return prev.map(x =>
+        x.id === selectedTextId ? { ...x, fontSize: maxFontSize } : x
+      )
+    })
+  }, [maxFontSize, selectedTextId])
+
+  // Per-size selected quantities; total derived from the sum.
+  const [sizeQuantities, setSizeQuantities] = useState<Record<string, number>>({})
+  const totalSelected = useMemo(
+    () => Object.values(sizeQuantities).reduce((a, b) => a + b, 0),
+    [sizeQuantities]
+  )
+
+  // Reset when color changes
+  useEffect(() => {
+    setSizeQuantities({})
   }, [activeColorIndex])
+
+  const setSizeQuantity = (size: string, qty: number) => {
+    setSizeQuantities(prev => ({ ...prev, [size]: Math.max(0, Math.floor(qty) || 0) }))
+  }
+
+  // Tier hint string driven by current totalSelected and the discount tiers.
+  const discountTierHint = (() => {
+    const tiers: { min: number; pct: number }[] = [
+      { min: 5, pct: 10 },
+      { min: 20, pct: 15 },
+      { min: 50, pct: 50 },
+    ]
+    const nextTier = tiers.find(t => totalSelected < t.min)
+    if (nextTier) return `From ${nextTier.min} articles -${nextTier.pct}% reduction`
+    const last = tiers[tiers.length - 1]
+    return `${last.pct}% reduction applied`
+  })()
+
+  const selectedSizes = sizes
+    .map(size => ({ size, qty: sizeQuantities[size] ?? 0 }))
+    .filter(s => s.qty > 0)
+  const sizeButtonLabel =
+    selectedSizes.length === 0 ? (
+      <span>Choose size</span>
+    ) : (
+      <span className="flex items-center flex-wrap gap-2">
+        <span>{totalSelected === 1 ? "Size:" : "Sizes:"}</span>
+        {selectedSizes.map(({ size, qty }) => (
+          <span
+            key={size}
+            className="flex items-center bg-black text-white rounded-none px-2 py-1"
+          >
+            <span>{size}</span>
+            {qty > 1 && (
+              <>
+                <span
+                  aria-hidden="true"
+                  className="mx-[6px] h-3 w-px bg-[var(--sprd-neutral-800)]"
+                />
+                <span className="font-normal opacity-70">{qty}x</span>
+              </>
+            )}
+          </span>
+        ))}
+      </span>
+    )
 
   // Calculate discount percentage based on volume
   const getDiscountPercentage = (qty: number): number => {
@@ -134,7 +439,6 @@ export default function Designer() {
   const rightSectionRef = useRef<HTMLDivElement | null>(null)
 
   const [hoveredButton, setHoveredButton] = useState<string | null>(null)
-  const [showToast, setShowToast] = useState(false)
 
   useEffect(() => {
     const checkRightSectionHeight = () => {
@@ -142,7 +446,7 @@ export default function Designer() {
       if (!rightSection) return
 
       const height = rightSection.clientHeight
-      const shouldScroll = height < 701
+      const shouldScroll = height < 471
       setIsColorScrollable(shouldScroll)
     }
 
@@ -195,7 +499,7 @@ export default function Designer() {
       window.removeEventListener("resize", onResize)
       ro?.disconnect()
     }
-  }, [isColorScrollable])
+  }, [isColorScrollable, productData])
 
   const scrollColorByPx = (dx: number) => {
     const row = colorRowRef.current
@@ -213,8 +517,12 @@ export default function Designer() {
       `}</style>
 
       <div className="h-screen w-full flex flex-col">
-        <SiteHeader hidden={productsDrawerOpen} />
-        <div className="flex flex-1 flex-col px-16 py-[16px] min-h-0">
+        <SiteHeader
+          hidden={productsDrawerOpen}
+          onCartClick={() => setBasketOpen(true)}
+          cartCount={basketItems.reduce((sum, it) => sum + it.qty, 0)}
+        />
+        <div className="flex flex-1 flex-col px-8 py-[16px] min-h-0">
         <div className="flex flex-1 items-center justify-center min-h-0">
         <div ref={creatomatRef} id="creatomat-container" className="relative flex items-stretch gap-2 w-full h-full justify-center">
           <div
@@ -325,6 +633,7 @@ export default function Designer() {
                 type="button"
                 onMouseEnter={() => setHoveredButton("text")}
                 onMouseLeave={() => setHoveredButton(null)}
+                onClick={addTextElement}
                 className={
                   "relative w-[88px] h-auto flex flex-col items-center gap-[8px] rounded-[10px] transition-all duration-200 cursor-pointer " +
                   (isDockCompact ? "px-[8px] py-[10px] " : "p-[8px] ") +
@@ -454,18 +763,160 @@ export default function Designer() {
               if (activePanel && e.target === e.currentTarget) {
                 setActivePanel(null)
               }
+              if (e.target === e.currentTarget) {
+                setSelectedTextId(null)
+                setTextColorPanelOpen(false)
+              }
             }}
           >
-            <img
-              src={productImages[activeColorIndex]?.src || "/placeholder.svg"}
-              alt={productImages[activeColorIndex]?.alt || ""}
-              className="h-[70%] w-auto object-contain"
+            <div
+              className="relative h-[70%]"
+              style={{ aspectRatio: canvasAspect }}
               onClick={() => activePanel && setActivePanel(null)}
-            />
+            >
+              <img
+                src={currentViewImage || "/placeholder.svg"}
+                alt={productImages[activeColorIndex]?.alt || ""}
+                className="h-full w-full object-contain"
+              />
+              {printAreaOverlay && (selectedTextId || editingTextId) && (
+                <svg
+                  className="pointer-events-none absolute"
+                  overflow="visible"
+                  style={{
+                    left: `${printAreaOverlay.left}%`,
+                    top: `${printAreaOverlay.top}%`,
+                    width: `${printAreaOverlay.width}%`,
+                    height: `${printAreaOverlay.height}%`,
+                  }}
+                >
+                  <rect
+                    width="100%"
+                    height="100%"
+                    fill="none"
+                    stroke="#6366F1"
+                    strokeWidth="1"
+                    strokeDasharray="10 4"
+                  />
+                </svg>
+              )}
+
+              {/* Text elements layer — same box as the print area, but interactive. */}
+              {printAreaOverlay && (
+                <div
+                  ref={printAreaBoxRef}
+                  className="absolute pointer-events-none"
+                  style={{
+                    left: `${printAreaOverlay.left}%`,
+                    top: `${printAreaOverlay.top}%`,
+                    width: `${printAreaOverlay.width}%`,
+                    height: `${printAreaOverlay.height}%`,
+                  }}
+                >
+                  {textElements.map(el =>
+                    editingTextId === el.id ? (
+                      <input
+                        key={el.id}
+                        autoFocus
+                        value={el.content}
+                        size={Math.max(el.content.length + 1, 5)}
+                        onChange={e => {
+                          const v = e.target.value
+                          setTextElements(prev =>
+                            prev.map(t => (t.id === el.id ? { ...t, content: v } : t))
+                          )
+                        }}
+                        onBlur={() => setEditingTextId(null)}
+                        onKeyDown={e => {
+                          if (e.key === "Enter" || e.key === "Escape")
+                            (e.target as HTMLInputElement).blur()
+                        }}
+                        onMouseDown={e => e.stopPropagation()}
+                        style={{
+                          position: "absolute",
+                          left: `${el.x}%`,
+                          top: `${el.y}%`,
+                          color: el.color,
+                          fontSize: `${el.fontSize}px`,
+                        }}
+                        className="pointer-events-auto font-sans bg-white/80 outline-none border border-dashed border-[#6366F1] px-1"
+                      />
+                    ) : (
+                      <div
+                        key={el.id}
+                        data-text-element="true"
+                        ref={node => {
+                          if (node) textElementRefs.current[el.id] = node
+                          else delete textElementRefs.current[el.id]
+                        }}
+                        onMouseDown={e => startTextDrag(e, el)}
+                        onDoubleClick={() => setEditingTextId(el.id)}
+                        style={{
+                          position: "absolute",
+                          left: `${el.x}%`,
+                          top: `${el.y}%`,
+                          color: el.color,
+                          fontSize: `${el.fontSize}px`,
+                        }}
+                        className={`pointer-events-auto font-sans select-none cursor-move whitespace-nowrap leading-none ${
+                          selectedTextId === el.id
+                            ? "outline outline-1 outline-dashed outline-[#6366F1]"
+                            : ""
+                        }`}
+                      >
+                        {el.content}
+                      </div>
+                    )
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* View selector */}
+            {productData && productData.views.length > 1 && (
+              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-end gap-1.5">
+                {productData.views.map(view => {
+                  const thumb = currentAppearance?.views.find(v => v.id === view.id)?.image
+                  if (!thumb) return null
+                  const selected = activeViewId === view.id
+                  return (
+                    <button
+                      key={view.id}
+                      type="button"
+                      onClick={() => setActiveViewId(view.id)}
+                      className="group flex flex-col items-center gap-1 cursor-pointer"
+                    >
+                      <div
+                        className={`box-border rounded-md border bg-white p-1 transition-colors ${
+                          selected
+                            ? "border-black"
+                            : "border-transparent group-hover:border-neutral-200"
+                        }`}
+                      >
+                        <img
+                          src={thumb}
+                          alt={view.name}
+                          className="block h-11 w-11 object-contain"
+                        />
+                      </div>
+                      <span
+                        className={`text-[12px] font-semibold text-center transition-opacity ${
+                          selected
+                            ? "text-black opacity-100"
+                            : "text-neutral-700 opacity-0 group-hover:opacity-100"
+                        }`}
+                      >
+                        {view.name}
+                      </span>
+                    </button>
+                  )
+                })}
+              </div>
+            )}
             {(["graphics", "uploads", "ai"] as const).map(panel => (
               <div
                 key={panel}
-                className={`absolute inset-y-[2px] left-[2px] w-[375px] rounded-[12px] bg-white shadow-[32px_0px_50px_0px_rgba(0,0,0,0.05)] flex flex-col transition-transform duration-300 ease-out ${
+                className={`absolute z-10 inset-y-[2px] left-[2px] w-[375px] rounded-[12px] bg-white shadow-[32px_0px_50px_0px_rgba(0,0,0,0.05)] flex flex-col transition-transform duration-300 ease-out ${
                   activePanel === panel ? "translate-x-0" : "-translate-x-[calc(100%+100px)]"
                 }`}
               >
@@ -505,12 +956,30 @@ export default function Designer() {
                 </button>
               </div>
             ))}
+
+            <EditorBar
+              show={!!selectedText}
+              fontSize={selectedText?.fontSize ?? 32}
+              color={selectedText?.color ?? "#000000"}
+              maxFontSize={maxFontSize}
+              onFontSizeChange={size => updateSelectedText({ fontSize: size })}
+              onColorClick={() => setTextColorPanelOpen(o => !o)}
+              onDuplicate={duplicateSelectedText}
+              onDelete={deleteSelectedText}
+            />
+
+            <TextColorPanel
+              open={textColorPanelOpen && !!selectedText}
+              onClose={() => setTextColorPanelOpen(false)}
+              currentColor={selectedText?.color ?? "#000000"}
+              onChange={color => updateSelectedText({ color })}
+            />
           </div>
 
           <div
             ref={rightSectionRef}
             id="right-section"
-            className="shrink-0 w-[460px] p-[24px] pb-3 overflow-y-auto h-full bg-[#F4F4F4] rounded-[12px] flex flex-col"
+            className="shrink-0 w-[470px] p-[24px] pb-3 overflow-y-auto h-full bg-[#F4F4F4] rounded-[12px] flex flex-col"
           >
             <div id="top-part" className="flex-shrink-0">
               <div className="flex items-start justify-between mb-[8px]">
@@ -522,21 +991,21 @@ export default function Designer() {
 
               <div id="select-color" className="mb-8">
                 <div className="w-full text-left text-[12px] uppercase font-bold text-[#6A6A6A] mb-[12px] tracking-[0.08em] mt-6">
-                  COLOR: {selectedColor.toUpperCase()}
+                  COLOR: <span className="text-[#000000]">{selectedColor.toUpperCase()}</span>
                 </div>
                 {isColorScrollable ? (
                   <div className="relative">
                     <div
                       id="color-buttons-row"
                       ref={colorRowRef}
-                      className="flex flex-nowrap gap-[2px] overflow-x-auto"
+                      className="flex flex-nowrap gap-[6px] overflow-x-auto"
                     >
                       {productImages.map((img, index) => (
                         <button
                           key={index}
                           type="button"
                           className={
-                            "shrink-0 w-[46px] h-[50px] p-[6px] box-border rounded-[6px] flex items-center justify-center overflow-hidden cursor-pointer select-none border " +
+                            "shrink-0 w-[50px] h-[50px] p-[6px] box-border rounded-[8px] flex items-center justify-center overflow-hidden cursor-pointer select-none border " +
                             (activeColorIndex === index
                               ? "bg-white border-black rounded-[8px]"
                               : "bg-transparent border-transparent hover:bg-[#E9E9E9]")
@@ -630,13 +1099,13 @@ export default function Designer() {
                     ) : null}
                   </div>
                 ) : (
-                  <div className="flex flex-wrap gap-[2px] items-start">
+                  <div className="grid grid-cols-8 gap-[6px]">
                     {productImages.map((img, index) => (
                       <button
                         key={index}
                         type="button"
                         className={
-                          "w-[46px] h-[50px] p-[6px] box-border flex items-center justify-center overflow-hidden cursor-pointer select-none border rounded-md " +
+                          "aspect-square w-full p-[6px] box-border flex items-center justify-center overflow-hidden cursor-pointer select-none border rounded-[8px] " +
                           (activeColorIndex === index
                             ? "bg-white border-black rounded-[8px]"
                             : "bg-transparent border-transparent hover:bg-[#E9E9E9]")
@@ -665,18 +1134,18 @@ export default function Designer() {
             <div id="bottom-part" className="flex-shrink-0 mt-auto">
               
 
-              <div className="flex mb-[12px] flex-row items-center justify-start gap-x-2 ml-0">
-  <span
-    className={
-      totalSelected > 0
-        ? "text-[14px] font-medium font-sans tracking-[0] text-[#DC2626]"
-        : "text-[12px] font-bold font-sans tracking-[0.08em] text-[#6A6A6A]"
-    }
-  >
-    {getVolumeDiscountText(totalSelected)}
-  </span>
-
-  <div className="h-[4px] rounded-full bg-[#E9E9E9] w-1 mx-2.5" />
+              <div className="flex mb-[12px] flex-row items-center justify-between gap-x-2 ml-0">
+  {totalSelected > 0 ? (
+    <span className="text-[14px] font-medium font-sans tracking-[0] text-[#DC2626]">
+      {getVolumeDiscountText(totalSelected)}
+    </span>
+  ) : (
+    (outOfStockMap[appearances[activeColorIndex]?.id] ?? []).length > 0 ? (
+      <span className="text-[14px] font-medium font-sans tracking-[0] text-[var(--sprd-neutral-700)]">
+        {(outOfStockMap[appearances[activeColorIndex]?.id] ?? []).join(", ")} out of stock
+      </span>
+    ) : <span />
+  )}
 
   <button
     type="button"
@@ -688,7 +1157,7 @@ export default function Designer() {
 </div>
 
 
-              {/* ✅ WRAPS: no horizontal scrolling */}
+              {/* Size buttons commented out — replaced by "Choose size" placeholder.
               <div id="size-buttons-row" className="flex flex-wrap gap-[8px] overflow-x-hidden mb-0">
                 {sizes.map((label) => (
                   <SizeSelectorButton
@@ -700,12 +1169,189 @@ export default function Designer() {
                   />
                 ))}
               </div>
+              */}
+              {!hasMounted ? (
+                <button
+                  type="button"
+                  className="inline-flex w-full h-12 items-center justify-between gap-3 cursor-pointer font-sans text-sm font-semibold px-3 border-2 border-[var(--sprd-neutral-300)] bg-transparent text-black outline-none transition-colors hover:border-black focus:border-black focus-visible:border-black active:border-black"
+                >
+                  {sizeButtonLabel}
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="size-5"
+                    aria-hidden="true"
+                  >
+                    <path
+                      d="M5 7.5L10 12.5L15 7.5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </button>
+              ) : (
+              <Popover.Root open={sizePopoverOpen} onOpenChange={setSizePopoverOpen}>
+                <Popover.Trigger asChild>
+                  <button
+                    type="button"
+                    className={`inline-flex w-full h-12 items-center justify-between gap-3 cursor-pointer font-sans text-sm font-semibold px-3 border-2 transition-colors ${
+                      selectedSizes.length > 0
+                        ? "border-black font-bold bg-white"
+                        : "border-[var(--sprd-neutral-300)] bg-transparent hover:border-black focus:border-black focus-visible:border-black active:border-black data-[state=open]:border-black"
+                    } ${flashSize ? "flash-red-border" : ""} text-black outline-none focus:outline-none focus-visible:outline-none focus-within:outline-none`}
+                  >
+                    {sizeButtonLabel}
+                    <svg
+                      width="20"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className={`size-5 transition-transform ${
+                        sizePopoverOpen ? "rotate-180" : "rotate-0"
+                      }`}
+                      aria-hidden="true"
+                    >
+                      <path
+                        d="M5 7.5L10 12.5L15 7.5"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
+                </Popover.Trigger>
+                <Popover.Portal>
+                  <Popover.Content
+                    side="top"
+                    sideOffset={isDockCompact ? -48 : 0}
+                    align="start"
+                    collisionPadding={12}
+                    collisionBoundary={
+                      rightSectionRef.current ? [rightSectionRef.current] : undefined
+                    }
+                    className="z-50 flex flex-col bg-white shadow-lg outline-none overflow-hidden rounded-t-[12px]"
+                    style={{
+                      width: "var(--radix-popover-trigger-width)",
+                      maxHeight: "var(--radix-popover-content-available-height)",
+                    }}
+                  >
+                    <div className="flex items-center justify-between px-6 pt-5 pb-4 flex-shrink-0">
+                      <div className="text-[14px] font-medium text-[var(--sprd-red-600)]">
+                        {discountTierHint}
+                      </div>
+                      <Popover.Close
+                        aria-label="Close"
+                        className="cursor-pointer outline-none focus:outline-none focus-visible:outline-none"
+                      >
+                        <img src="/icons/icon-close-x.svg" alt="" className="h-6 w-6" />
+                      </Popover.Close>
+                    </div>
+                    <div className="flex-1 overflow-y-auto">
+                      {sizes.map(label => {
+                        const isOOS = outOfStockMap[
+                          appearances[activeColorIndex]?.id
+                        ]?.includes(label)
+                        const qty = sizeQuantities[label] ?? 0
+                        return (
+                          <div
+                            key={label}
+                            className="flex items-center justify-between gap-2 border-b border-neutral-200 px-6 py-3"
+                          >
+                            <span
+                              className={`text-md font-bold text-black ${
+                                isOOS ? "opacity-30" : ""
+                              }`}
+                            >
+                              {label}
+                            </span>
+                            <div className="flex items-center gap-4">
+                              {isOOS && (
+                                <span className="text-sm text-[var(--sprd-red-600)]">
+                                  Out of stock
+                                </span>
+                              )}
+                              <div
+                                className={`flex w-fit items-center border border-neutral-200 ${
+                                  isOOS ? "opacity-60 pointer-events-none" : ""
+                                }`}
+                              >
+                              <button
+                                type="button"
+                                aria-label="Decrease"
+                                disabled={qty <= 0}
+                                onClick={() => setSizeQuantity(label, qty - 1)}
+                                className="p-1.5 border-r border-neutral-200 cursor-pointer hover:bg-neutral-100 active:bg-white disabled:opacity-50 disabled:pointer-events-none"
+                              >
+                                <svg
+                                  viewBox="0 0 20 20"
+                                  className="w-5 h-5"
+                                  fill="currentColor"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
+                                    d="M15.8333 9.16663C16.2935 9.16663 16.6666 9.53972 16.6666 9.99996C16.6666 10.4273 16.3449 10.7795 15.9305 10.8277L15.8333 10.8333H4.16665C3.70641 10.8333 3.33331 10.4602 3.33331 9.99996C3.33331 9.5726 3.65501 9.22037 4.06946 9.17223L4.16665 9.16663H15.8333Z"
+                                  />
+                                </svg>
+                              </button>
+                              <input
+                                type="text"
+                                inputMode="numeric"
+                                pattern="[0-9]*"
+                                value={qty === 0 ? "" : String(qty)}
+                                placeholder="0"
+                                aria-label={`${label} quantity`}
+                                onChange={e => {
+                                  const digits = e.target.value
+                                    .replace(/[^0-9]/g, "")
+                                    .slice(0, 5)
+                                  setSizeQuantity(label, digits === "" ? 0 : Number(digits))
+                                }}
+                                className="w-12 text-center text-sm outline-none placeholder:text-black focus:placeholder:text-transparent"
+                              />
+                              <button
+                                type="button"
+                                aria-label="Increase"
+                                onClick={() => setSizeQuantity(label, qty + 1)}
+                                className="p-1.5 border-l border-neutral-200 cursor-pointer hover:bg-neutral-100 active:bg-white"
+                              >
+                                <svg
+                                  viewBox="0 0 20 20"
+                                  className="w-5 h-5"
+                                  fill="currentColor"
+                                  aria-hidden="true"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
+                                    d="M10.8277 4.06952C10.7796 3.65507 10.4273 3.33337 9.99998 3.33337C9.53974 3.33337 9.16665 3.70647 9.16665 4.16671V9.16671H4.16665L4.06946 9.17231C3.65501 9.22045 3.33331 9.57268 3.33331 10C3.33331 10.4603 3.70641 10.8334 4.16665 10.8334H9.16665V15.8334L9.17225 15.9306C9.22039 16.345 9.57262 16.6667 9.99998 16.6667C10.4602 16.6667 10.8333 16.2936 10.8333 15.8334V10.8334H15.8333L15.9305 10.8278C16.3449 10.7796 16.6666 10.4274 16.6666 10C16.6666 9.5398 16.2935 9.16671 15.8333 9.16671H10.8333V4.16671L10.8277 4.06952Z"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
+                            </div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </Popover.Content>
+                </Popover.Portal>
+              </Popover.Root>
+              )}
 
               {/* Price and CTA section */}
-              <div className="flex items-center justify-between gap-[16px] mt-8 mb-3">
+              <div className="flex items-center justify-between gap-[16px] mt-5 mb-3">
                 <div className="flex flex-col relative">
                   {totalSelected >= 5 && discountPercent > 0 ? (
-                    <span className="text-[12px] text-[#6A6A6A] line-through mb-1 absolute mt-[-18px] font-medium">
+                    <span className="text-[12px] text-[#6A6A6A] line-through mb-1 absolute mt-[-16px] font-medium">
                       {formattedOriginalPrice} €
                     </span>
                   ) : null}
@@ -720,18 +1366,60 @@ export default function Designer() {
                 </div>
                 <button
                   type="button"
-                  disabled={showToast}
+                  disabled={addingToBasket || flashSize}
                   onClick={() => {
-                    setShowToast(true)
+                    if (addingToBasket || flashSize) return
+                    if (totalSelected === 0) {
+                      setFlashSize(true)
+                      setTimeout(() => setFlashSize(false), 4000)
+                      return
+                    }
+                    if (!productData) return
+                    const currentApp = appearances[activeColorIndex]
+                    if (!currentApp) return
+                    setAddingToBasket(true)
                     setTimeout(() => {
-                      setShowToast(false)
-                    }, 2000)
+                      const newItems: BasketItem[] = Object.entries(sizeQuantities)
+                        .filter(([, qty]) => qty > 0)
+                        .map(([size, qty]) => ({
+                          id: `cart-${Date.now()}-${size}`,
+                          productName: productData.name,
+                          appearanceName: currentApp.name,
+                          image: currentApp.image,
+                          size,
+                          qty,
+                          price: BASE_PRICE,
+                        }))
+                      setBasketItems(prev => [...prev, ...newItems])
+                      setSizeQuantities({})
+                      setAddingToBasket(false)
+                      setBasketOpen(true)
+                    }, ADD_TO_BASKET_DELAY)
                   }}
-                  className={`flex-1 text-white text-[14px] font-medium px-[24px] flex items-center justify-center transition-colors h-[54px] ${
-                    showToast ? "bg-[#666] cursor-not-allowed" : "bg-black cursor-pointer hover:bg-[#333]"
+                  className={`flex-1 text-white font-sans text-[14px] font-semibold px-[24px] flex items-center justify-center transition-colors h-12 overflow-hidden ${
+                    flashSize
+                      ? "bg-[#999] cursor-not-allowed"
+                      : addingToBasket
+                        ? "bg-black cursor-not-allowed"
+                        : "bg-black cursor-pointer hover:bg-[#333]"
                   }`}
                 >
-                  Add to basket
+                  {addingToBasket ? (
+                    <span className="flex w-full items-center justify-between gap-2">
+                      <span className="flex-1" />
+                      <span
+                        key={loadingTextIdx}
+                        className="inline-block text-sm animate-in fade-in duration-200"
+                      >
+                        {LOADING_TEXTS[loadingTextIdx]}
+                      </span>
+                      <span className="flex flex-1 justify-end">
+                        <IconsScroller />
+                      </span>
+                    </span>
+                  ) : (
+                    "Add to basket"
+                  )}
                 </button>
               </div>
 
@@ -841,12 +1529,15 @@ export default function Designer() {
         </div>
       </div>
 
-      {/* Toast notification */}
-      {showToast && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-green-700 text-white px-6 py-4 rounded-lg shadow-lg z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <span className="text-[14px] font-medium">Successfully added to basket</span>
-        </div>
-      )}
+      <Basket
+        open={basketOpen}
+        onClose={() => setBasketOpen(false)}
+        items={basketItems}
+        onQuantityChange={(id, qty) =>
+          setBasketItems(prev => prev.map(it => (it.id === id ? { ...it, qty } : it)))
+        }
+        onRemove={id => setBasketItems(prev => prev.filter(it => it.id !== id))}
+      />
 
       <ProductsDrawer
         open={productsDrawerOpen}
@@ -1090,7 +1781,7 @@ export function XLButton({ label, value, onValueChange, isRemoved, setIsRemoved,
         }}
         className={
           "group relative inline-flex items-center justify-center gap-[4px] " +
-          "h-[32px] min-w-[32px] px-[6px] py-0 " +
+          "h-[36px] min-w-[36px] px-[8px] py-[2px] " +
           (disabled
             ? "bg-[#E8E8E8] "
             : isLockedActive
@@ -1190,25 +1881,6 @@ export function XLButton({ label, value, onValueChange, isRemoved, setIsRemoved,
           </>
         ) : null}
 
-        {/* Plus icon - shows on enabled buttons only when no value is selected */}
-        {!disabled && isRemoved && (!value || Number(value) === 0) ? (
-          <svg
-            width="12"
-            height="12"
-            viewBox="0 0 16 16"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            className={
-              "flex-shrink-0 " +
-              (isLockedActive ? "text-[#989898]" : "text-[#989898] group-hover:text-[#989898]")
-            }
-          >
-            <path
-              d="M7.99951 2.66699C8.34137 2.66699 8.62307 2.92435 8.66162 3.25586L8.6665 3.33398V7.33398H12.6665C13.0346 7.33398 13.3333 7.63196 13.3335 8C13.3335 8.34175 13.076 8.62341 12.7446 8.66211L12.6665 8.66699H8.6665V12.667C8.6665 13.0352 8.3677 13.334 7.99951 13.334C7.65789 13.3338 7.37605 13.0764 7.3374 12.7451L7.3335 12.667V8.66699H3.3335C2.96531 8.66699 2.6665 8.36819 2.6665 8C2.66667 7.65826 2.92393 7.3764 3.25537 7.33789L3.3335 7.33398H7.3335V3.33398C7.3335 2.9659 7.63147 2.66717 7.99951 2.66699Z"
-              fill="currentColor"
-            />
-          </svg>
-        ) : null}
       </button>
 
       {/* Tooltip (portal) */}
@@ -1311,11 +1983,9 @@ export function XLButton({ label, value, onValueChange, isRemoved, setIsRemoved,
 export function getVolumeDiscountText(totalSelected: number) {
   const n = Math.max(0, Math.floor(totalSelected || 0))
 
-  if (n === 0) return "CHOOSE SIZE & QUANTITY"
-
-  if (n >= 1 && n <= 5) return "From 5 article -10% reduction"
-  if (n >= 6 && n <= 19) return "From 20 article -15% reduction"
-  if (n >= 20 && n <= 49) return "From 50 article -25% reduction"
+  if (n <= 5) return "From 5 article -10% reduction"
+  if (n <= 19) return "From 20 article -15% reduction"
+  if (n <= 49) return "From 50 article -25% reduction"
   return `For ${n} article -50% reduction`
 }
 

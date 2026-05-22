@@ -1,6 +1,11 @@
-import { PRODUCTS, type StaticProduct } from "./products-data"
+import {
+  PRODUCTS,
+  type StaticProduct,
+  type StaticView,
+  type StaticPrintArea,
+} from "./products-data"
 
-export type ViewImage = { id: string; name: string; image: string }
+export type ViewImage = { id: string; image: string }
 
 export type AppearanceData = {
   id: string
@@ -17,6 +22,8 @@ export type ProductTypeData = {
   defaultViewId: string
   defaultAppearanceId: string
   appearances: AppearanceData[]
+  views: StaticView[]
+  printAreas: StaticPrintArea[]
   sizes: { id: string; name: string }[]
 }
 
@@ -33,7 +40,33 @@ export function getProductType(id: string): ProductTypeData | null {
     defaultViewId,
     defaultAppearanceId: defaultAppearance?.id ?? "",
     appearances: p.appearances,
+    views: p.views,
+    printAreas: p.printAreas,
     sizes: p.sizes.map((name, i) => ({ id: String(i), name })),
+  }
+}
+
+/**
+ * Compute the print-area overlay rectangle (as percentages of the canvas) for
+ * a given view. Returns null if the view has no print area mapping.
+ */
+export function getPrintAreaOverlay(
+  product: ProductTypeData,
+  viewId: string
+): { left: number; top: number; width: number; height: number } | null {
+  const view = product.views.find(v => v.id === viewId)
+  const viewMap = view?.viewMaps[0]
+  if (!view || !viewMap) return null
+  const printArea = product.printAreas.find(pa => pa.id === viewMap.printAreaId)
+  if (!printArea) return null
+  const canvasW = viewMap.size.width || view.canvas.width
+  const canvasH = viewMap.size.height || view.canvas.height
+  if (!canvasW || !canvasH) return null
+  return {
+    left: (viewMap.offset.x / canvasW) * 100,
+    top: (viewMap.offset.y / canvasH) * 100,
+    width: (printArea.boundary.width / canvasW) * 100,
+    height: (printArea.boundary.height / canvasH) * 100,
   }
 }
 

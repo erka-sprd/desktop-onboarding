@@ -15,8 +15,141 @@
   font-display: swap;
 }
 
+/* Spreadshirt brand colors (pulled from @sprd/sprd-component-kit/dist/preset/globals.css) */
+:root {
+  /* Neutrals */
+  --sprd-neutral-50: #faf8f6;
+  --sprd-neutral-100: #f4f4f4;
+  --sprd-neutral-200: #dedede;
+  --sprd-neutral-300: #c7c7c7;
+  --sprd-neutral-400: #afafaf;
+  --sprd-neutral-500: #989898;
+  --sprd-neutral-600: #818181;
+  --sprd-neutral-700: #6a6a6a;
+  --sprd-neutral-800: #535353;
+  --sprd-neutral-900: #3c3c3c;
+  --sprd-black: #000;
+  --sprd-white: #fff;
+
+  /* Blue */
+  --sprd-blue-50: #eff6ff;
+  --sprd-blue-100: #dbeafe;
+  --sprd-blue-200: #bfdbfe;
+  --sprd-blue-300: #93c5fd;
+  --sprd-blue-400: #72b2e7;
+  --sprd-blue-500: #609acc;
+  --sprd-blue-600: #4f82b0;
+  --sprd-blue-700: #4d52d2;
+  --sprd-blue-800: #2c527a;
+  --sprd-blue-900: #1b3a5f;
+
+  /* Red */
+  --sprd-red-50: #fef2f2;
+  --sprd-red-100: #fee2e2;
+  --sprd-red-200: #fecaca;
+  --sprd-red-300: #fca5a5;
+  --sprd-red-400: #f87171;
+  --sprd-red-500: #ef4444;
+  --sprd-red-600: #dc2626;
+  --sprd-red-700: #b91c1c;
+  --sprd-red-800: #991b1b;
+  --sprd-red-900: #7f1d1d;
+
+  /* Green */
+  --sprd-green-50: #f0fdf4;
+  --sprd-green-100: #dcfce7;
+  --sprd-green-200: #bbf7d0;
+  --sprd-green-300: #86efac;
+  --sprd-green-400: #4ade80;
+  --sprd-green-500: #22c55e;
+  --sprd-green-600: #16a34a;
+  --sprd-green-700: #15803d;
+  --sprd-green-800: #166534;
+  --sprd-green-900: #14532d;
+
+  /* Orange */
+  --sprd-orange-50: #fff7ed;
+  --sprd-orange-100: #ffedd5;
+  --sprd-orange-200: #fed7aa;
+  --sprd-orange-300: #fdba74;
+  --sprd-orange-400: #fb923c;
+  --sprd-orange-500: #f97316;
+  --sprd-orange-600: #ea580c;
+  --sprd-orange-700: #c2410c;
+  --sprd-orange-800: #9a3412;
+  --sprd-orange-900: #7c2d12;
+
+  /* Brand */
+  --sprd-brand-blue-main: #1500fb;
+  --sprd-brand-red-main: #ff3a1c;
+  --sprd-brand-green-main: #00ac4e;
+  --sprd-brand-yellow-main: #fff12a;
+  --sprd-brand-pink-main: #ef01aa;
+  --sprd-brand-spreadshop: #ff8256;
+  --sprd-brand-spreadconnect: #6022dd;
+  --sprd-brand-spreadshirt-pro: #facc15;
+
+  --sprd-focus: #4f82b0;
+}
+
 @theme {
   --font-display: "MADEOuterSans", sans-serif;
+}
+
+/* Add-to-basket loading IconsScroller (ported from create-omat) */
+.icons-viewport {
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 10px,
+    #000 calc(100% - 10px),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 10px,
+    #000 calc(100% - 10px),
+    transparent
+  );
+}
+.icons-track {
+  animation: icons-slide 6s linear infinite;
+}
+.icons-icon {
+  display: grid;
+  height: 30px;
+  width: 30px;
+  flex: 0 0 50px;
+  place-items: center;
+}
+.icons-icon svg {
+  width: 100%;
+  height: 100%;
+}
+@keyframes icons-slide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-250px);
+  }
+}
+
+/* Red flash to indicate "no size selected": hold red 2s, then fade back over 2s. */
+@keyframes flash-red-border {
+  0%,
+  50% {
+    border-color: var(--sprd-red-600);
+    color: var(--sprd-red-600);
+  }
+  100% {
+    border-color: var(--sprd-neutral-300);
+    color: #000;
+  }
+}
+.flash-red-border {
+  animation: flash-red-border 4s ease-out 1 forwards;
 }
 
 @custom-variant dark (&:is(.dark *));
