@@ -7,16 +7,16 @@ import "./globals.css"
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
-  title: "Onboarding Revamp",
-  description: "Made with Claude",
+  title: "Spreadshirt",
+  description: "Spreadshirt",
   openGraph: {
-    title: "Onboarding Revamp",
-    description: "Made with Claude",
+    title: "Spreadshirt",
+    description: "Spreadshirt",
   },
   twitter: {
     card: "summary",
-    title: "Onboarding Revamp",
-    description: "Made with Claude",
+    title: "Spreadshirt",
+    description: "Spreadshirt",
   },
 }
 
