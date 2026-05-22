@@ -164,8 +164,12 @@ export default function Designer() {
       ...prev,
       { id, content, x, y, color, fontSize, fontFamily: DEFAULT_FONT_FAMILY },
     ])
-    setSelectedTextId(id)
-    setEditingTextId(id)
+    // Defer to next tick so the document click handler (firing in the same
+    // event's bubble phase) doesn't clear the selection we're about to set.
+    setTimeout(() => {
+      setSelectedTextId(id)
+      setEditingTextId(id)
+    }, 0)
   }
 
   const updateSelectedText = (patch: Partial<TextElement>) => {
@@ -197,6 +201,24 @@ export default function Designer() {
     setTextColorPanelOpen(false)
     setFontPanelOpen(false)
   }
+
+  // Backspace / Delete removes the selected text — only when not actively typing
+  // and not inside any input/contenteditable element.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (!selectedTextId || editingTextId) return
+      if (e.key !== "Backspace" && e.key !== "Delete") return
+      const target = e.target as HTMLElement | null
+      if (target) {
+        const tag = target.tagName
+        if (tag === "INPUT" || tag === "TEXTAREA" || target.isContentEditable) return
+      }
+      e.preventDefault()
+      deleteSelectedText()
+    }
+    document.addEventListener("keydown", onKey)
+    return () => document.removeEventListener("keydown", onKey)
+  }, [selectedTextId, editingTextId])
 
   // Deselect text on clicks anywhere outside the text element / editor bar / color panel.
   useEffect(() => {
@@ -1077,6 +1099,7 @@ export default function Designer() {
                               node.setSelectionRange(len, len)
                               node.dataset.cursorAtEnd = "1"
                             }}
+                            data-text-element="true"
                             className="pointer-events-auto bg-transparent outline-none leading-none"
                           />
                         )
