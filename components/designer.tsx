@@ -13,6 +13,7 @@ import {
   ScopedDialogClose,
   ScopedDialogTitle,
 } from "@/components/ui/scoped-dialog"
+import { FontPanel } from "@/components/ui/font-panel/FontPanel"
 import { TextColorPanel } from "@/components/ui/text-color-panel/TextColorPanel"
 import {
   buildOutOfStockMap,
@@ -35,6 +36,21 @@ type DesignerPanel = "graphics" | "uploads" | "ai"
 
 const DEFAULT_PRODUCT_ID = "2940" // Unisex Premium Oversized Organic T-Shirt
 
+// Treat a product color as "dark" only when very close to black.
+// Returns true only for near-black colors (e.g., #1A1A1A, #2F3031), so non-dark
+// hues (red, blue, etc.) get black text and white products get black text.
+const isDarkProductColor = (hex?: string): boolean => {
+  if (!hex) return false
+  const h = hex.replace("#", "")
+  if (h.length !== 6) return false
+  const r = parseInt(h.slice(0, 2), 16)
+  const g = parseInt(h.slice(2, 4), 16)
+  const b = parseInt(h.slice(4, 6), 16)
+  if ([r, g, b].some(n => Number.isNaN(n))) return false
+  const brightness = (r * 299 + g * 587 + b * 114) / 1000
+  return brightness < 80
+}
+
 export default function Designer() {
   const [selectedProduct, setSelectedProduct] = useState<SelectedProduct | null>(null)
   const productId = selectedProduct?.id ?? DEFAULT_PRODUCT_ID
@@ -45,6 +61,9 @@ export default function Designer() {
   const [activePanel, setActivePanel] = useState<DesignerPanel | null>(null)
   const [welcomeOpen, setWelcomeOpen] = useState(true)
   const [sizePopoverOpen, setSizePopoverOpen] = useState(false)
+  const sizePopoverScrollRef = useRef<HTMLDivElement | null>(null)
+  const [sizePopoverOverflowTop, setSizePopoverOverflowTop] = useState(false)
+  const [sizePopoverOverflowBottom, setSizePopoverOverflowBottom] = useState(false)
   const [basketItems, setBasketItems] = useState<BasketItem[]>([])
   const [basketOpen, setBasketOpen] = useState(false)
   const [addingToBasket, setAddingToBasket] = useState(false)
@@ -75,11 +94,14 @@ export default function Designer() {
     y: number
     color: string
     fontSize: number
+    fontFamily: string
   }
+  const DEFAULT_FONT_FAMILY = "Inter"
   const [textElements, setTextElements] = useState<TextElement[]>([])
   const [editingTextId, setEditingTextId] = useState<string | null>(null)
   const [selectedTextId, setSelectedTextId] = useState<string | null>(null)
   const [textColorPanelOpen, setTextColorPanelOpen] = useState(false)
+  const [fontPanelOpen, setFontPanelOpen] = useState(false)
   const selectedText = textElements.find(t => t.id === selectedTextId) ?? null
   const [printAreaPxSize, setPrintAreaPxSize] = useState({ width: 0, height: 0 })
   const printAreaBoxRef = useRef<HTMLDivElement>(null)
@@ -92,15 +114,58 @@ export default function Designer() {
     elY: number
     moved: boolean
   } | null>(null)
+  const resizeStateRef = useRef<{
+    id: string
+    initialFontSize: number
+    initialDist: number
+    oppX: number
+    oppY: number
+    corner: "nw" | "ne" | "sw" | "se"
+    initialWidthPct: number
+    initialHeightPct: number
+    anchorXPct: number
+    anchorYPct: number
+  } | null>(null)
 
   const addTextElement = () => {
     const id = `text-${Date.now()}`
+    const content = "Your text here"
+    let fontSize = 32
+    let x = 25
+    let y = 40
+    if (
+      printAreaPxSize.width > 0 &&
+      printAreaPxSize.height > 0 &&
+      typeof document !== "undefined"
+    ) {
+      const canvas = document.createElement("canvas")
+      const ctx = canvas.getContext("2d")
+      if (ctx) {
+        ctx.font = '100px "Inter", sans-serif'
+        const widthAt100 = ctx.measureText(content).width
+        if (widthAt100 > 0) {
+          const targetWidthPx = printAreaPxSize.width / 2
+          const computedFontSize = (targetWidthPx / widthAt100) * 100
+          fontSize = Math.max(
+            14,
+            Math.floor(Math.min(computedFontSize, printAreaPxSize.height))
+          )
+          const actualWidthPx = (widthAt100 / 100) * fontSize
+          const elWidthPct = (actualWidthPx / printAreaPxSize.width) * 100
+          const elHeightPct = (fontSize / printAreaPxSize.height) * 100
+          x = (100 - elWidthPct) / 2
+          y = (100 - elHeightPct) / 2
+        }
+      }
+    }
+    const productColor = appearances[activeColorIndex]?.color
+    const color = isDarkProductColor(productColor) ? "#FFFFFF" : "#000000"
     setTextElements(prev => [
       ...prev,
-      { id, content: "Your text here", x: 20, y: 40, color: "#000000", fontSize: 32 },
+      { id, content, x, y, color, fontSize, fontFamily: DEFAULT_FONT_FAMILY },
     ])
-    setEditingTextId(id)
     setSelectedTextId(id)
+    setEditingTextId(id)
   }
 
   const updateSelectedText = (patch: Partial<TextElement>) => {
@@ -130,6 +195,7 @@ export default function Designer() {
     setTextElements(prev => prev.filter(t => t.id !== selectedTextId))
     setSelectedTextId(null)
     setTextColorPanelOpen(false)
+    setFontPanelOpen(false)
   }
 
   // Deselect text on clicks anywhere outside the text element / editor bar / color panel.
@@ -140,12 +206,14 @@ export default function Designer() {
       if (
         target.closest("[data-text-element]") ||
         target.closest("[data-editor-bar]") ||
-        target.closest("[data-text-color-panel]")
+        target.closest("[data-text-color-panel]") ||
+        target.closest("[data-font-panel]")
       ) {
         return
       }
       setSelectedTextId(null)
       setTextColorPanelOpen(false)
+      setFontPanelOpen(false)
     }
     document.addEventListener("click", onDocClick)
     return () => document.removeEventListener("click", onDocClick)
@@ -157,9 +225,49 @@ export default function Designer() {
     setEditingTextId(null)
   }, [productData])
 
-  // Document-level mousemove/up so dragging keeps working when cursor leaves the element.
+  // Document-level mousemove/up so dragging and resizing keep working when cursor leaves the element.
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
+      const rs = resizeStateRef.current
+      if (rs) {
+        if (rs.initialDist > 0) {
+          const newDist = Math.hypot(e.clientX - rs.oppX, e.clientY - rs.oppY)
+          const scale = newDist / rs.initialDist
+          const nextFontSize = Math.max(
+            MIN_TEXT_FONT_SIZE,
+            rs.initialFontSize * scale
+          )
+          const sizeScale = nextFontSize / rs.initialFontSize
+          const newWidthPct = rs.initialWidthPct * sizeScale
+          const newHeightPct = rs.initialHeightPct * sizeScale
+          let newX = rs.anchorXPct
+          let newY = rs.anchorYPct
+          switch (rs.corner) {
+            case "nw":
+              newX = rs.anchorXPct - newWidthPct
+              newY = rs.anchorYPct - newHeightPct
+              break
+            case "ne":
+              newX = rs.anchorXPct
+              newY = rs.anchorYPct - newHeightPct
+              break
+            case "sw":
+              newX = rs.anchorXPct - newWidthPct
+              newY = rs.anchorYPct
+              break
+            case "se":
+              newX = rs.anchorXPct
+              newY = rs.anchorYPct
+              break
+          }
+          setTextElements(prev =>
+            prev.map(t =>
+              t.id === rs.id ? { ...t, fontSize: nextFontSize, x: newX, y: newY } : t
+            )
+          )
+        }
+        return
+      }
       const ds = dragStateRef.current
       if (!ds) return
       const pa = printAreaBoxRef.current
@@ -190,9 +298,14 @@ export default function Designer() {
       )
     }
     const onUp = () => {
+      if (resizeStateRef.current) {
+        resizeStateRef.current = null
+        return
+      }
       const ds = dragStateRef.current
       if (!ds) return
-      if (!ds.moved) setSelectedTextId(ds.id)
+      // Always select the text on mouseup so dragging it keeps it as the active selection.
+      setSelectedTextId(ds.id)
       dragStateRef.current = null
     }
     document.addEventListener("mousemove", onMove)
@@ -213,6 +326,57 @@ export default function Designer() {
       elX: el.x,
       elY: el.y,
       moved: false,
+    }
+  }
+  const startResize = (
+    e: React.MouseEvent,
+    el: TextElement,
+    corner: "nw" | "ne" | "sw" | "se"
+  ) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const node = textElementRefs.current[el.id]
+    const pa = printAreaBoxRef.current
+    if (!node || !pa) return
+    const rect = node.getBoundingClientRect()
+    const paRect = pa.getBoundingClientRect()
+    const oppX = corner.endsWith("e") ? rect.left : rect.right
+    const oppY = corner.startsWith("s") ? rect.top : rect.bottom
+    const initialDist = Math.hypot(e.clientX - oppX, e.clientY - oppY)
+    const initialWidthPct = (rect.width / paRect.width) * 100
+    const initialHeightPct = (rect.height / paRect.height) * 100
+    // Anchor corner = opposite of the dragged corner, in print-area % coordinates.
+    let anchorXPct = el.x
+    let anchorYPct = el.y
+    switch (corner) {
+      case "nw": // anchor = SE
+        anchorXPct = el.x + initialWidthPct
+        anchorYPct = el.y + initialHeightPct
+        break
+      case "ne": // anchor = SW
+        anchorXPct = el.x
+        anchorYPct = el.y + initialHeightPct
+        break
+      case "sw": // anchor = NE
+        anchorXPct = el.x + initialWidthPct
+        anchorYPct = el.y
+        break
+      case "se": // anchor = NW
+        anchorXPct = el.x
+        anchorYPct = el.y
+        break
+    }
+    resizeStateRef.current = {
+      id: el.id,
+      initialFontSize: el.fontSize,
+      initialDist,
+      oppX,
+      oppY,
+      corner,
+      initialWidthPct,
+      initialHeightPct,
+      anchorXPct,
+      anchorYPct,
     }
   }
   const [hasMounted, setHasMounted] = useState(false)
@@ -336,6 +500,25 @@ export default function Designer() {
     const maxByWidth = (areaWidth / widthAt100) * 100
     return Math.max(14, Math.floor(Math.min(maxByWidth, areaHeight)))
   }
+  // Measures a text run's pixel width at the given fontSize/fontFamily.
+  const measureTextWidth = (text: string, fontSize: number, fontFamily: string) => {
+    if (typeof document === "undefined") return 0
+    const canvas = document.createElement("canvas")
+    const ctx = canvas.getContext("2d")
+    if (!ctx) return 0
+    ctx.font = `${fontSize}px "${fontFamily}"`
+    return ctx.measureText(text || " ").width
+  }
+  // Measures a multi-line text block; width = widest line, height = lines * fontSize (leading-none).
+  const measureTextBox = (text: string, fontSize: number, fontFamily: string) => {
+    const lines = (text || " ").split("\n")
+    let width = 0
+    for (const line of lines) {
+      width = Math.max(width, measureTextWidth(line || " ", fontSize, fontFamily))
+    }
+    return { width, height: lines.length * fontSize }
+  }
+  const MIN_TEXT_FONT_SIZE = 14
   const maxFontSize = useMemo(
     () =>
       computeMaxFontSize(
@@ -370,6 +553,31 @@ export default function Designer() {
     setSizeQuantities({})
   }, [activeColorIndex])
 
+  // If the user selects a size while the "no size" flash is still active, end the flash early.
+  useEffect(() => {
+    if (flashSize && totalSelected > 0) setFlashSize(false)
+  }, [flashSize, totalSelected])
+
+  // Track scroll overflow inside the size popover so we can fade top/bottom edges.
+  useEffect(() => {
+    if (!sizePopoverOpen) return
+    const el = sizePopoverScrollRef.current
+    if (!el) return
+    const update = () => {
+      const max = el.scrollHeight - el.clientHeight
+      setSizePopoverOverflowTop(el.scrollTop > 1)
+      setSizePopoverOverflowBottom(el.scrollTop < max - 1)
+    }
+    update()
+    el.addEventListener("scroll", update)
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    return () => {
+      el.removeEventListener("scroll", update)
+      ro.disconnect()
+    }
+  }, [sizePopoverOpen])
+
   const setSizeQuantity = (size: string, qty: number) => {
     setSizeQuantities(prev => ({ ...prev, [size]: Math.max(0, Math.floor(qty) || 0) }))
   }
@@ -394,12 +602,20 @@ export default function Designer() {
     selectedSizes.length === 0 ? (
       <span>Choose size</span>
     ) : (
-      <span className="flex items-center flex-wrap gap-2">
-        <span>{totalSelected === 1 ? "Size:" : "Sizes:"}</span>
+      <span
+        className="flex min-w-0 flex-1 items-center gap-2 overflow-hidden whitespace-nowrap"
+        style={{
+          maskImage:
+            "linear-gradient(to right, #000 0, #000 calc(100% - 16px), transparent 100%)",
+          WebkitMaskImage:
+            "linear-gradient(to right, #000 0, #000 calc(100% - 16px), transparent 100%)",
+        }}
+      >
+        <span className="flex-shrink-0">{totalSelected === 1 ? "Size:" : "Sizes:"}</span>
         {selectedSizes.map(({ size, qty }) => (
           <span
             key={size}
-            className="flex items-center bg-black text-white rounded-none px-2 py-1"
+            className="flex flex-shrink-0 items-center bg-black text-white rounded-none px-2 py-1"
           >
             <span>{size}</span>
             {qty > 1 && (
@@ -766,11 +982,12 @@ export default function Designer() {
               if (e.target === e.currentTarget) {
                 setSelectedTextId(null)
                 setTextColorPanelOpen(false)
+                setFontPanelOpen(false)
               }
             }}
           >
             <div
-              className="relative h-[70%]"
+              className="relative h-[60%]"
               style={{ aspectRatio: canvasAspect }}
               onClick={() => activePanel && setActivePanel(null)}
             >
@@ -815,32 +1032,55 @@ export default function Designer() {
                 >
                   {textElements.map(el =>
                     editingTextId === el.id ? (
-                      <input
-                        key={el.id}
-                        autoFocus
-                        value={el.content}
-                        size={Math.max(el.content.length + 1, 5)}
-                        onChange={e => {
-                          const v = e.target.value
-                          setTextElements(prev =>
-                            prev.map(t => (t.id === el.id ? { ...t, content: v } : t))
-                          )
-                        }}
-                        onBlur={() => setEditingTextId(null)}
-                        onKeyDown={e => {
-                          if (e.key === "Enter" || e.key === "Escape")
-                            (e.target as HTMLInputElement).blur()
-                        }}
-                        onMouseDown={e => e.stopPropagation()}
-                        style={{
-                          position: "absolute",
-                          left: `${el.x}%`,
-                          top: `${el.y}%`,
-                          color: el.color,
-                          fontSize: `${el.fontSize}px`,
-                        }}
-                        className="pointer-events-auto font-sans bg-white/80 outline-none border border-dashed border-[#6366F1] px-1"
-                      />
+                      (() => {
+                        const box = measureTextBox(el.content, el.fontSize, el.fontFamily)
+                        return (
+                          <textarea
+                            key={el.id}
+                            autoFocus
+                            value={el.content}
+                            rows={1}
+                            onChange={e => {
+                              const v = e.target.value
+                              setTextElements(prev =>
+                                prev.map(t => (t.id === el.id ? { ...t, content: v } : t))
+                              )
+                            }}
+                            onBlur={() => setEditingTextId(null)}
+                            onKeyDown={e => {
+                              if (e.key === "Escape")
+                                (e.target as HTMLTextAreaElement).blur()
+                            }}
+                            onMouseDown={e => e.stopPropagation()}
+                            style={{
+                              position: "absolute",
+                              left: `${el.x}%`,
+                              top: `${el.y}%`,
+                              color: el.color,
+                              fontSize: `${el.fontSize}px`,
+                              fontFamily: `"${el.fontFamily}"`,
+                              width: `${box.width + 4}px`,
+                              height: `${box.height}px`,
+                              minWidth: `${el.fontSize * 0.5}px`,
+                              padding: 0,
+                              margin: 0,
+                              border: "none",
+                              resize: "none",
+                              overflow: "hidden",
+                              whiteSpace: "pre",
+                              boxShadow: "0 0 0 1px #6366F1",
+                            }}
+                            ref={node => {
+                              if (!node) return
+                              if (node.dataset.cursorAtEnd === "1") return
+                              const len = node.value.length
+                              node.setSelectionRange(len, len)
+                              node.dataset.cursorAtEnd = "1"
+                            }}
+                            className="pointer-events-auto bg-transparent outline-none leading-none"
+                          />
+                        )
+                      })()
                     ) : (
                       <div
                         key={el.id}
@@ -857,14 +1097,36 @@ export default function Designer() {
                           top: `${el.y}%`,
                           color: el.color,
                           fontSize: `${el.fontSize}px`,
+                          fontFamily: `"${el.fontFamily}"`,
+                          whiteSpace: "pre",
+                          boxShadow:
+                            selectedTextId === el.id ? "0 0 0 1px #6366F1" : undefined,
                         }}
-                        className={`pointer-events-auto font-sans select-none cursor-move whitespace-nowrap leading-none ${
-                          selectedTextId === el.id
-                            ? "outline outline-1 outline-dashed outline-[#6366F1]"
-                            : ""
-                        }`}
+                        className="pointer-events-auto select-none cursor-move leading-none"
                       >
                         {el.content}
+                        {selectedTextId === el.id &&
+                          (["nw", "ne", "sw", "se"] as const).map(corner => {
+                            const cursor =
+                              corner === "nw" || corner === "se"
+                                ? "cursor-nwse-resize"
+                                : "cursor-nesw-resize"
+                            const pos =
+                              corner === "nw"
+                                ? "-top-[7.5px] -left-[7.5px]"
+                                : corner === "ne"
+                                  ? "-top-[7.5px] -right-[7.5px]"
+                                  : corner === "sw"
+                                    ? "-bottom-[7.5px] -left-[7.5px]"
+                                    : "-bottom-[7.5px] -right-[7.5px]"
+                            return (
+                              <span
+                                key={corner}
+                                onMouseDown={e => startResize(e, el, corner)}
+                                className={`absolute ${pos} ${cursor} block size-[15px] rounded-full border-2 border-[#6366F1] bg-white`}
+                              />
+                            )
+                          })}
                       </div>
                     )
                   )}
@@ -874,7 +1136,7 @@ export default function Designer() {
 
             {/* View selector */}
             {productData && productData.views.length > 1 && (
-              <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-end gap-1.5">
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-start gap-1.5">
                 {productData.views.map(view => {
                   const thumb = currentAppearance?.views.find(v => v.id === view.id)?.image
                   if (!thumb) return null
@@ -884,7 +1146,7 @@ export default function Designer() {
                       key={view.id}
                       type="button"
                       onClick={() => setActiveViewId(view.id)}
-                      className="group flex flex-col items-center gap-1 cursor-pointer"
+                      className="group flex w-[60px] flex-col items-center gap-1 cursor-pointer"
                     >
                       <div
                         className={`box-border rounded-md border bg-white p-1 transition-colors ${
@@ -900,7 +1162,7 @@ export default function Designer() {
                         />
                       </div>
                       <span
-                        className={`text-[12px] font-semibold text-center transition-opacity ${
+                        className={`block h-8 w-full overflow-hidden text-center text-[12px] font-semibold leading-4 transition-opacity line-clamp-2 ${
                           selected
                             ? "text-black opacity-100"
                             : "text-neutral-700 opacity-0 group-hover:opacity-100"
@@ -960,10 +1222,24 @@ export default function Designer() {
             <EditorBar
               show={!!selectedText}
               fontSize={selectedText?.fontSize ?? 32}
+              fontFamily={selectedText?.fontFamily ?? DEFAULT_FONT_FAMILY}
               color={selectedText?.color ?? "#000000"}
               maxFontSize={maxFontSize}
               onFontSizeChange={size => updateSelectedText({ fontSize: size })}
-              onColorClick={() => setTextColorPanelOpen(o => !o)}
+              onFontFamilyClick={() =>
+                setFontPanelOpen(o => {
+                  const next = !o
+                  if (next) setTextColorPanelOpen(false)
+                  return next
+                })
+              }
+              onColorClick={() =>
+                setTextColorPanelOpen(o => {
+                  const next = !o
+                  if (next) setFontPanelOpen(false)
+                  return next
+                })
+              }
               onDuplicate={duplicateSelectedText}
               onDelete={deleteSelectedText}
             />
@@ -973,6 +1249,13 @@ export default function Designer() {
               onClose={() => setTextColorPanelOpen(false)}
               currentColor={selectedText?.color ?? "#000000"}
               onChange={color => updateSelectedText({ color })}
+            />
+
+            <FontPanel
+              open={fontPanelOpen && !!selectedText}
+              onClose={() => setFontPanelOpen(false)}
+              currentFontFamily={selectedText?.fontFamily ?? DEFAULT_FONT_FAMILY}
+              onChange={family => updateSelectedText({ fontFamily: family })}
             />
           </div>
 
@@ -1134,14 +1417,14 @@ export default function Designer() {
             <div id="bottom-part" className="flex-shrink-0 mt-auto">
               
 
-              <div className="flex mb-[12px] flex-row items-center justify-between gap-x-2 ml-0">
+              <div className="flex mb-[12px] flex-row items-end justify-between gap-x-2 ml-0">
   {totalSelected > 0 ? (
-    <span className="text-[14px] font-medium font-sans tracking-[0] text-[#DC2626]">
+    <span className="min-w-0 text-[14px] font-medium font-sans tracking-[0] text-[#DC2626]">
       {getVolumeDiscountText(totalSelected)}
     </span>
   ) : (
     (outOfStockMap[appearances[activeColorIndex]?.id] ?? []).length > 0 ? (
-      <span className="text-[14px] font-medium font-sans tracking-[0] text-[var(--sprd-neutral-700)]">
+      <span className="min-w-0 text-[14px] font-medium font-sans tracking-[0] text-[var(--sprd-neutral-700)]">
         {(outOfStockMap[appearances[activeColorIndex]?.id] ?? []).join(", ")} out of stock
       </span>
     ) : <span />
@@ -1149,7 +1432,7 @@ export default function Designer() {
 
   <button
     type="button"
-    className="text-[14px] font-sans underline text-black hover:cursor-pointer font-normal"
+    className="shrink-0 whitespace-nowrap text-[14px] font-sans underline text-black hover:cursor-pointer font-normal"
     onClick={(e) => e.preventDefault()}
   >
     Size guide
@@ -1199,7 +1482,7 @@ export default function Designer() {
                 <Popover.Trigger asChild>
                   <button
                     type="button"
-                    className={`inline-flex w-full h-12 items-center justify-between gap-3 cursor-pointer font-sans text-sm font-semibold px-3 border-2 transition-colors ${
+                    className={`inline-flex w-full h-12 items-center justify-between gap-3 cursor-pointer font-sans text-sm font-semibold px-3 border-2 ${
                       selectedSizes.length > 0
                         ? "border-black font-bold bg-white"
                         : "border-[var(--sprd-neutral-300)] bg-transparent hover:border-black focus:border-black focus-visible:border-black active:border-black data-[state=open]:border-black"
@@ -1212,7 +1495,7 @@ export default function Designer() {
                       viewBox="0 0 20 20"
                       fill="none"
                       xmlns="http://www.w3.org/2000/svg"
-                      className={`size-5 transition-transform ${
+                      className={`size-5 flex-shrink-0 ${
                         sizePopoverOpen ? "rotate-180" : "rotate-0"
                       }`}
                       aria-hidden="true"
@@ -1236,13 +1519,13 @@ export default function Designer() {
                     collisionBoundary={
                       rightSectionRef.current ? [rightSectionRef.current] : undefined
                     }
-                    className="z-50 flex flex-col bg-white shadow-lg outline-none overflow-hidden rounded-t-[12px]"
+                    className="relative z-50 flex flex-col bg-white shadow-lg outline-none overflow-hidden rounded-t-[12px]"
                     style={{
                       width: "var(--radix-popover-trigger-width)",
                       maxHeight: "var(--radix-popover-content-available-height)",
                     }}
                   >
-                    <div className="flex items-center justify-between px-6 pt-5 pb-4 flex-shrink-0">
+                    <div className="relative z-10 flex items-center justify-between px-6 pt-5 pb-4 flex-shrink-0 bg-white">
                       <div className="text-[14px] font-medium text-[var(--sprd-red-600)]">
                         {discountTierHint}
                       </div>
@@ -1253,7 +1536,10 @@ export default function Designer() {
                         <img src="/icons/icon-close-x.svg" alt="" className="h-6 w-6" />
                       </Popover.Close>
                     </div>
-                    <div className="flex-1 overflow-y-auto">
+                    <div
+                      ref={sizePopoverScrollRef}
+                      className="flex-1 overflow-y-auto"
+                    >
                       {sizes.map(label => {
                         const isOOS = outOfStockMap[
                           appearances[activeColorIndex]?.id
@@ -1315,7 +1601,9 @@ export default function Designer() {
                                     .slice(0, 5)
                                   setSizeQuantity(label, digits === "" ? 0 : Number(digits))
                                 }}
-                                className="w-12 text-center text-sm outline-none placeholder:text-black focus:placeholder:text-transparent"
+                                className={`w-12 self-stretch text-center text-sm outline-none placeholder:text-black focus:placeholder:text-transparent ${
+                                  qty > 0 ? "bg-neutral-100" : ""
+                                }`}
                               />
                               <button
                                 type="button"
@@ -1377,6 +1665,17 @@ export default function Designer() {
                     if (!productData) return
                     const currentApp = appearances[activeColorIndex]
                     if (!currentApp) return
+                    const designSnapshot =
+                      printAreaOverlay && printAreaPxSize.width > 0 && printAreaPxSize.height > 0
+                        ? {
+                            textElements: textElements.map(t => ({ ...t })),
+                            printAreaOverlay,
+                            displayWidth:
+                              (printAreaPxSize.width * 100) / printAreaOverlay.width,
+                            displayHeight:
+                              (printAreaPxSize.height * 100) / printAreaOverlay.height,
+                          }
+                        : undefined
                     setAddingToBasket(true)
                     setTimeout(() => {
                       const newItems: BasketItem[] = Object.entries(sizeQuantities)
@@ -1385,10 +1684,11 @@ export default function Designer() {
                           id: `cart-${Date.now()}-${size}`,
                           productName: productData.name,
                           appearanceName: currentApp.name,
-                          image: currentApp.image,
+                          image: currentViewImage || currentApp.image,
                           size,
                           qty,
                           price: BASE_PRICE,
+                          design: designSnapshot,
                         }))
                       setBasketItems(prev => [...prev, ...newItems])
                       setSizeQuantities({})
@@ -1433,24 +1733,22 @@ export default function Designer() {
               <div className="w-full h-px bg-[#E9E9E9] mb-3" />
               
 
-              {/* Shipping section */}
-              <div className="flex items-center mb-0 gap-2">                
-                <div className="flex items-center flex-1 gap-1.5 flex-row justify-between">
-                  <span className="flex items-center gap-1.5 text-[14px] text-black py-0.5 rounded-xs text-left px-0 font-medium">
-<svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M8.66602 2.66699C9.00787 2.66699 9.28957 2.92435 9.32812 3.25586L9.33301 3.33398H12C12.2048 3.33408 12.3961 3.42801 12.5215 3.58594L12.5713 3.65723L14.5713 6.99023L14.5957 7.03516L14.624 7.10059L14.6504 7.18848L14.6631 7.2666L14.666 7.33398V11.334C14.6659 11.6757 14.4086 11.9576 14.0771 11.9961L14 12H13.2168C12.9421 12.7766 12.2036 13.334 11.333 13.334C10.4624 13.334 9.72391 12.7766 9.44922 12H6.5498C6.27509 12.7765 5.53662 13.334 4.66602 13.334C3.79548 13.3338 3.05685 12.7765 2.78223 12H2C1.65811 12 1.3764 11.7427 1.33789 11.4111L1.33301 11.334V4C1.33318 3.29739 1.87682 2.722 2.56641 2.6709L2.66602 2.66699H8.66602ZM4.66602 10.667C4.30015 10.6672 4.00252 10.9621 3.99902 11.3271L4 11.334C4 11.3356 3.99904 11.3372 3.99902 11.3389C4.00182 11.7046 4.29971 12.0008 4.66602 12.001C5.0341 12.001 5.33283 11.702 5.33301 11.334C5.33301 10.9658 5.03421 10.667 4.66602 10.667ZM11.333 10.667C10.9648 10.667 10.666 10.9658 10.666 11.334C10.6662 11.702 10.9649 12.001 11.333 12.001C11.7011 12.001 11.9998 11.702 12 11.334C12 10.9658 11.7012 10.667 11.333 10.667ZM9.33301 10.667H9.44922C9.72399 9.89059 10.4625 9.33398 11.333 9.33398C12.2035 9.33398 12.942 9.89059 13.2168 10.667H13.333V8H9.33301V10.667ZM2.66602 10.667H2.78223C3.05693 9.89064 3.79559 9.33412 4.66602 9.33398C5.53651 9.33398 6.275 9.89065 6.5498 10.667H8V4H2.66602V10.667ZM9.33301 6.66699H12.8223L11.6221 4.66699H9.33301V6.66699Z" fill="#6A6A6A"/>
-</svg>
-                    Dec. 13-15 or
-                      <span className="text-[14px] text-black font-regular underline px-0 py-0">
-                        faster  
-                      </span>
+              {/* Shipping + return info as two columns */}
+              <div className="flex flex-row items-center justify-between gap-4">
+                <span className="flex items-center gap-1.5 text-[14px] text-black py-0.5 rounded-xs text-left px-0 font-medium">
+                  <svg width="20" height="20" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8.66602 2.66699C9.00787 2.66699 9.28957 2.92435 9.32812 3.25586L9.33301 3.33398H12C12.2048 3.33408 12.3961 3.42801 12.5215 3.58594L12.5713 3.65723L14.5713 6.99023L14.5957 7.03516L14.624 7.10059L14.6504 7.18848L14.6631 7.2666L14.666 7.33398V11.334C14.6659 11.6757 14.4086 11.9576 14.0771 11.9961L14 12H13.2168C12.9421 12.7766 12.2036 13.334 11.333 13.334C10.4624 13.334 9.72391 12.7766 9.44922 12H6.5498C6.27509 12.7765 5.53662 13.334 4.66602 13.334C3.79548 13.3338 3.05685 12.7765 2.78223 12H2C1.65811 12 1.3764 11.7427 1.33789 11.4111L1.33301 11.334V4C1.33318 3.29739 1.87682 2.722 2.56641 2.6709L2.66602 2.66699H8.66602ZM4.66602 10.667C4.30015 10.6672 4.00252 10.9621 3.99902 11.3271L4 11.334C4 11.3356 3.99904 11.3372 3.99902 11.3389C4.00182 11.7046 4.29971 12.0008 4.66602 12.001C5.0341 12.001 5.33283 11.702 5.33301 11.334C5.33301 10.9658 5.03421 10.667 4.66602 10.667ZM11.333 10.667C10.9648 10.667 10.666 10.9658 10.666 11.334C10.6662 11.702 10.9649 12.001 11.333 12.001C11.7011 12.001 11.9998 11.702 12 11.334C12 10.9658 11.7012 10.667 11.333 10.667ZM9.33301 10.667H9.44922C9.72399 9.89059 10.4625 9.33398 11.333 9.33398C12.2035 9.33398 12.942 9.89059 13.2168 10.667H13.333V8H9.33301V10.667ZM2.66602 10.667H2.78223C3.05693 9.89064 3.79559 9.33412 4.66602 9.33398C5.53651 9.33398 6.275 9.89065 6.5498 10.667H8V4H2.66602V10.667ZM9.33301 6.66699H12.8223L11.6221 4.66699H9.33301V6.66699Z" fill="#000000"/>
+                  </svg>
+                  Dec. 13-15 or
+                  <span className="text-[14px] text-black font-regular underline px-0 py-0">
+                    faster
                   </span>
-                  
-                  <span className="text-[14px] py-0.5 font-regular rounded-xs px-0 font-medium">
-                    30-Day easy returns
-                  </span>
-                </div>
-                
+                </span>
+
+                <span className="flex items-center gap-1.5 text-[14px] text-black py-0.5 rounded-xs text-left px-0 font-medium">
+                  <img src="/icons/icon-refresh.svg" alt="" className="h-5 w-5" />
+                  30-Day easy returns
+                </span>
               </div>
 
               
@@ -1512,6 +1810,10 @@ export default function Designer() {
                     key={a.id}
                     type="button"
                     onClick={() => {
+                      if (a.id === "text") {
+                        openFromOnboarding(() => addTextElement())
+                        return
+                      }
                       if (!("panel" in a)) return
                       openFromOnboarding(() => setActivePanel(a.panel))
                     }}

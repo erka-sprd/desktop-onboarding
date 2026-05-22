@@ -2,6 +2,23 @@
 
 import { useEffect, useState } from "react"
 
+export type BasketDesignText = {
+  id: string
+  content: string
+  x: number
+  y: number
+  color: string
+  fontSize: number
+  fontFamily: string
+}
+
+export type BasketDesign = {
+  textElements: BasketDesignText[]
+  printAreaOverlay: { left: number; top: number; width: number; height: number }
+  displayWidth: number
+  displayHeight: number
+}
+
 export type BasketItem = {
   id: string
   productName: string
@@ -10,6 +27,7 @@ export type BasketItem = {
   size: string
   qty: number
   price: number // unit price
+  design?: BasketDesign
 }
 
 type BasketProps = {
@@ -140,12 +158,8 @@ function BasketItemRow({
 }) {
   return (
     <div className="flex gap-4 px-6 py-4 border-b border-neutral-200">
-      <div className="w-24 h-24 flex-shrink-0 bg-[#f5f5f5] flex items-center justify-center overflow-hidden">
-        <img
-          src={item.image}
-          alt={item.productName}
-          className="w-full h-full object-contain"
-        />
+      <div className="w-24 h-24 flex-shrink-0 bg-[#f5f5f5] overflow-hidden relative">
+        <DesignThumbnail item={item} size={96} />
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-start justify-between">
@@ -218,6 +232,67 @@ function BasketItemRow({
             </button>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function DesignThumbnail({ item, size }: { item: BasketItem; size: number }) {
+  const { design, image, productName } = item
+  if (!design || design.displayWidth <= 0 || design.displayHeight <= 0) {
+    return (
+      <img
+        src={image}
+        alt={productName}
+        className="w-full h-full object-contain"
+      />
+    )
+  }
+  const { textElements, printAreaOverlay, displayWidth, displayHeight } = design
+  const scale = Math.min(size / displayWidth, size / displayHeight)
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
+        width: displayWidth,
+        height: displayHeight,
+        transform: `translate(-50%, -50%) scale(${scale})`,
+        transformOrigin: "center",
+      }}
+    >
+      <img
+        src={image}
+        alt={productName}
+        className="h-full w-full object-contain pointer-events-none select-none"
+      />
+      <div
+        style={{
+          position: "absolute",
+          left: `${printAreaOverlay.left}%`,
+          top: `${printAreaOverlay.top}%`,
+          width: `${printAreaOverlay.width}%`,
+          height: `${printAreaOverlay.height}%`,
+        }}
+      >
+        {textElements.map(el => (
+          <div
+            key={el.id}
+            style={{
+              position: "absolute",
+              left: `${el.x}%`,
+              top: `${el.y}%`,
+              color: el.color,
+              fontSize: `${el.fontSize}px`,
+              fontFamily: `"${el.fontFamily}"`,
+              whiteSpace: "pre",
+              lineHeight: 1,
+            }}
+          >
+            {el.content}
+          </div>
+        ))}
       </div>
     </div>
   )

@@ -99,7 +99,7 @@ export function buildOutOfStockMap(
   const map: Record<string, string[]> = {}
   for (const a of appearances) {
     const seed = hash(`${productId}:${a.id}`)
-    const count = 1 + (seed % 3)
+    const count = seed % 3
     const picks = new Set<string>()
     let s = seed
     while (picks.size < Math.min(count, sizes.length)) {

@@ -39,6 +39,7 @@ export function WedgeSlider({ min, max, value, onChange }: WedgeSliderProps) {
         type="range"
         min={min}
         max={max}
+        step="any"
         value={value}
         onChange={e => onChange(Number(e.target.value))}
         onMouseDown={() => setIsDragging(true)}

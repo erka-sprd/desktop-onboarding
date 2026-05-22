@@ -5,9 +5,11 @@ import { WedgeSlider } from "./WedgeSlider"
 type EditorBarProps = {
   show: boolean
   fontSize: number
+  fontFamily: string
   color: string
   maxFontSize?: number
   onFontSizeChange: (next: number) => void
+  onFontFamilyClick: () => void
   onColorClick: () => void
   onDuplicate?: () => void
   onDelete?: () => void
@@ -19,9 +21,11 @@ const ABS_MAX_FONT_SIZE = 320
 export function EditorBar({
   show,
   fontSize,
+  fontFamily,
   color,
   maxFontSize = ABS_MAX_FONT_SIZE,
   onFontSizeChange,
+  onFontFamilyClick,
   onColorClick,
   onDuplicate,
   onDelete,
@@ -36,6 +40,20 @@ export function EditorBar({
       className="shadow-s absolute top-8 left-1/2 z-[5] flex h-[48px] -translate-x-1/2 items-center overflow-hidden rounded-full bg-white"
     >
       <div className="flex h-full min-w-0 items-center gap-2 px-1.5 py-1.5">
+        {/* Font family */}
+        <button
+          type="button"
+          aria-label="Font family"
+          title={fontFamily}
+          onClick={onFontFamilyClick}
+          className="flex h-9 max-w-[100px] min-w-[100px] cursor-pointer items-center justify-start truncate rounded-md rounded-l-[24px] px-2 text-left text-[12px] font-semibold hover:bg-neutral-100"
+        >
+          {fontFamily}
+        </button>
+
+        {/* divider */}
+        <div className="bg-neutral-200 -my-1.5 w-px self-stretch" />
+
         {/* Font size: decrease */}
         <button
           type="button"
@@ -123,7 +141,7 @@ export function EditorBar({
           type="button"
           aria-label="Delete text"
           onClick={onDelete}
-          className="flex h-9 w-9 items-center justify-center cursor-pointer rounded-md text-[#DC2626] hover:bg-neutral-100"
+          className="-ml-1.5 flex h-9 w-9 items-center justify-center cursor-pointer rounded-md rounded-r-[24px] text-[#DC2626] hover:bg-neutral-100"
         >
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true">
             <path
