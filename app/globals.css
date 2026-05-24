@@ -136,6 +136,64 @@
   }
 }
 
+/* Size-pill enter: pill grows width + bounce scale + opacity 0 → 1.
+   Animating max-width + padding makes the row push neighbors smoothly. */
+@keyframes size-pill-pop {
+  0% {
+    opacity: 0;
+    max-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    max-width: 200px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    transform: scale(1.25);
+  }
+  75% {
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    max-width: 200px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    transform: scale(1);
+  }
+}
+.size-pill-pop {
+  animation: size-pill-pop 450ms cubic-bezier(0.34, 1.6, 0.64, 1) 1 backwards;
+  transform-origin: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@keyframes size-pill-pop-out {
+  0% {
+    opacity: 1;
+    max-width: 200px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    max-width: 0;
+    padding-left: 0;
+    padding-right: 0;
+    transform: scale(0.3);
+  }
+}
+.size-pill-pop-out {
+  animation: size-pill-pop-out 320ms cubic-bezier(0.4, 0, 0.2, 1) 1 forwards;
+  transform-origin: center;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
 /* Red flash to indicate "no size selected": hold red 2s, then fade back over 2s. */
 @keyframes flash-red-border {
   0%,

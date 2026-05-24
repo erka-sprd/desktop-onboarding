@@ -86,9 +86,10 @@ export default function Designer() {
   }, [addingToBasket])
   const [flashSize, setFlashSize] = useState(false)
 
-  // Text elements placed inside the print area. Positions are % of the print area.
+  // Text elements placed inside a specific print area. Positions are % of that print area.
   type TextElement = {
     id: string
+    printAreaId: string
     content: string
     x: number
     y: number
@@ -132,6 +133,7 @@ export default function Designer() {
   } | null>(null)
 
   const addTextElement = () => {
+    if (!currentPrintAreaId) return
     const id = `text-${Date.now()}`
     const content = "Your text here"
     let fontSize = 32
@@ -166,7 +168,16 @@ export default function Designer() {
     const color = isDarkProductColor(productColor) ? "#FFFFFF" : "#000000"
     setTextElements(prev => [
       ...prev,
-      { id, content, x, y, color, fontSize, fontFamily: DEFAULT_FONT_FAMILY },
+      {
+        id,
+        printAreaId: currentPrintAreaId,
+        content,
+        x,
+        y,
+        color,
+        fontSize,
+        fontFamily: DEFAULT_FONT_FAMILY,
+      },
     ])
     // Defer to next tick so the document click handler (firing in the same
     // event's bubble phase) doesn't clear the selection we're about to set.
@@ -501,6 +512,23 @@ export default function Designer() {
     ? `${currentView.canvas.width} / ${currentView.canvas.height}`
     : "1 / 1"
   const printAreaOverlay = productData ? getPrintAreaOverlay(productData, activeViewId) : null
+  const currentPrintAreaId = currentView?.viewMaps[0]?.printAreaId ?? null
+  const visibleTextElements = currentPrintAreaId
+    ? textElements.filter(t => t.printAreaId === currentPrintAreaId)
+    : []
+
+  // When switching views (print areas), clear any stale selection / editing
+  // that points to an element that doesn't live in the new print area.
+  useEffect(() => {
+    if (!selectedTextId) return
+    const t = textElements.find(x => x.id === selectedTextId)
+    if (!t || t.printAreaId !== currentPrintAreaId) {
+      setSelectedTextId(null)
+      setEditingTextId(null)
+      setTextColorPanelOpen(false)
+      setFontPanelOpen(false)
+    }
+  }, [currentPrintAreaId, selectedTextId, textElements])
 
   useEffect(() => {
     const el = printAreaBoxRef.current
@@ -626,7 +654,7 @@ export default function Designer() {
       { min: 50, pct: 50 },
     ]
     const nextTier = tiers.find(t => totalSelected < t.min)
-    if (nextTier) return `From ${nextTier.min} articles -${nextTier.pct}% reduction`
+    if (nextTier) return `From ${nextTier.min} items -${nextTier.pct}% reduction`
     const last = tiers[tiers.length - 1]
     return `${last.pct}% reduction applied`
   })()
@@ -634,6 +662,35 @@ export default function Designer() {
   const selectedSizes = sizes
     .map(size => ({ size, qty: sizeQuantities[size] ?? 0 }))
     .filter(s => s.qty > 0)
+
+  // Track pills (selected + recently-removed) so exits can animate. A pill
+  // marked `exiting` stays in the DOM for the exit animation, then is removed.
+  type RenderPill = { size: string; qty: number; exiting: boolean }
+  const [renderPills, setRenderPills] = useState<RenderPill[]>([])
+  useEffect(() => {
+    const selectedMap = new Map(selectedSizes.map(s => [s.size, s.qty]))
+    setRenderPills(prev => {
+      const next: RenderPill[] = prev.map(p => {
+        const qty = selectedMap.get(p.size)
+        if (qty !== undefined && qty > 0) return { ...p, qty, exiting: false }
+        return p.exiting ? p : { ...p, exiting: true }
+      })
+      const existingSet = new Set(prev.map(p => p.size))
+      selectedSizes.forEach(s => {
+        if (!existingSet.has(s.size))
+          next.push({ size: s.size, qty: s.qty, exiting: false })
+      })
+      next.sort((a, b) => sizes.indexOf(a.size) - sizes.indexOf(b.size))
+      return next
+    })
+  }, [sizeQuantities, sizes])
+  useEffect(() => {
+    if (!renderPills.some(p => p.exiting)) return
+    const timer = setTimeout(() => {
+      setRenderPills(prev => prev.filter(p => !p.exiting))
+    }, 320)
+    return () => clearTimeout(timer)
+  }, [renderPills])
   const sizeButtonLabel =
     selectedSizes.length === 0 ? (
       <span>Choose size</span>
@@ -647,23 +704,9 @@ export default function Designer() {
             "linear-gradient(to right, #000 0, #000 calc(100% - 16px), transparent 100%)",
         }}
       >
-        <span className="flex-shrink-0">{totalSelected === 1 ? "Size:" : "Sizes:"}</span>
-        {selectedSizes.map(({ size, qty }) => (
-          <span
-            key={size}
-            className="flex flex-shrink-0 items-center bg-black text-white rounded-none px-2 py-1"
-          >
-            <span>{size}</span>
-            {qty > 1 && (
-              <>
-                <span
-                  aria-hidden="true"
-                  className="mx-[6px] h-3 w-px bg-[var(--sprd-neutral-800)]"
-                />
-                <span className="font-normal opacity-70">{qty}x</span>
-              </>
-            )}
-          </span>
+        <span className="flex-shrink-0">Sizes:</span>
+        {renderPills.map(({ size, qty, exiting }) => (
+          <SizePill key={size} size={size} qty={qty} exiting={exiting} />
         ))}
       </span>
     )
@@ -1072,7 +1115,7 @@ export default function Designer() {
                   {snapGuides.h && (
                     <div className="pointer-events-none absolute top-1/2 left-0 right-0 h-px bg-[#FF3B30] -translate-y-1/2" />
                   )}
-                  {textElements.map(el =>
+                  {visibleTextElements.map(el =>
                     editingTextId === el.id ? (
                       (() => {
                         const box = measureTextBox(el.content, el.fontSize, el.fontFamily)
@@ -1601,7 +1644,7 @@ export default function Designer() {
                             </span>
                             <div className="flex items-center gap-4">
                               {isOOS && (
-                                <span className="text-sm text-[var(--sprd-red-600)]">
+                                <span className="text-sm text-[var(--sprd-neutral-700)]">
                                   Out of stock
                                 </span>
                               )}
@@ -1643,9 +1686,7 @@ export default function Designer() {
                                     .slice(0, 5)
                                   setSizeQuantity(label, digits === "" ? 0 : Number(digits))
                                 }}
-                                className={`w-12 self-stretch text-center text-sm outline-none placeholder:text-black focus:placeholder:text-transparent ${
-                                  qty > 0 ? "bg-neutral-100" : ""
-                                }`}
+                                className="w-12 self-stretch text-center text-sm outline-none placeholder:text-black focus:placeholder:text-transparent"
                               />
                               <button
                                 type="button"
@@ -1710,7 +1751,7 @@ export default function Designer() {
                     const designSnapshot =
                       printAreaOverlay && printAreaPxSize.width > 0 && printAreaPxSize.height > 0
                         ? {
-                            textElements: textElements.map(t => ({ ...t })),
+                            textElements: visibleTextElements.map(t => ({ ...t })),
                             printAreaOverlay,
                             displayWidth:
                               (printAreaPxSize.width * 100) / printAreaOverlay.width,
@@ -1890,6 +1931,60 @@ export default function Designer() {
       />
 
     </>
+  )
+}
+
+// Pill shown inside the "Choose size" trigger button. Latches the displayed
+// quantity for the duration of the collapse transition so the layout has
+// something to clip while the wrapper's max-width animates down to 0.
+function SizePill({
+  size,
+  qty,
+  exiting,
+}: {
+  size: string
+  qty: number
+  exiting: boolean
+}) {
+  const [displayQty, setDisplayQty] = useState(qty)
+  useEffect(() => {
+    if (qty > 1) {
+      setDisplayQty(qty)
+      return
+    }
+    // qty just dropped to <= 1: keep displaying the previous value so the
+    // max-width transition has content to clip, then update after 300ms.
+    const timer = setTimeout(() => setDisplayQty(qty), 300)
+    return () => clearTimeout(timer)
+  }, [qty])
+  return (
+    <span
+      className={`${
+        exiting ? "size-pill-pop-out" : "size-pill-pop"
+      } flex flex-shrink-0 items-center bg-black text-white rounded-none px-2 py-1`}
+    >
+      <span>{size}</span>
+      <span
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          overflow: "hidden",
+          maxWidth: qty > 1 ? 80 : 0,
+          transition: "max-width 300ms cubic-bezier(0.4, 0, 0.2, 1)",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {displayQty > 1 && (
+          <>
+            <span
+              aria-hidden="true"
+              className="mx-[6px] h-3 w-px bg-[var(--sprd-neutral-800)]"
+            />
+            <span className="font-normal opacity-70">{displayQty}x</span>
+          </>
+        )}
+      </span>
+    </span>
   )
 }
 
@@ -2327,10 +2422,10 @@ export function XLButton({ label, value, onValueChange, isRemoved, setIsRemoved,
 export function getVolumeDiscountText(totalSelected: number) {
   const n = Math.max(0, Math.floor(totalSelected || 0))
 
-  if (n <= 5) return "From 5 article -10% reduction"
-  if (n <= 19) return "From 20 article -15% reduction"
-  if (n <= 49) return "From 50 article -25% reduction"
-  return `For ${n} article -50% reduction`
+  if (n <= 5) return "From 5 items -10% reduction"
+  if (n <= 19) return "From 20 items -15% reduction"
+  if (n <= 49) return "From 50 items -25% reduction"
+  return `For ${n} items -50% reduction`
 }
 
 export function onlyDigits(input: string) {
