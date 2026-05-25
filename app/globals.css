@@ -194,7 +194,7 @@
   white-space: nowrap;
 }
 
-/* Red flash to indicate "no size selected": hold red 2s, then fade back over 2s. */
+/* Red flash to indicate "no size selected": hold red 1s, then fade back over 1s. */
 @keyframes flash-red-border {
   0%,
   50% {
@@ -207,7 +207,7 @@
   }
 }
 .flash-red-border {
-  animation: flash-red-border 4s ease-out 1 forwards;
+  animation: flash-red-border 2s ease-out 1 forwards;
 }
 
 @custom-variant dark (&:is(.dark *));

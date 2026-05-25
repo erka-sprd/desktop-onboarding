@@ -1742,7 +1742,7 @@ export default function Designer() {
                     if (addingToBasket || flashSize) return
                     if (totalSelected === 0) {
                       setFlashSize(true)
-                      setTimeout(() => setFlashSize(false), 4000)
+                      setTimeout(() => setFlashSize(false), 2000)
                       return
                     }
                     if (!productData) return
