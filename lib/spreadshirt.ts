@@ -1,6 +1,7 @@
 import {
   PRODUCTS,
   type StaticProduct,
+  type StaticProductDetails,
   type StaticView,
   type StaticPrintArea,
 } from "./products-data"
@@ -25,6 +26,7 @@ export type ProductTypeData = {
   views: StaticView[]
   printAreas: StaticPrintArea[]
   sizes: { id: string; name: string }[]
+  details: StaticProductDetails
 }
 
 export function getProductType(id: string): ProductTypeData | null {
@@ -43,6 +45,7 @@ export function getProductType(id: string): ProductTypeData | null {
     views: p.views,
     printAreas: p.printAreas,
     sizes: p.sizes.map((name, i) => ({ id: String(i), name })),
+    details: p.details,
   }
 }
 

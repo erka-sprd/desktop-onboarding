@@ -178,6 +178,13 @@ async function main() {
       views: productViews,
       sizes: (detail.sizes ?? []).map(s => s.name),
       printAreas,
+      details: {
+        shortDescription: detail.shortDescription ?? "",
+        description: detail.description ?? "",
+        brand: detail.brand ?? "",
+        weight: detail.weight ?? 0,
+        sizeFitHint: detail.sizeFitHint ?? "",
+      },
     })
   }
 
@@ -219,6 +226,14 @@ export type StaticPrintArea = {
   printoutQuantity: number
 }
 
+export type StaticProductDetails = {
+  shortDescription: string
+  description: string
+  brand: string
+  weight: number
+  sizeFitHint: string
+}
+
 export type StaticProduct = {
   id: string
   name: string
@@ -228,6 +243,7 @@ export type StaticProduct = {
   views: StaticView[]
   sizes: string[]
   printAreas: StaticPrintArea[]
+  details: StaticProductDetails
 }
 
 export const FEATURED_PRODUCT_ID = ${JSON.stringify(FEATURED_ID)}

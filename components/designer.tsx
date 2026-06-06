@@ -60,6 +60,7 @@ export default function Designer() {
   const [productsDrawerOpen, setProductsDrawerOpen] = useState(false)
   const [activePanel, setActivePanel] = useState<DesignerPanel | null>(null)
   const [welcomeOpen, setWelcomeOpen] = useState(true)
+  const [detailsOpen, setDetailsOpen] = useState(false)
   const [sizePopoverOpen, setSizePopoverOpen] = useState(false)
   const sizePopoverScrollRef = useRef<HTMLDivElement | null>(null)
   const [sizePopoverOverflowTop, setSizePopoverOverflowTop] = useState(false)
@@ -1221,7 +1222,7 @@ export default function Designer() {
 
             {/* View selector */}
             {productData && productData.views.length > 1 && (
-              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-start gap-1.5">
+              <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-start gap-0.3">
                 {productData.views.map(view => {
                   const thumb = currentAppearance?.views.find(v => v.id === view.id)?.image
                   if (!thumb) return null
@@ -1355,7 +1356,13 @@ export default function Designer() {
                   {productData?.name ?? ""}
                 </h1>
               </div>
-              <div className="text-[14px] text-black underline cursor-pointer">See product details</div>
+              <button
+                type="button"
+                onClick={() => setDetailsOpen(true)}
+                className="text-[14px] text-black underline cursor-pointer"
+              >
+                See product details
+              </button>
 
               <div id="select-color" className="mb-8">
                 <div className="w-full text-left text-[12px] uppercase font-bold text-[#6A6A6A] mb-[12px] tracking-[0.08em] mt-6">
@@ -1907,6 +1914,74 @@ export default function Designer() {
                   </button>
                 ))}
               </div>
+            </div>
+          </ScopedDialog>
+
+          <ScopedDialog
+            open={detailsOpen}
+            onOpenChange={setDetailsOpen}
+            container={creatomatContainer}
+            overlayClassName="rounded-[12px]"
+            className="flex max-h-[80%] w-[480px] max-w-[90%] flex-col gap-0 overflow-hidden rounded-2xl bg-white p-0 shadow-xl"
+          >
+            <div className="flex items-start justify-between gap-4 p-[24px] pb-[16px]">
+              <ScopedDialogTitle className="font-display text-[18px] font-[800] leading-tight text-black">
+                {productData?.name ?? "Product details"}
+              </ScopedDialogTitle>
+              <ScopedDialogClose
+                aria-label="Close"
+                className="shrink-0 cursor-pointer outline-none focus:outline-none focus-visible:outline-none"
+              >
+                <img src="/icons/icon-close-x.svg" alt="" className="h-6 w-6" />
+              </ScopedDialogClose>
+            </div>
+
+            <div className="flex flex-col gap-5 overflow-y-auto px-[24px] pb-[24px] text-[14px] text-black">
+              {productData?.details.shortDescription && (
+                <p className="leading-relaxed text-neutral-700">
+                  {productData.details.shortDescription}
+                </p>
+              )}
+
+              {productData?.details.description && (
+                <div
+                  className="leading-relaxed text-neutral-700 [&_li]:mt-1 [&_ul]:list-disc [&_ul]:pl-5"
+                  dangerouslySetInnerHTML={{ __html: productData.details.description }}
+                />
+              )}
+
+              <dl className="flex flex-col gap-2 border-t border-neutral-200 pt-4">
+                {productData?.details.brand && (
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-neutral-500">Brand</dt>
+                    <dd className="text-right font-medium">{productData.details.brand}</dd>
+                  </div>
+                )}
+                {productData?.details.sizeFitHint && (
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-neutral-500">Fit</dt>
+                    <dd className="text-right font-medium capitalize">
+                      {productData.details.sizeFitHint}
+                    </dd>
+                  </div>
+                )}
+                {!!productData?.details.weight && (
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-neutral-500">Weight</dt>
+                    <dd className="text-right font-medium">
+                      {Math.round(productData.details.weight)} g
+                    </dd>
+                  </div>
+                )}
+                {!!productData?.sizes.length && (
+                  <div className="flex justify-between gap-4">
+                    <dt className="text-neutral-500">Sizes</dt>
+                    <dd className="text-right font-medium">
+                      {productData.sizes.map(s => s.name).join(", ")}
+                    </dd>
+                  </div>
+                )}
+              </dl>
             </div>
           </ScopedDialog>
         </div>

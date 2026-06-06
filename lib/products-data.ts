@@ -36,6 +36,14 @@ export type StaticPrintArea = {
   printoutQuantity: number
 }
 
+export type StaticProductDetails = {
+  shortDescription: string
+  description: string
+  brand: string
+  weight: number
+  sizeFitHint: string
+}
+
 export type StaticProduct = {
   id: string
   name: string
@@ -45,6 +53,7 @@ export type StaticProduct = {
   views: StaticView[]
   sizes: string[]
   printAreas: StaticPrintArea[]
+  details: StaticProductDetails
 }
 
 export const FEATURED_PRODUCT_ID = "2940"
@@ -499,235 +508,466 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Oversized Unisex T-shirt made from 100% organic cotton. Brand: SPREAD.",
+      "description": "<ul class=\"listMCE\">\n  <li>Wide-cut oversized T-shirt for a modern look</li>\n  <li>Generous fit for maximum comfort</li>\n  <li>Color-matched jersey neck tape</li>\n  <li>Double stitching on hem and sleeves</li>\n  <li>Elastic 2x1 rib knit collar</li>\n  <li>Satin label sewn in on the side</li>\n  <li>Neutral size label</li>\n  <li>Heavyweight fabric: 240 g/m²</li>\n  <li>Material: 100% organic cotton</li><li>Brand: SPREAD</li>\n</ul>",
+      "brand": "SPREAD",
+      "weight": 243,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
-    "id": "6",
-    "name": "Men's T-Shirt",
-    "price": 16.24,
-    "preview": "/products/6/2/1.webp",
+    "id": "812",
+    "name": "Men's Premium Organic T-Shirt",
+    "price": 19.74,
+    "preview": "/products/812/2/1.webp",
     "appearances": [
       {
-        "id": "403",
-        "name": "sage",
-        "color": "#C1D5AA",
-        "image": "/products/6/403/1.webp",
+        "id": "1251",
+        "name": "mauve",
+        "color": "#BA7283",
+        "image": "/products/812/1251/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/6/403/1.webp"
+            "image": "/products/812/1251/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/6/403/2.webp"
+            "image": "/products/812/1251/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/6/403/3.webp"
+            "image": "/products/812/1251/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/6/403/4.webp"
+            "image": "/products/812/1251/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/6/403/12.webp"
+            "id": "13",
+            "image": "/products/812/1251/13.webp"
           }
         ]
       },
       {
-        "id": "648",
-        "name": "charcoal grey",
-        "color": "#605E5E",
-        "image": "/products/6/648/1.webp",
+        "id": "1252",
+        "name": "mint ",
+        "color": "#AED9CF",
+        "image": "/products/812/1252/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/6/648/1.webp"
+            "image": "/products/812/1252/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/6/648/2.webp"
+            "image": "/products/812/1252/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/6/648/3.webp"
+            "image": "/products/812/1252/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/6/648/4.webp"
+            "image": "/products/812/1252/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/6/648/12.webp"
+            "id": "13",
+            "image": "/products/812/1252/13.webp"
           }
         ]
       },
       {
-        "id": "715",
-        "name": "military green",
-        "color": "#6E7C54",
-        "image": "/products/6/715/1.webp",
+        "id": "1254",
+        "name": "heather grey",
+        "color": "#BEBEBE",
+        "image": "/products/812/1254/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/6/715/1.webp"
+            "image": "/products/812/1254/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/6/715/2.webp"
+            "image": "/products/812/1254/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/6/715/3.webp"
+            "image": "/products/812/1254/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/6/715/4.webp"
+            "image": "/products/812/1254/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/6/715/12.webp"
+            "id": "13",
+            "image": "/products/812/1254/13.webp"
           }
         ]
       },
       {
-        "id": "729",
-        "name": "graphite heather",
-        "color": "#716969",
-        "image": "/products/6/729/1.webp",
+        "id": "1256",
+        "name": "heather anthracite",
+        "color": "#2F3031",
+        "image": "/products/812/1256/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/6/729/1.webp"
+            "image": "/products/812/1256/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/6/729/2.webp"
+            "image": "/products/812/1256/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/6/729/3.webp"
+            "image": "/products/812/1256/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/6/729/4.webp"
+            "image": "/products/812/1256/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/6/729/12.webp"
+            "id": "13",
+            "image": "/products/812/1256/13.webp"
           }
         ]
       },
       {
-        "id": "868",
-        "name": "brick red",
-        "color": "#921F2F",
-        "image": "/products/6/868/1.webp",
+        "id": "1259",
+        "name": "off white",
+        "color": "#ECE7E0",
+        "image": "/products/812/1259/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/6/868/1.webp"
+            "image": "/products/812/1259/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/6/868/2.webp"
+            "image": "/products/812/1259/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/6/868/3.webp"
+            "image": "/products/812/1259/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/6/868/4.webp"
+            "image": "/products/812/1259/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/6/868/12.webp"
+            "id": "13",
+            "image": "/products/812/1259/13.webp"
           }
         ]
       },
       {
-        "id": "950",
-        "name": "majorelle blue",
-        "color": "#254E98",
-        "image": "/products/6/950/1.webp",
+        "id": "1261",
+        "name": "beige",
+        "color": "#CDC6BD",
+        "image": "/products/812/1261/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/6/950/1.webp"
+            "image": "/products/812/1261/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/6/950/2.webp"
+            "image": "/products/812/1261/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/6/950/3.webp"
+            "image": "/products/812/1261/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/6/950/4.webp"
+            "image": "/products/812/1261/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/6/950/12.webp"
+            "id": "13",
+            "image": "/products/812/1261/13.webp"
           }
         ]
       },
       {
-        "id": "1175",
-        "name": "carolina blue",
-        "color": "#86A1CD",
-        "image": "/products/6/1175/1.webp",
+        "id": "1264",
+        "name": "burgundy",
+        "color": "#6A2A39",
+        "image": "/products/812/1264/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/6/1175/1.webp"
+            "image": "/products/812/1264/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/6/1175/2.webp"
+            "image": "/products/812/1264/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/6/1175/3.webp"
+            "image": "/products/812/1264/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/6/1175/4.webp"
+            "image": "/products/812/1264/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/6/1175/12.webp"
+            "id": "13",
+            "image": "/products/812/1264/13.webp"
           }
         ]
       },
       {
-        "id": "1704",
-        "name": "dark denim",
-        "color": "#465777",
-        "image": "/products/6/1704/1.webp",
+        "id": "1265",
+        "name": "red",
+        "color": "#BB1E1E",
+        "image": "/products/812/1265/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/6/1704/1.webp"
+            "image": "/products/812/1265/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/6/1704/2.webp"
+            "image": "/products/812/1265/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/6/1704/3.webp"
+            "image": "/products/812/1265/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/6/1704/4.webp"
+            "image": "/products/812/1265/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/6/1704/12.webp"
+            "id": "13",
+            "image": "/products/812/1265/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1268",
+        "name": "light blue",
+        "color": "#A9C1D9",
+        "image": "/products/812/1268/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/812/1268/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/812/1268/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/812/1268/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/812/1268/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/812/1268/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1269",
+        "name": "navy",
+        "color": "#2E303B",
+        "image": "/products/812/1269/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/812/1269/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/812/1269/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/812/1269/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/812/1269/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/812/1269/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1270",
+        "name": "heather denim",
+        "color": "#3B4856",
+        "image": "/products/812/1270/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/812/1270/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/812/1270/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/812/1270/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/812/1270/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/812/1270/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1271",
+        "name": "stone blue",
+        "color": "#5A7199",
+        "image": "/products/812/1271/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/812/1271/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/812/1271/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/812/1271/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/812/1271/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/812/1271/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1272",
+        "name": "green",
+        "color": "#0E8D32",
+        "image": "/products/812/1272/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/812/1272/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/812/1272/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/812/1272/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/812/1272/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/812/1272/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1274",
+        "name": "khaki",
+        "color": "#5B5F38",
+        "image": "/products/812/1274/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/812/1274/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/812/1274/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/812/1274/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/812/1274/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/812/1274/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1276",
+        "name": "sky yellow",
+        "color": "#FFE57B",
+        "image": "/products/812/1276/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/812/1276/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/812/1276/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/812/1276/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/812/1276/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/812/1276/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1277",
+        "name": "orange ",
+        "color": "#DF5A0A",
+        "image": "/products/812/1277/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/812/1277/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/812/1277/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/812/1277/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/812/1277/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/812/1277/13.webp"
           }
         ]
       },
@@ -735,27 +975,27 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "1",
         "name": "white",
         "color": "#FFFFFF",
-        "image": "/products/6/1/1.webp",
+        "image": "/products/812/1/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/6/1/1.webp"
+            "image": "/products/812/1/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/6/1/2.webp"
+            "image": "/products/812/1/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/6/1/3.webp"
+            "image": "/products/812/1/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/6/1/4.webp"
+            "image": "/products/812/1/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/6/1/12.webp"
+            "id": "13",
+            "image": "/products/812/1/13.webp"
           }
         ]
       },
@@ -763,251 +1003,27 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "2",
         "name": "black",
         "color": "#000000",
-        "image": "/products/6/2/1.webp",
+        "image": "/products/812/2/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/6/2/1.webp"
+            "image": "/products/812/2/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/6/2/2.webp"
+            "image": "/products/812/2/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/6/2/3.webp"
+            "image": "/products/812/2/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/6/2/4.webp"
+            "image": "/products/812/2/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/6/2/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "5",
-        "name": "red",
-        "color": "#F51E30",
-        "image": "/products/6/5/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/6/5/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/6/5/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/6/5/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/6/5/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/6/5/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "4",
-        "name": "navy",
-        "color": "#00224C",
-        "image": "/products/6/4/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/6/4/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/6/4/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/6/4/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/6/4/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/6/4/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "92",
-        "name": "kelly green",
-        "color": "#1E9658",
-        "image": "/products/6/92/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/6/92/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/6/92/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/6/92/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/6/92/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/6/92/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "231",
-        "name": "heather grey",
-        "color": "#BEBEBE",
-        "image": "/products/6/231/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/6/231/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/6/231/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/6/231/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/6/231/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/6/231/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "444",
-        "name": "purple",
-        "color": "#6B3F7F",
-        "image": "/products/6/444/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/6/444/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/6/444/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/6/444/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/6/444/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/6/444/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "7",
-        "name": "yellow",
-        "color": "#F7EF00",
-        "image": "/products/6/7/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/6/7/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/6/7/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/6/7/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/6/7/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/6/7/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "526",
-        "name": "pink",
-        "color": "#FE8FB6",
-        "image": "/products/6/526/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/6/526/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/6/526/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/6/526/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/6/526/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/6/526/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "337",
-        "name": "sand beige",
-        "color": "#BBB29D",
-        "image": "/products/6/337/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/6/337/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/6/337/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/6/337/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/6/337/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/6/337/12.webp"
+            "id": "13",
+            "image": "/products/812/2/13.webp"
           }
         ]
       }
@@ -1017,67 +1033,123 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "1",
         "name": "Front",
         "canvas": {
-          "width": 791.6883116883116,
-          "height": 791.6883116883116,
+          "width": 819.3548387096773,
+          "height": 819.3548387096773,
           "unit": "mm"
         },
-        "dpi": 38.5,
+        "dpi": 37.2,
         "viewMaps": [
           {
-            "printAreaId": "4",
+            "printAreaId": "1667",
             "offset": {
-              "x": 191.236,
-              "y": 68.6487,
+              "x": 241.213,
+              "y": 151.121,
               "unit": "mm"
             },
             "size": {
-              "width": 686.4864864864865,
-              "height": 686.4864864864865,
+              "width": 813.7299771167048,
+              "height": 813.7299771167048,
               "unit": "mm"
             },
-            "dpi": 44.4
+            "dpi": 37.457142857142856
           },
           {
-            "printAreaId": "4289",
+            "printAreaId": "3811",
             "offset": {
-              "x": 191.236,
-              "y": 100.521,
+              "x": 220.87,
+              "y": 124.966,
               "unit": "mm"
             },
             "size": {
-              "width": 686.4864864864865,
-              "height": 686.4864864864865,
+              "width": 813.7299771167048,
+              "height": 813.7299771167048,
               "unit": "mm"
             },
-            "dpi": 44.4
+            "dpi": 37.457142857142856
           },
           {
-            "printAreaId": "5835",
+            "printAreaId": "5881",
             "offset": {
-              "x": 186.332,
-              "y": 85.8108,
+              "x": 235.4,
+              "y": 130.778,
               "unit": "mm"
             },
             "size": {
-              "width": 686.4864864864865,
-              "height": 686.4864864864865,
+              "width": 813.7299771167048,
+              "height": 813.7299771167048,
               "unit": "mm"
             },
-            "dpi": 44.4
+            "dpi": 37.457142857142856
           },
           {
-            "printAreaId": "8124",
+            "printAreaId": "5883",
             "offset": {
-              "x": 207.158,
-              "y": 129.309,
+              "x": 235.4,
+              "y": 133.684,
               "unit": "mm"
             },
             "size": {
-              "width": 791.6883116883116,
-              "height": 791.6883116883116,
+              "width": 813.7299771167048,
+              "height": 813.7299771167048,
               "unit": "mm"
             },
-            "dpi": 38.5
+            "dpi": 37.457142857142856
+          },
+          {
+            "printAreaId": "5884",
+            "offset": {
+              "x": 232.494,
+              "y": 133.684,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 813.7299771167048,
+              "height": 813.7299771167048,
+              "unit": "mm"
+            },
+            "dpi": 37.457142857142856
+          },
+          {
+            "printAreaId": "5885",
+            "offset": {
+              "x": 232.494,
+              "y": 133.684,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 813.7299771167048,
+              "height": 813.7299771167048,
+              "unit": "mm"
+            },
+            "dpi": 37.457142857142856
+          },
+          {
+            "printAreaId": "5886",
+            "offset": {
+              "x": 235.4,
+              "y": 133.684,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 813.7299771167048,
+              "height": 813.7299771167048,
+              "unit": "mm"
+            },
+            "dpi": 37.457142857142856
+          },
+          {
+            "printAreaId": "8515",
+            "offset": {
+              "x": 216.446,
+              "y": 139.973,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 819.3548387096773,
+              "height": 819.3548387096773,
+              "unit": "mm"
+            },
+            "dpi": 37.2
           }
         ]
       },
@@ -1085,67 +1157,67 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "2",
         "name": "Back",
         "canvas": {
-          "width": 791.6883116883116,
-          "height": 791.6883116883116,
+          "width": 819.3548387096773,
+          "height": 819.3548387096773,
           "unit": "mm"
         },
-        "dpi": 38.5,
+        "dpi": 37.2,
         "viewMaps": [
           {
-            "printAreaId": "41",
+            "printAreaId": "1668",
             "offset": {
-              "x": 190.683,
-              "y": 53.7825,
+              "x": 239.296,
+              "y": 95.1419,
               "unit": "mm"
             },
             "size": {
-              "width": 684.5043310875841,
-              "height": 684.5043310875841,
+              "width": 807.2644721906923,
+              "height": 807.2644721906923,
               "unit": "mm"
             },
-            "dpi": 44.52857142857143
+            "dpi": 37.75714285714286
           },
           {
-            "printAreaId": "4291",
+            "printAreaId": "3813",
             "offset": {
-              "x": 188.239,
-              "y": 70.8951,
+              "x": 221.998,
+              "y": 77.8434,
               "unit": "mm"
             },
             "size": {
-              "width": 684.5043310875841,
-              "height": 684.5043310875841,
+              "width": 807.2644721906923,
+              "height": 807.2644721906923,
               "unit": "mm"
             },
-            "dpi": 44.52857142857143
+            "dpi": 37.75714285714286
           },
           {
-            "printAreaId": "5836",
+            "printAreaId": "5882",
             "offset": {
-              "x": 183.349,
-              "y": 61.1165,
+              "x": 230.647,
+              "y": 92.2588,
               "unit": "mm"
             },
             "size": {
-              "width": 684.5043310875841,
-              "height": 684.5043310875841,
+              "width": 807.2644721906923,
+              "height": 807.2644721906923,
               "unit": "mm"
             },
-            "dpi": 44.52857142857143
+            "dpi": 37.75714285714286
           },
           {
-            "printAreaId": "8125",
+            "printAreaId": "8516",
             "offset": {
-              "x": 205.839,
-              "y": 114.135,
+              "x": 215.081,
+              "y": 82.6183,
               "unit": "mm"
             },
             "size": {
-              "width": 791.6883116883116,
-              "height": 791.6883116883116,
+              "width": 819.3548387096773,
+              "height": 819.3548387096773,
               "unit": "mm"
             },
-            "dpi": 38.5
+            "dpi": 37.2
           }
         ]
       },
@@ -1153,53 +1225,53 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "3",
         "name": "Right",
         "canvas": {
-          "width": 441.4649286157666,
-          "height": 441.4649286157666,
+          "width": 348.10415714938324,
+          "height": 348.10415714938324,
           "unit": "mm"
         },
-        "dpi": 69.04285714285713,
+        "dpi": 87.56,
         "viewMaps": [
           {
-            "printAreaId": "420",
+            "printAreaId": "1669",
             "offset": {
-              "x": 121.403,
-              "y": 238.076,
+              "x": 97.5292,
+              "y": 131.452,
               "unit": "mm"
             },
             "size": {
-              "width": 441.4649286157666,
-              "height": 441.4649286157666,
+              "width": 296.82804674457424,
+              "height": 296.82804674457424,
               "unit": "mm"
             },
-            "dpi": 69.04285714285713
+            "dpi": 102.6857142857143
           },
           {
-            "printAreaId": "4293",
+            "printAreaId": "3815",
             "offset": {
-              "x": 148.206,
-              "y": 238.076,
+              "x": 100.71,
+              "y": 133.573,
               "unit": "mm"
             },
             "size": {
-              "width": 441.4649286157666,
-              "height": 441.4649286157666,
+              "width": 296.82804674457424,
+              "height": 296.82804674457424,
               "unit": "mm"
             },
-            "dpi": 69.04285714285713
+            "dpi": 102.6857142857143
           },
           {
-            "printAreaId": "5837",
+            "printAreaId": "8517",
             "offset": {
-              "x": 160.819,
-              "y": 241.229,
+              "x": 112.844,
+              "y": 165.349,
               "unit": "mm"
             },
             "size": {
-              "width": 441.4649286157666,
-              "height": 441.4649286157666,
+              "width": 348.10415714938324,
+              "height": 348.10415714938324,
               "unit": "mm"
             },
-            "dpi": 69.04285714285713
+            "dpi": 87.56
           }
         ]
       },
@@ -1207,84 +1279,101 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "4",
         "name": "Left",
         "canvas": {
-          "width": 441.4649286157666,
-          "height": 441.4649286157666,
+          "width": 348.10415714938324,
+          "height": 348.10415714938324,
           "unit": "mm"
         },
-        "dpi": 69.04285714285713,
+        "dpi": 87.56,
         "viewMaps": [
           {
-            "printAreaId": "421",
+            "printAreaId": "1670",
             "offset": {
-              "x": 168.703,
-              "y": 238.076,
+              "x": 100.71,
+              "y": 131.452,
               "unit": "mm"
             },
             "size": {
-              "width": 441.4649286157666,
-              "height": 441.4649286157666,
+              "width": 296.82804674457424,
+              "height": 296.82804674457424,
               "unit": "mm"
             },
-            "dpi": 69.04285714285713
+            "dpi": 102.6857142857143
           },
           {
-            "printAreaId": "4295",
+            "printAreaId": "3817",
             "offset": {
-              "x": 195.506,
-              "y": 238.076,
+              "x": 101.77,
+              "y": 133.573,
               "unit": "mm"
             },
             "size": {
-              "width": 441.4649286157666,
-              "height": 441.4649286157666,
+              "width": 296.82804674457424,
+              "height": 296.82804674457424,
               "unit": "mm"
             },
-            "dpi": 69.04285714285713
+            "dpi": 102.6857142857143
           },
           {
-            "printAreaId": "5838",
+            "printAreaId": "8518",
             "offset": {
-              "x": 179.739,
-              "y": 241.229,
+              "x": 139.242,
+              "y": 165.349,
               "unit": "mm"
             },
             "size": {
-              "width": 441.4649286157666,
-              "height": 441.4649286157666,
+              "width": 348.10415714938324,
+              "height": 348.10415714938324,
               "unit": "mm"
             },
-            "dpi": 69.04285714285713
+            "dpi": 87.56
           }
         ]
       },
       {
-        "id": "12",
-        "name": "Close-up",
+        "id": "13",
+        "name": "Neck Label",
         "canvas": {
-          "width": 30480,
-          "height": 30480,
+          "width": 305.10510510510505,
+          "height": 305.10510510510505,
           "unit": "mm"
         },
-        "dpi": 1,
-        "viewMaps": []
+        "dpi": 99.9,
+        "viewMaps": [
+          {
+            "printAreaId": "8521",
+            "offset": {
+              "x": 109.329,
+              "y": 91.7858,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 305.10510510510505,
+              "height": 305.10510510510505,
+              "unit": "mm"
+            },
+            "dpi": 99.9
+          }
+        ]
       }
     ],
     "sizes": [
+      "XS",
       "S",
       "M",
       "L",
       "XL",
       "XXL",
       "3XL",
-      "4XL"
+      "4XL",
+      "5XL"
     ],
     "printAreas": [
       {
-        "id": "4",
+        "id": "1667",
         "defaultViewId": "1",
         "boundary": {
-          "width": 308.9189189148,
-          "height": 566.3513513438,
+          "width": 308.0549199062,
+          "height": 569.610983966,
           "unit": "mm"
         },
         "restrictions": {
@@ -1295,11 +1384,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "4289",
+        "id": "3811",
         "defaultViewId": "1",
         "boundary": {
-          "width": 311.3706563532,
-          "height": 448.6679536656,
+          "width": 348.7414187464,
+          "height": 450.457665885,
           "unit": "mm"
         },
         "restrictions": {
@@ -1310,11 +1399,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "5835",
+        "id": "5881",
         "defaultViewId": "1",
         "boundary": {
-          "width": 311.3706563706564,
-          "height": 451.11969111969114,
+          "width": 348.74141876430207,
+          "height": 450.4576659038901,
           "unit": "mm"
         },
         "restrictions": {
@@ -1325,11 +1414,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "8124",
+        "id": "5883",
         "defaultViewId": "1",
         "boundary": {
-          "width": 380.01038961038955,
-          "height": 480.2909090909091,
+          "width": 348.74141876430207,
+          "height": 450.4576659038901,
           "unit": "mm"
         },
         "restrictions": {
@@ -1340,11 +1429,71 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "41",
+        "id": "5884",
+        "defaultViewId": "1",
+        "boundary": {
+          "width": 345.8352402745995,
+          "height": 447.5514874141876,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "5885",
+        "defaultViewId": "1",
+        "boundary": {
+          "width": 345.8352402745995,
+          "height": 447.5514874141876,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "5886",
+        "defaultViewId": "1",
+        "boundary": {
+          "width": 345.8352402745995,
+          "height": 447.5514874141876,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "8515",
+        "defaultViewId": "1",
+        "boundary": {
+          "width": 389.87634408602145,
+          "height": 490.24731182795693,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "1668",
         "defaultViewId": "2",
         "boundary": {
-          "width": 312.9162656318,
-          "height": 596.496631363,
+          "width": 308.4903518522,
+          "height": 619.863791131,
           "unit": "mm"
         },
         "restrictions": {
@@ -1355,11 +1504,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "4291",
+        "id": "3813",
         "defaultViewId": "2",
         "boundary": {
-          "width": 310.4716073004,
-          "height": 449.8171318346,
+          "width": 348.853575469,
+          "height": 449.7616344856,
           "unit": "mm"
         },
         "restrictions": {
@@ -1370,11 +1519,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "5836",
+        "id": "5882",
         "defaultViewId": "2",
         "boundary": {
-          "width": 312.9162656400385,
-          "height": 449.8171318575553,
+          "width": 345.97048808172525,
+          "height": 446.8785471055618,
           "unit": "mm"
         },
         "restrictions": {
@@ -1385,11 +1534,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "8125",
+        "id": "8516",
         "defaultViewId": "2",
         "boundary": {
-          "width": 380.01038961038955,
-          "height": 480.2909090909091,
+          "width": 389.87634408602145,
+          "height": 490.24731182795693,
           "unit": "mm"
         },
         "restrictions": {
@@ -1400,11 +1549,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "420",
+        "id": "1669",
         "defaultViewId": "3",
         "boundary": {
-          "width": 149.782743614,
-          "height": 127.709497184,
+          "width": 98.589315521,
+          "height": 117.6711185308,
           "unit": "mm"
         },
         "restrictions": {
@@ -1415,11 +1564,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "4293",
+        "id": "3815",
         "defaultViewId": "3",
         "boundary": {
-          "width": 94.599627539,
-          "height": 115.0962135206,
+          "width": 95.4090150236,
+          "height": 115.5509181738,
           "unit": "mm"
         },
         "restrictions": {
@@ -1430,11 +1579,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "5837",
+        "id": "8517",
         "defaultViewId": "3",
         "boundary": {
-          "width": 96.17628801986343,
-          "height": 115.0962135319677,
+          "width": 94.85838282320694,
+          "height": 114.87437185929646,
           "unit": "mm"
         },
         "restrictions": {
@@ -1445,11 +1594,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "421",
+        "id": "1670",
         "defaultViewId": "4",
         "boundary": {
-          "width": 149.782743614,
-          "height": 127.709497184,
+          "width": 98.589315521,
+          "height": 112.3706176764,
           "unit": "mm"
         },
         "restrictions": {
@@ -1460,11 +1609,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "4295",
+        "id": "3817",
         "defaultViewId": "4",
         "boundary": {
-          "width": 94.599627539,
-          "height": 115.0962135206,
+          "width": 95.4090150236,
+          "height": 115.5509181738,
           "unit": "mm"
         },
         "restrictions": {
@@ -1475,11 +1624,26 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "5838",
+        "id": "8518",
         "defaultViewId": "4",
         "boundary": {
-          "width": 94.59962756052141,
-          "height": 115.0962135319677,
+          "width": 94.85838282320694,
+          "height": 114.87437185929646,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "8521",
+        "defaultViewId": "13",
+        "boundary": {
+          "width": 80.09009009009009,
+          "height": 50.088088088088085,
           "unit": "mm"
         },
         "restrictions": {
@@ -1489,39 +1653,410 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "T-Shirt made from 100% combed organic cotton. Brand: SPREAD.",
+      "description": "  <ul class=\"listMCE\">\n  <li>Regular fit</li>\n  <li>Color-matched jersey neck tape</li>\n  <li>Double stitching on hem and sleeves</li>\n  <li>Elastic 1x1 rib knit collar</li>\n  <li>Satin label sewn in on the side</li>\n  <li>Neutral size label</li>\n  <li>Medium fabric quality: 200g/m²</li>\n  <li>Material: 100% combed organic cotton (heather grey & heather anthracite: 60% viscose, 40% polyester)</li><li>Brand: SPREAD</li>\n<li>Please note: the fit may vary slightly in white & black</li>\n</ul>",
+      "brand": "SPREAD",
+      "weight": 10,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
-    "id": "631",
-    "name": "Women's T-Shirt",
-    "price": 16.24,
-    "preview": "/products/631/2/1.webp",
+    "id": "813",
+    "name": "Women's Premium Organic T-shirt",
+    "price": 19.74,
+    "preview": "/products/813/2/1.webp",
     "appearances": [
       {
-        "id": "1458",
-        "name": "antique blue sapphire heather",
-        "color": "#1B6FA8",
-        "image": "/products/631/1458/1.webp",
+        "id": "1249",
+        "name": "rose",
+        "color": "#FFCDCF",
+        "image": "/products/813/1249/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/631/1458/1.webp"
+            "image": "/products/813/1249/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/631/1458/2.webp"
+            "image": "/products/813/1249/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/631/1458/3.webp"
+            "image": "/products/813/1249/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/631/1458/4.webp"
+            "image": "/products/813/1249/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/631/1458/12.webp"
+            "id": "13",
+            "image": "/products/813/1249/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1251",
+        "name": "mauve",
+        "color": "#BA7283",
+        "image": "/products/813/1251/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1251/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1251/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1251/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1251/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1251/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1252",
+        "name": "mint ",
+        "color": "#AED9CF",
+        "image": "/products/813/1252/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1252/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1252/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1252/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1252/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1252/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1254",
+        "name": "heather grey",
+        "color": "#BEBEBE",
+        "image": "/products/813/1254/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1254/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1254/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1254/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1254/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1254/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1256",
+        "name": "heather anthracite",
+        "color": "#2F3031",
+        "image": "/products/813/1256/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1256/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1256/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1256/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1256/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1256/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1259",
+        "name": "off white",
+        "color": "#ECE7E0",
+        "image": "/products/813/1259/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1259/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1259/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1259/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1259/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1259/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1264",
+        "name": "burgundy",
+        "color": "#6A2A39",
+        "image": "/products/813/1264/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1264/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1264/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1264/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1264/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1264/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1265",
+        "name": "red",
+        "color": "#BB1E1E",
+        "image": "/products/813/1265/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1265/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1265/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1265/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1265/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1265/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1268",
+        "name": "light blue",
+        "color": "#A9C1D9",
+        "image": "/products/813/1268/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1268/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1268/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1268/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1268/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1268/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1269",
+        "name": "navy",
+        "color": "#2E303B",
+        "image": "/products/813/1269/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1269/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1269/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1269/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1269/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1269/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1271",
+        "name": "stone blue",
+        "color": "#5A7199",
+        "image": "/products/813/1271/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1271/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1271/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1271/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1271/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1271/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1272",
+        "name": "green",
+        "color": "#0E8D32",
+        "image": "/products/813/1272/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1272/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1272/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1272/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1272/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1272/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1275",
+        "name": "sun yellow",
+        "color": "#FACE48",
+        "image": "/products/813/1275/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1275/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1275/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1275/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1275/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1275/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1277",
+        "name": "orange ",
+        "color": "#DF5A0A",
+        "image": "/products/813/1277/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/813/1277/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/813/1277/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/813/1277/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/813/1277/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/813/1277/13.webp"
           }
         ]
       },
@@ -1529,27 +2064,27 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "1",
         "name": "white",
         "color": "#FFFFFF",
-        "image": "/products/631/1/1.webp",
+        "image": "/products/813/1/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/631/1/1.webp"
+            "image": "/products/813/1/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/631/1/2.webp"
+            "image": "/products/813/1/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/631/1/3.webp"
+            "image": "/products/813/1/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/631/1/4.webp"
+            "image": "/products/813/1/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/631/1/12.webp"
+            "id": "13",
+            "image": "/products/813/1/13.webp"
           }
         ]
       },
@@ -1557,195 +2092,27 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "2",
         "name": "black",
         "color": "#000000",
-        "image": "/products/631/2/1.webp",
+        "image": "/products/813/2/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/631/2/1.webp"
+            "image": "/products/813/2/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/631/2/2.webp"
+            "image": "/products/813/2/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/631/2/3.webp"
+            "image": "/products/813/2/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/631/2/4.webp"
+            "image": "/products/813/2/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/631/2/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "5",
-        "name": "red",
-        "color": "#F51E30",
-        "image": "/products/631/5/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/631/5/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/631/5/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/631/5/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/631/5/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/631/5/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "4",
-        "name": "navy",
-        "color": "#00224C",
-        "image": "/products/631/4/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/631/4/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/631/4/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/631/4/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/631/4/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/631/4/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "92",
-        "name": "kelly green",
-        "color": "#1E9658",
-        "image": "/products/631/92/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/631/92/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/631/92/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/631/92/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/631/92/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/631/92/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "231",
-        "name": "heather grey",
-        "color": "#BEBEBE",
-        "image": "/products/631/231/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/631/231/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/631/231/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/631/231/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/631/231/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/631/231/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "258",
-        "name": "royal blue",
-        "color": "#48599B",
-        "image": "/products/631/258/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/631/258/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/631/258/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/631/258/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/631/258/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/631/258/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "194",
-        "name": "azalea",
-        "color": "#F24173",
-        "image": "/products/631/194/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/631/194/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/631/194/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/631/194/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/631/194/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/631/194/12.webp"
+            "id": "13",
+            "image": "/products/813/2/13.webp"
           }
         ]
       }
@@ -1755,53 +2122,67 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "1",
         "name": "Front",
         "canvas": {
-          "width": 648.905109489051,
-          "height": 648.905109489051,
+          "width": 704.5769764216366,
+          "height": 704.5769764216366,
           "unit": "mm"
         },
-        "dpi": 46.971428571428575,
+        "dpi": 43.26,
         "viewMaps": [
           {
-            "printAreaId": "1280",
+            "printAreaId": "1671",
             "offset": {
-              "x": 180.766,
-              "y": 97.3358,
+              "x": 220.652,
+              "y": 142.922,
               "unit": "mm"
             },
             "size": {
-              "width": 648.905109489051,
-              "height": 648.905109489051,
+              "width": 702.0730503455084,
+              "height": 702.0730503455084,
               "unit": "mm"
             },
-            "dpi": 46.971428571428575
+            "dpi": 43.41428571428571
           },
           {
-            "printAreaId": "4095",
+            "printAreaId": "3803",
             "offset": {
-              "x": 180.766,
-              "y": 104.288,
+              "x": 213.129,
+              "y": 137.907,
               "unit": "mm"
             },
             "size": {
-              "width": 648.905109489051,
-              "height": 648.905109489051,
+              "width": 702.0730503455084,
+              "height": 702.0730503455084,
               "unit": "mm"
             },
-            "dpi": 46.971428571428575
+            "dpi": 43.41428571428571
           },
           {
-            "printAreaId": "4699",
+            "printAreaId": "5870",
             "offset": {
-              "x": 180.766,
-              "y": 104.288,
+              "x": 213.129,
+              "y": 147.937,
               "unit": "mm"
             },
             "size": {
-              "width": 648.905109489051,
-              "height": 648.905109489051,
+              "width": 702.0730503455084,
+              "height": 702.0730503455084,
               "unit": "mm"
             },
-            "dpi": 46.971428571428575
+            "dpi": 43.41428571428571
+          },
+          {
+            "printAreaId": "8544",
+            "offset": {
+              "x": 187.3,
+              "y": 137.393,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 704.5769764216366,
+              "height": 704.5769764216366,
+              "unit": "mm"
+            },
+            "dpi": 43.26
           }
         ]
       },
@@ -1809,53 +2190,53 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "2",
         "name": "Back",
         "canvas": {
-          "width": 672.2117202268431,
-          "height": 672.2117202268431,
+          "width": 704.5769764216366,
+          "height": 704.5769764216366,
           "unit": "mm"
         },
-        "dpi": 45.34285714285714,
+        "dpi": 43.26,
         "viewMaps": [
           {
-            "printAreaId": "1281",
+            "printAreaId": "1672",
             "offset": {
-              "x": 184.858,
-              "y": 60.0189,
+              "x": 231.619,
+              "y": 93.6885,
               "unit": "mm"
             },
             "size": {
-              "width": 672.2117202268431,
-              "height": 672.2117202268431,
+              "width": 728.688524590164,
+              "height": 728.688524590164,
               "unit": "mm"
             },
-            "dpi": 45.34285714285714
+            "dpi": 41.82857142857143
           },
           {
-            "printAreaId": "4097",
+            "printAreaId": "3805",
             "offset": {
-              "x": 189.66,
-              "y": 64.8204,
+              "x": 226.414,
+              "y": 85.8811,
               "unit": "mm"
             },
             "size": {
-              "width": 672.2117202268431,
-              "height": 672.2117202268431,
+              "width": 728.688524590164,
+              "height": 728.688524590164,
               "unit": "mm"
             },
-            "dpi": 45.34285714285714
+            "dpi": 41.82857142857143
           },
           {
-            "printAreaId": "4701",
+            "printAreaId": "8545",
             "offset": {
-              "x": 187.259,
-              "y": 64.8204,
+              "x": 187.887,
+              "y": 61.0633,
               "unit": "mm"
             },
             "size": {
-              "width": 672.2117202268431,
-              "height": 672.2117202268431,
+              "width": 704.5769764216366,
+              "height": 704.5769764216366,
               "unit": "mm"
             },
-            "dpi": 45.34285714285714
+            "dpi": 43.26
           }
         ]
       },
@@ -1863,53 +2244,53 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "3",
         "name": "Right",
         "canvas": {
-          "width": 226.7134204654128,
-          "height": 226.7134204654128,
+          "width": 240.6822488945041,
+          "height": 240.6822488945041,
           "unit": "mm"
         },
-        "dpi": 134.44285714285715,
+        "dpi": 126.64000000000001,
         "viewMaps": [
           {
-            "printAreaId": "1282",
+            "printAreaId": "1673",
             "offset": {
-              "x": 35.6264,
-              "y": 86.6369,
+              "x": 58.9109,
+              "y": 115.261,
               "unit": "mm"
             },
             "size": {
-              "width": 226.7134204654128,
-              "height": 226.7134204654128,
+              "width": 239.05882352941177,
+              "height": 239.05882352941177,
               "unit": "mm"
             },
-            "dpi": 134.44285714285715
+            "dpi": 127.5
           },
           {
-            "printAreaId": "4099",
+            "printAreaId": "3807",
             "offset": {
-              "x": 41.2942,
-              "y": 86.6369,
+              "x": 58.9109,
+              "y": 115.261,
               "unit": "mm"
             },
             "size": {
-              "width": 226.7134204654128,
-              "height": 226.7134204654128,
+              "width": 239.05882352941177,
+              "height": 239.05882352941177,
               "unit": "mm"
             },
-            "dpi": 134.44285714285715
+            "dpi": 127.5
           },
           {
-            "printAreaId": "4703",
+            "printAreaId": "8546",
             "offset": {
-              "x": 41.2942,
-              "y": 86.6369,
+              "x": 52.9501,
+              "y": 105.098,
               "unit": "mm"
             },
             "size": {
-              "width": 226.7134204654128,
-              "height": 226.7134204654128,
+              "width": 240.6822488945041,
+              "height": 240.6822488945041,
               "unit": "mm"
             },
-            "dpi": 134.44285714285715
+            "dpi": 126.64000000000001
           }
         ]
       },
@@ -1917,82 +2298,101 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "4",
         "name": "Left",
         "canvas": {
-          "width": 226.7134204654128,
-          "height": 226.7134204654128,
+          "width": 240.6822488945041,
+          "height": 240.6822488945041,
           "unit": "mm"
         },
-        "dpi": 134.44285714285715,
+        "dpi": 126.64000000000001,
         "viewMaps": [
           {
-            "printAreaId": "1283",
+            "printAreaId": "1674",
             "offset": {
-              "x": 84.2078,
-              "y": 86.6369,
+              "x": 93.916,
+              "y": 115.261,
               "unit": "mm"
             },
             "size": {
-              "width": 226.7134204654128,
-              "height": 226.7134204654128,
+              "width": 239.05882352941177,
+              "height": 239.05882352941177,
               "unit": "mm"
             },
-            "dpi": 134.44285714285715
+            "dpi": 127.5
           },
           {
-            "printAreaId": "4101",
+            "printAreaId": "3809",
             "offset": {
-              "x": 89.8757,
-              "y": 86.6369,
+              "x": 93.916,
+              "y": 115.261,
               "unit": "mm"
             },
             "size": {
-              "width": 226.7134204654128,
-              "height": 226.7134204654128,
+              "width": 239.05882352941177,
+              "height": 239.05882352941177,
               "unit": "mm"
             },
-            "dpi": 134.44285714285715
+            "dpi": 127.5
           },
           {
-            "printAreaId": "4705",
+            "printAreaId": "8547",
             "offset": {
-              "x": 89.8757,
-              "y": 86.6369,
+              "x": 100.485,
+              "y": 105.098,
               "unit": "mm"
             },
             "size": {
-              "width": 226.7134204654128,
-              "height": 226.7134204654128,
+              "width": 240.6822488945041,
+              "height": 240.6822488945041,
               "unit": "mm"
             },
-            "dpi": 134.44285714285715
+            "dpi": 126.64000000000001
           }
         ]
       },
       {
-        "id": "12",
-        "name": "Close-up",
+        "id": "13",
+        "name": "Neck Label",
         "canvas": {
-          "width": 30480,
-          "height": 30480,
+          "width": 263.7362637362637,
+          "height": 263.7362637362637,
           "unit": "mm"
         },
-        "dpi": 1,
-        "viewMaps": []
+        "dpi": 115.57,
+        "viewMaps": [
+          {
+            "printAreaId": "9131",
+            "offset": {
+              "x": 88.5714,
+              "y": 69.6703,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 263.7362637362637,
+              "height": 263.7362637362637,
+              "unit": "mm"
+            },
+            "dpi": 115.57
+          }
+        ]
       }
     ],
     "sizes": [
+      "XS",
       "S",
       "M",
       "L",
       "XL",
-      "XXL"
+      "XXL",
+      "3XL",
+      "4XL",
+      "5XL"
     ],
     "printAreas": [
       {
-        "id": "1280",
+        "id": "1671",
         "defaultViewId": "1",
         "boundary": {
-          "width": 289.6897810206,
-          "height": 484.361313851,
+          "width": 260.7699901176,
+          "height": 478.914116465,
           "unit": "mm"
         },
         "restrictions": {
@@ -2003,11 +2403,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "4095",
+        "id": "3803",
         "defaultViewId": "1",
         "boundary": {
-          "width": 289.6897810206,
-          "height": 398.6131386624,
+          "width": 278.3218163804,
+          "height": 401.1846001946,
           "unit": "mm"
         },
         "restrictions": {
@@ -2018,11 +2418,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "4699",
+        "id": "5870",
         "defaultViewId": "1",
         "boundary": {
-          "width": 289.6897810206,
-          "height": 398.6131386624,
+          "width": 278.3218163869694,
+          "height": 401.1846001974333,
           "unit": "mm"
         },
         "restrictions": {
@@ -2033,11 +2433,26 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "1281",
+        "id": "8544",
+        "defaultViewId": "1",
+        "boundary": {
+          "width": 329.97688395746644,
+          "height": 399.8474341192788,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "1672",
         "defaultViewId": "2",
         "boundary": {
-          "width": 304.8960302372,
-          "height": 549.7731568904,
+          "width": 270.6557376816,
+          "height": 549.1188524586,
           "unit": "mm"
         },
         "restrictions": {
@@ -2048,11 +2463,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "4097",
+        "id": "3805",
         "defaultViewId": "2",
         "boundary": {
-          "width": 290.4914933618,
-          "height": 400.9262759716,
+          "width": 281.065573758,
+          "height": 398.1762295032,
           "unit": "mm"
         },
         "restrictions": {
@@ -2063,11 +2478,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "4701",
+        "id": "8545",
         "defaultViewId": "2",
         "boundary": {
-          "width": 290.4914933618,
-          "height": 400.9262759716,
+          "width": 329.97688395746644,
+          "height": 399.8474341192788,
           "unit": "mm"
         },
         "restrictions": {
@@ -2078,11 +2493,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "1282",
+        "id": "1673",
         "defaultViewId": "3",
         "boundary": {
-          "width": 106.8791839298,
-          "height": 90.6853681844,
+          "width": 87.0857142712,
+          "height": 78.5478991396,
           "unit": "mm"
         },
         "restrictions": {
@@ -2093,11 +2508,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "4099",
+        "id": "3807",
         "defaultViewId": "3",
         "boundary": {
-          "width": 95.5435129004,
-          "height": 90.6853681844,
+          "width": 87.0857142712,
+          "height": 78.5478991396,
           "unit": "mm"
         },
         "restrictions": {
@@ -2108,11 +2523,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "4703",
+        "id": "8546",
         "defaultViewId": "3",
         "boundary": {
-          "width": 95.5435129004,
-          "height": 90.6853681844,
+          "width": 87.04674668351231,
+          "height": 78.0211623499684,
           "unit": "mm"
         },
         "restrictions": {
@@ -2123,11 +2538,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "1283",
+        "id": "1674",
         "defaultViewId": "4",
         "boundary": {
-          "width": 106.8791839298,
-          "height": 90.6853681844,
+          "width": 87.0857142712,
+          "height": 78.5478991396,
           "unit": "mm"
         },
         "restrictions": {
@@ -2138,11 +2553,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "4101",
+        "id": "3809",
         "defaultViewId": "4",
         "boundary": {
-          "width": 95.5435129004,
-          "height": 90.6853681844,
+          "width": 87.0857142712,
+          "height": 78.5478991396,
           "unit": "mm"
         },
         "restrictions": {
@@ -2153,11 +2568,26 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "4705",
+        "id": "8547",
         "defaultViewId": "4",
         "boundary": {
-          "width": 95.5435129004,
-          "height": 90.6853681844,
+          "width": 87.04674668351231,
+          "height": 78.0211623499684,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "9131",
+        "defaultViewId": "13",
+        "boundary": {
+          "width": 80,
+          "height": 50.10989010989011,
           "unit": "mm"
         },
         "restrictions": {
@@ -2167,67 +2597,494 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Women’s T-Shirt made from 99% combed organic cotton, 1% elastane. Brand: SPREAD.",
+      "description": "<ul class=\"listMCE\">\n  <li>Regular fit</li>\n  <li>Wide neck</li>\n  <li>Color-matched jersey neck tape</li>\n  <li>Double stitching on hem and sleeves</li>\n  <li>Elastic 1x1 rib knit collar</li>\n  <li>Satin label sewn in on the side</li>\n  <li>Neutral size label</li>\n  <li>Lightweight fabric quality: 180g/m²</li>\n  <li>Material: 99% combed organic cotton, 1% elastane (heather grey: 90% organic cotton, 10% viscose; heather anthracite: 59% cotton, 40% polyester, 1% elastane)</li><li>Brand: SPREAD</li>\n<li>Please note: In white the fit may vary slightly and tends to run a bit larger.</li>\n</ul>",
+      "brand": "SPREAD",
+      "weight": 20,
+      "sizeFitHint": "slimmer fit"
+    }
   },
   {
-    "id": "724",
-    "name": "Kids' T-Shirt",
-    "price": 15.99,
-    "preview": "/products/724/2/1.webp",
+    "id": "814",
+    "name": "Kids Premium Organic T-Shirt",
+    "price": 15.49,
+    "preview": "/products/814/2/1.webp",
     "appearances": [
       {
-        "id": "813",
-        "name": "dark grey",
-        "color": "#3B3B3B",
-        "image": "/products/724/813/1.webp",
+        "id": "1249",
+        "name": "rose",
+        "color": "#FFCDCF",
+        "image": "/products/814/1249/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/724/813/1.webp"
+            "image": "/products/814/1249/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/724/813/2.webp"
+            "image": "/products/814/1249/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/724/813/3.webp"
+            "image": "/products/814/1249/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/724/813/4.webp"
+            "image": "/products/814/1249/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/724/813/12.webp"
+            "id": "13",
+            "image": "/products/814/1249/13.webp"
           }
         ]
       },
       {
-        "id": "1195",
-        "name": "sky blue",
-        "color": "#8EB8F2",
-        "image": "/products/724/1195/1.webp",
+        "id": "1251",
+        "name": "mauve",
+        "color": "#BA7283",
+        "image": "/products/814/1251/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/724/1195/1.webp"
+            "image": "/products/814/1251/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/724/1195/2.webp"
+            "image": "/products/814/1251/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/724/1195/3.webp"
+            "image": "/products/814/1251/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/724/1195/4.webp"
+            "image": "/products/814/1251/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/724/1195/12.webp"
+            "id": "13",
+            "image": "/products/814/1251/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1252",
+        "name": "mint ",
+        "color": "#AED9CF",
+        "image": "/products/814/1252/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1252/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1252/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1252/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1252/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1252/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1254",
+        "name": "heather grey",
+        "color": "#BEBEBE",
+        "image": "/products/814/1254/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1254/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1254/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1254/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1254/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1254/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1256",
+        "name": "heather anthracite",
+        "color": "#2F3031",
+        "image": "/products/814/1256/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1256/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1256/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1256/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1256/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1256/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1259",
+        "name": "off white",
+        "color": "#ECE7E0",
+        "image": "/products/814/1259/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1259/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1259/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1259/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1259/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1259/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1264",
+        "name": "burgundy",
+        "color": "#6A2A39",
+        "image": "/products/814/1264/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1264/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1264/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1264/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1264/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1264/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1265",
+        "name": "red",
+        "color": "#BB1E1E",
+        "image": "/products/814/1265/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1265/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1265/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1265/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1265/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1265/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1268",
+        "name": "light blue",
+        "color": "#A9C1D9",
+        "image": "/products/814/1268/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1268/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1268/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1268/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1268/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1268/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1269",
+        "name": "navy",
+        "color": "#2E303B",
+        "image": "/products/814/1269/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1269/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1269/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1269/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1269/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1269/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1270",
+        "name": "heather denim",
+        "color": "#3B4856",
+        "image": "/products/814/1270/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1270/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1270/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1270/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1270/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1270/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1271",
+        "name": "stone blue",
+        "color": "#5A7199",
+        "image": "/products/814/1271/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1271/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1271/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1271/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1271/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1271/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1272",
+        "name": "green",
+        "color": "#0E8D32",
+        "image": "/products/814/1272/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1272/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1272/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1272/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1272/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1272/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1274",
+        "name": "khaki",
+        "color": "#5B5F38",
+        "image": "/products/814/1274/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1274/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1274/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1274/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1274/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1274/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1275",
+        "name": "sun yellow",
+        "color": "#FACE48",
+        "image": "/products/814/1275/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1275/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1275/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1275/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1275/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1275/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1277",
+        "name": "orange ",
+        "color": "#DF5A0A",
+        "image": "/products/814/1277/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1277/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1277/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1277/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1277/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1277/13.webp"
+          }
+        ]
+      },
+      {
+        "id": "1278",
+        "name": "royal blue",
+        "color": "#1F2E7F",
+        "image": "/products/814/1278/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/814/1278/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/814/1278/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/814/1278/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/814/1278/4.webp"
+          },
+          {
+            "id": "13",
+            "image": "/products/814/1278/13.webp"
           }
         ]
       },
@@ -2235,27 +3092,27 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "1",
         "name": "white",
         "color": "#FFFFFF",
-        "image": "/products/724/1/1.webp",
+        "image": "/products/814/1/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/724/1/1.webp"
+            "image": "/products/814/1/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/724/1/2.webp"
+            "image": "/products/814/1/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/724/1/3.webp"
+            "image": "/products/814/1/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/724/1/4.webp"
+            "image": "/products/814/1/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/724/1/12.webp"
+            "id": "13",
+            "image": "/products/814/1/13.webp"
           }
         ]
       },
@@ -2263,251 +3120,27 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "2",
         "name": "black",
         "color": "#000000",
-        "image": "/products/724/2/1.webp",
+        "image": "/products/814/2/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/724/2/1.webp"
+            "image": "/products/814/2/1.webp"
           },
           {
             "id": "2",
-            "image": "/products/724/2/2.webp"
+            "image": "/products/814/2/2.webp"
           },
           {
             "id": "3",
-            "image": "/products/724/2/3.webp"
+            "image": "/products/814/2/3.webp"
           },
           {
             "id": "4",
-            "image": "/products/724/2/4.webp"
+            "image": "/products/814/2/4.webp"
           },
           {
-            "id": "12",
-            "image": "/products/724/2/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "5",
-        "name": "red",
-        "color": "#F51E30",
-        "image": "/products/724/5/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/724/5/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/724/5/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/724/5/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/724/5/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/724/5/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "92",
-        "name": "kelly green",
-        "color": "#1E9658",
-        "image": "/products/724/92/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/724/92/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/724/92/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/724/92/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/724/92/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/724/92/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "438",
-        "name": "forest green",
-        "color": "#1B471E",
-        "image": "/products/724/438/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/724/438/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/724/438/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/724/438/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/724/438/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/724/438/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "17",
-        "name": "royal blue",
-        "color": "#3450B5",
-        "image": "/products/724/17/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/724/17/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/724/17/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/724/17/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/724/17/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/724/17/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "231",
-        "name": "heather grey",
-        "color": "#BEBEBE",
-        "image": "/products/724/231/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/724/231/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/724/231/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/724/231/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/724/231/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/724/231/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "316",
-        "name": "gold",
-        "color": "#F5AC0C",
-        "image": "/products/724/316/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/724/316/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/724/316/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/724/316/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/724/316/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/724/316/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "399",
-        "name": "navy",
-        "color": "#212735",
-        "image": "/products/724/399/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/724/399/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/724/399/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/724/399/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/724/399/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/724/399/12.webp"
-          }
-        ]
-      },
-      {
-        "id": "29",
-        "name": "orange",
-        "color": "#FA6807",
-        "image": "/products/724/29/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/724/29/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/724/29/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/724/29/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/724/29/4.webp"
-          },
-          {
-            "id": "12",
-            "image": "/products/724/29/12.webp"
+            "id": "13",
+            "image": "/products/814/2/13.webp"
           }
         ]
       }
@@ -2517,67 +3150,81 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "1",
         "name": "Front",
         "canvas": {
-          "width": 440.3987863025575,
-          "height": 440.3987863025575,
+          "width": 496.0130187144019,
+          "height": 496.0130187144019,
           "unit": "mm"
         },
-        "dpi": 69.21,
+        "dpi": 61.45,
         "viewMaps": [
           {
-            "printAreaId": "1554",
+            "printAreaId": "1675",
             "offset": {
-              "x": 128.399,
-              "y": 93.8302,
+              "x": 112.955,
+              "y": 101.065,
               "unit": "mm"
             },
             "size": {
-              "width": 460.9202851587816,
-              "height": 460.9202851587816,
+              "width": 416.14979520187245,
+              "height": 416.14979520187245,
               "unit": "mm"
             },
-            "dpi": 66.12857142857142
+            "dpi": 73.24285714285713
           },
           {
-            "printAreaId": "6121",
+            "printAreaId": "3795",
             "offset": {
-              "x": 130.045,
-              "y": 83.9533,
+              "x": 123.359,
+              "y": 98.0925,
               "unit": "mm"
             },
             "size": {
-              "width": 460.9202851587816,
-              "height": 460.9202851587816,
+              "width": 416.14979520187245,
+              "height": 416.14979520187245,
               "unit": "mm"
             },
-            "dpi": 66.12857142857142
+            "dpi": 73.24285714285713
           },
           {
-            "printAreaId": "8154",
+            "printAreaId": "5871",
             "offset": {
-              "x": 147.437,
-              "y": 100.711,
+              "x": 123.359,
+              "y": 90.6612,
               "unit": "mm"
             },
             "size": {
-              "width": 544.3829255224147,
-              "height": 544.3829255224147,
+              "width": 416.14979520187245,
+              "height": 416.14979520187245,
               "unit": "mm"
             },
-            "dpi": 55.99
+            "dpi": 73.24285714285713
           },
           {
-            "printAreaId": "8924",
+            "printAreaId": "5878",
             "offset": {
-              "x": 110.467,
-              "y": 81.1068,
+              "x": 124.845,
+              "y": 90.6612,
               "unit": "mm"
             },
             "size": {
-              "width": 440.3987863025575,
-              "height": 440.3987863025575,
+              "width": 416.14979520187245,
+              "height": 416.14979520187245,
               "unit": "mm"
             },
-            "dpi": 69.21
+            "dpi": 73.24285714285713
+          },
+          {
+            "printAreaId": "8554",
+            "offset": {
+              "x": 123.177,
+              "y": 93.8291,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 496.0130187144019,
+              "height": 496.0130187144019,
+              "unit": "mm"
+            },
+            "dpi": 61.45
           }
         ]
       },
@@ -2585,67 +3232,67 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "2",
         "name": "Back",
         "canvas": {
-          "width": 440.3987863025575,
-          "height": 440.3987863025575,
+          "width": 496.0130187144019,
+          "height": 496.0130187144019,
           "unit": "mm"
         },
-        "dpi": 69.21,
+        "dpi": 61.45,
         "viewMaps": [
           {
-            "printAreaId": "1555",
+            "printAreaId": "1676",
             "offset": {
-              "x": 142.123,
-              "y": 61.9512,
+              "x": 118.429,
+              "y": 70.1227,
               "unit": "mm"
             },
             "size": {
-              "width": 510.1865136298421,
-              "height": 510.1865136298421,
+              "width": 436.319018404908,
+              "height": 436.319018404908,
               "unit": "mm"
             },
-            "dpi": 59.74285714285715
+            "dpi": 69.85714285714286
           },
           {
-            "printAreaId": "6122",
+            "printAreaId": "3797",
             "offset": {
-              "x": 140.301,
-              "y": 67.4175,
+              "x": 132.454,
+              "y": 63.8896,
               "unit": "mm"
             },
             "size": {
-              "width": 510.1865136298421,
-              "height": 510.1865136298421,
+              "width": 436.319018404908,
+              "height": 436.319018404908,
               "unit": "mm"
             },
-            "dpi": 59.74285714285715
+            "dpi": 69.85714285714286
           },
           {
-            "printAreaId": "8155",
+            "printAreaId": "5872",
             "offset": {
-              "x": 147.437,
-              "y": 72.1307,
+              "x": 129.337,
+              "y": 52.9816,
               "unit": "mm"
             },
             "size": {
-              "width": 544.3829255224147,
-              "height": 544.3829255224147,
+              "width": 436.319018404908,
+              "height": 436.319018404908,
               "unit": "mm"
             },
-            "dpi": 55.99
+            "dpi": 69.85714285714286
           },
           {
-            "printAreaId": "8925",
+            "printAreaId": "8555",
             "offset": {
-              "x": 110.467,
-              "y": 69.3628,
+              "x": 125.243,
+              "y": 70.6819,
               "unit": "mm"
             },
             "size": {
-              "width": 440.3987863025575,
-              "height": 440.3987863025575,
+              "width": 496.0130187144019,
+              "height": 496.0130187144019,
               "unit": "mm"
             },
-            "dpi": 69.21
+            "dpi": 61.45
           }
         ]
       },
@@ -2653,53 +3300,53 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "3",
         "name": "Right",
         "canvas": {
-          "width": 273.1182795698925,
-          "height": 273.1182795698925,
+          "width": 224.76218567952213,
+          "height": 224.76218567952213,
           "unit": "mm"
         },
-        "dpi": 111.6,
+        "dpi": 135.61,
         "viewMaps": [
           {
-            "printAreaId": "1556",
+            "printAreaId": "1677",
             "offset": {
-              "x": 67.1256,
-              "y": 101.931,
+              "x": 57.387,
+              "y": 98.556,
               "unit": "mm"
             },
             "size": {
-              "width": 232.03915171288745,
-              "height": 232.03915171288745,
+              "width": 174.65618860510804,
+              "height": 174.65618860510804,
               "unit": "mm"
             },
-            "dpi": 131.35714285714286
+            "dpi": 174.51428571428573
           },
           {
-            "printAreaId": "6123",
+            "printAreaId": "3799",
             "offset": {
-              "x": 58.0098,
-              "y": 87.8434,
+              "x": 57.387,
+              "y": 98.556,
               "unit": "mm"
             },
             "size": {
-              "width": 232.03915171288745,
-              "height": 232.03915171288745,
+              "width": 174.65618860510804,
+              "height": 174.65618860510804,
               "unit": "mm"
             },
-            "dpi": 131.35714285714286
+            "dpi": 174.51428571428573
           },
           {
-            "printAreaId": "8926",
+            "printAreaId": "8556",
             "offset": {
-              "x": 75.5627,
-              "y": 131.097,
+              "x": 76.0445,
+              "y": 136.168,
               "unit": "mm"
             },
             "size": {
-              "width": 273.1182795698925,
-              "height": 273.1182795698925,
+              "width": 224.76218567952213,
+              "height": 224.76218567952213,
               "unit": "mm"
             },
-            "dpi": 111.6
+            "dpi": 135.61
           }
         ]
       },
@@ -2707,80 +3354,96 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "4",
         "name": "Left",
         "canvas": {
-          "width": 273.1182795698925,
-          "height": 273.1182795698925,
+          "width": 224.76218567952213,
+          "height": 224.76218567952213,
           "unit": "mm"
         },
-        "dpi": 111.6,
+        "dpi": 135.61,
         "viewMaps": [
           {
-            "printAreaId": "1557",
+            "printAreaId": "1678",
             "offset": {
-              "x": 71.2692,
-              "y": 101.931,
+              "x": 54.2682,
+              "y": 98.556,
               "unit": "mm"
             },
             "size": {
-              "width": 232.03915171288745,
-              "height": 232.03915171288745,
+              "width": 174.65618860510804,
+              "height": 174.65618860510804,
               "unit": "mm"
             },
-            "dpi": 131.35714285714286
+            "dpi": 174.51428571428573
           },
           {
-            "printAreaId": "6124",
+            "printAreaId": "3801",
             "offset": {
-              "x": 83.6998,
-              "y": 87.8434,
+              "x": 54.2682,
+              "y": 98.556,
               "unit": "mm"
             },
             "size": {
-              "width": 232.03915171288745,
-              "height": 232.03915171288745,
+              "width": 174.65618860510804,
+              "height": 174.65618860510804,
               "unit": "mm"
             },
-            "dpi": 131.35714285714286
+            "dpi": 174.51428571428573
           },
           {
-            "printAreaId": "8927",
+            "printAreaId": "8557",
             "offset": {
-              "x": 89.2186,
-              "y": 131.097,
+              "x": 82.2255,
+              "y": 136.168,
               "unit": "mm"
             },
             "size": {
-              "width": 273.1182795698925,
-              "height": 273.1182795698925,
+              "width": 224.76218567952213,
+              "height": 224.76218567952213,
               "unit": "mm"
             },
-            "dpi": 111.6
+            "dpi": 135.61
           }
         ]
       },
       {
-        "id": "12",
-        "name": "Close-up",
+        "id": "13",
+        "name": "Neck Label",
         "canvas": {
-          "width": 30480,
-          "height": 30480,
+          "width": 263.0080248511519,
+          "height": 263.0080248511519,
           "unit": "mm"
         },
-        "dpi": 1,
-        "viewMaps": []
+        "dpi": 115.88999999999999,
+        "viewMaps": [
+          {
+            "printAreaId": "9134",
+            "offset": {
+              "x": 88.3269,
+              "y": 87.6693,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 263.0080248511519,
+              "height": 263.0080248511519,
+              "unit": "mm"
+            },
+            "dpi": 115.88999999999999
+          }
+        ]
       }
     ],
     "sizes": [
-      "98/104 (3-4 Years)",
-      "110/116 (5-6 Years)",
-      "122/128 (7-8 Years)"
+      "98/104 (2 Years)",
+      "110/116 (4 Years)",
+      "122/128 (6 Years)",
+      "134/140 (8 Years)"
     ],
     "printAreas": [
       {
-        "id": "1554",
+        "id": "1675",
         "defaultViewId": "1",
         "boundary": {
-          "width": 202.4756966734,
-          "height": 309.4750485874,
+          "width": 188.7536570868,
+          "height": 260.0936219758,
           "unit": "mm"
         },
         "restrictions": {
@@ -2791,11 +3454,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "6121",
+        "id": "3795",
         "defaultViewId": "1",
         "boundary": {
-          "width": 202.4756966947505,
-          "height": 307.8289047310434,
+          "width": 169.4324166082,
+          "height": 194.698654163,
           "unit": "mm"
         },
         "restrictions": {
@@ -2806,11 +3469,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "8154",
+        "id": "5871",
         "defaultViewId": "1",
         "boundary": {
-          "width": 249.9624933023754,
-          "height": 230.0017860332202,
+          "width": 169.4324166179052,
+          "height": 194.69865418373317,
           "unit": "mm"
         },
         "restrictions": {
@@ -2821,11 +3484,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "8924",
+        "id": "5878",
         "defaultViewId": "1",
         "boundary": {
-          "width": 219.83239416269325,
-          "height": 249.92631122670136,
+          "width": 169.4324166179052,
+          "height": 194.69865418373317,
           "unit": "mm"
         },
         "restrictions": {
@@ -2836,11 +3499,26 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "1555",
+        "id": "8554",
+        "defaultViewId": "1",
+        "boundary": {
+          "width": 250.48657445077293,
+          "height": 319.92839707078923,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "1676",
         "defaultViewId": "2",
         "boundary": {
-          "width": 224.1176470394,
-          "height": 380.8177905092,
+          "width": 194.7852760624,
+          "height": 300.7484662438,
           "unit": "mm"
         },
         "restrictions": {
@@ -2851,11 +3529,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "6122",
+        "id": "3797",
         "defaultViewId": "2",
         "boundary": {
-          "width": 224.11764705882354,
-          "height": 378.99569583931134,
+          "width": 169.8527607256,
+          "height": 194.7852760624,
           "unit": "mm"
         },
         "restrictions": {
@@ -2866,11 +3544,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "8155",
+        "id": "5872",
         "defaultViewId": "2",
         "boundary": {
-          "width": 249.9624933023754,
-          "height": 230.0017860332202,
+          "width": 177.6441717791411,
+          "height": 204.13496932515332,
           "unit": "mm"
         },
         "restrictions": {
@@ -2881,11 +3559,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "8925",
+        "id": "8555",
         "defaultViewId": "2",
         "boundary": {
-          "width": 219.83239416269325,
-          "height": 249.92631122670136,
+          "width": 250.07323026851094,
+          "height": 319.92839707078923,
           "unit": "mm"
         },
         "restrictions": {
@@ -2896,11 +3574,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "1556",
+        "id": "1677",
         "defaultViewId": "3",
         "boundary": {
-          "width": 91.9869494268,
-          "height": 87.0146818758,
+          "width": 63.6247544114,
+          "height": 49.9017681668,
           "unit": "mm"
         },
         "restrictions": {
@@ -2911,11 +3589,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "6123",
+        "id": "3799",
         "defaultViewId": "3",
         "boundary": {
-          "width": 91.15823817292006,
-          "height": 87.01468189233279,
+          "width": 63.6247544114,
+          "height": 49.9017681668,
           "unit": "mm"
         },
         "restrictions": {
@@ -2926,11 +3604,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "8926",
+        "id": "8556",
         "defaultViewId": "3",
         "boundary": {
-          "width": 109.93010752688171,
-          "height": 89.90143369175627,
+          "width": 64.05722291866381,
+          "height": 50.009586313693674,
           "unit": "mm"
         },
         "restrictions": {
@@ -2941,11 +3619,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "1557",
+        "id": "1678",
         "defaultViewId": "4",
         "boundary": {
-          "width": 91.9869494268,
-          "height": 87.0146818758,
+          "width": 63.6247544114,
+          "height": 49.9017681668,
           "unit": "mm"
         },
         "restrictions": {
@@ -2956,11 +3634,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "6124",
+        "id": "3801",
         "defaultViewId": "4",
         "boundary": {
-          "width": 91.15823817292006,
-          "height": 87.01468189233279,
+          "width": 63.6247544114,
+          "height": 49.9017681668,
           "unit": "mm"
         },
         "restrictions": {
@@ -2971,11 +3649,26 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "8927",
+        "id": "8557",
         "defaultViewId": "4",
         "boundary": {
-          "width": 109.93010752688171,
-          "height": 89.90143369175627,
+          "width": 64.05722291866381,
+          "height": 50.009586313693674,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "9134",
+        "defaultViewId": "13",
+        "boundary": {
+          "width": 80.21744757960134,
+          "height": 50.190698075761496,
           "unit": "mm"
         },
         "restrictions": {
@@ -2985,7 +3678,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Kids T-Shirt made from 100% combed organic cotton. Brand: SPREAD.",
+      "description": "<ul class=\"listMCE\">\n  <li>Regular fit</li>\n  <li>Color-matched jersey neck tape</li>\n  <li>Double stitching on hem and sleeves</li>\n  <li>Elastic 1x1 rib knit collar</li>\n  <li>Satin label sewn in on the side</li>\n  <li>Neutral size label</li>\n  <li>Fabric quality: 180g/m²</li>\n  <li>Material: 100% combed organic cotton</li><li>Brand: SPREAD</li>\n  <li>Please note: the fit may vary slightly in white</li>\n</ul>",
+      "brand": "SPREAD",
+      "weight": 30,
+      "sizeFitHint": "slimmer fit"
+    }
   },
   {
     "id": "1047",
@@ -4533,7 +5233,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Classic hoodie for everyone (unisex). 80% cotton, 20% polyester, (anthracite: 52% cotton, 48% polyester; heather grey: 75% cotton, 25% polyester). Brand: AWDis",
+      "description": "Cuddly, warm and cosy: Get snug with this feel-good classic, because every wardrobe needs a hoodie. \n<ul class=\"listMCE\"><li>\nUnisex fit tends to sit more tightly on men and more loosely on women. If in doubt, order a size smaller or larger.\n</li><li>\nHood with drawstring and cord\n</li><li>\nKangaroo pouch on the front\n</li><li>\nSmooth and durable fabric quality (280 g/m²), fleecy inside \n</li><li>\nMaterial: 80% cotton, 20% polyester, (anthracite: 52% cotton, 48% polyester; heather grey: 75% cotton, 25% polyester)\n</li><li>\nIn size 4XL, the hoodies are only available in the following colours: black, navy, light grey, bottlegreen\n</li><li>\nBrand: AWDis\n</li></ul>",
+      "brand": "AWDis Just Hoods",
+      "weight": 50,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "20",
@@ -6122,7 +6829,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Warm and cosy premium hoodie for men from the SPREAD Collection. 70% organic cotton, 30% recycled polyester. Brand: SPREAD.",
+      "description": "The SPREAD Collection stands for best-possible print results on top-quality products. A huge range of sizes makes sure that our gear fits everyone, big and small alike. Our premium hoodie is especially thick and fleecy for warmth and cosiness whatever you’re up to.\n<ul class=\"listMCE\">\n<li>Kangaroo pouch on front</li>\n<li>Elastic rib cuffs on the sleeves and bottom hem in colour matching hoodie</li>\n<li>Hood with matching-coloured drawstring and embroidered eyelets</li>\n<li>Regular fit</li>\n<li>High-quality, heavyweight fabric: 300 g/m²</li>\n<li>Material: 70% organic cotton, 30% recycled polyester</li>\n<li>Material type: soft fleece with brushed inner lining for comfort</li>\n<li>Branding: small black flag label with white heart outline in side seam</li>\n<li>Please note: the fit may vary slightly in white & black</li>\n<li>Brand: SPREAD</li>\n</ul>",
+      "brand": "SPREAD",
+      "weight": 60,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "1505",
@@ -6960,7 +7674,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Cozy hoodie for kids, 80% cotton, 20% polyester. Brand: Just Hoods.",
+      "description": "Catching a chilly outside? Then this cuddly hoodie is the perfect companion for kids out and about! When dressed with this warm hoodie, toddlers and school kids alike will have a great time at play with and when discovering the world outside. And the kangaroo pouches offer enough space for little hands and a sandwich.\r\n\r\n<ul>\r\n<li>With sewn-on kangaroo pockets</li>.\r\n<li>Double-layered hood without drawstrings</li>.\r\n<li>Cuffs at hem and sleeves</li>.\r\n<li>Cozy fabric quality: 280 g/m2</li>\r\n<li>80% cotton, 20% polyester (heather grey: 75% cotton, 25% polyester)</li>\r\n</ul>",
+      "brand": "AWDis Just Hoods",
+      "weight": 70,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "3980",
@@ -7115,6 +7836,20 @@ export const PRODUCTS: StaticProduct[] = [
               "unit": "mm"
             },
             "dpi": 82.8
+          },
+          {
+            "printAreaId": "10294",
+            "offset": {
+              "x": 135.589,
+              "y": 82.8261,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 368.1159420289855,
+              "height": 368.1159420289855,
+              "unit": "mm"
+            },
+            "dpi": 82.8
           }
         ]
       }
@@ -7153,8 +7888,30 @@ export const PRODUCTS: StaticProduct[] = [
           "backgroundAllowed": false
         },
         "printoutQuantity": 1
+      },
+      {
+        "id": "10294",
+        "defaultViewId": "3",
+        "boundary": {
+          "width": 50.0024154589372,
+          "height": 70.24879227053141,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Classic tennis socks made from 55% organic cotton, 35% recycling polyester, 7% polyamide and 3% elastane. Brand: Mr. Socks",
+      "description": "<ul class=\"listMCE\"><li>\nSolid colour, ankle-high tennis socks \n</li><li>\nWith elastic ribbed band for a secure fit\n</li><li>\nSuperior comfort\n</li><li>Sustainable: Ribbed shaft made from recycled polyester</li><li>Certified: Global Recycled Standard, OEKOTEX Standard 100, GOTS</li><li>\nMaterial: 55% organic cotton, 35% recycling polyester, 7% polyamide and 3% elastane. Foot section made from 100% organic cotton\n</li><li>Note: The design of the left sock is duplicated identically on the right sock.\n</li><li>Brand: Mr. Socks</li></ul>",
+      "brand": "Mr. Socks",
+      "weight": 130,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "3001",
@@ -7325,7 +8082,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Classic tennis socks made from 55% organic cotton, 35% recycling polyester, 7% polyamide and 3% elastane. Brand: Mr. Socks",
+      "description": "<ul class=\"listMCE\"><li>\nSolid colour, ankle-high tennis socks \n</li><li>\nWith elastic ribbed band for a secure fit\n</li><li>\nSuperior comfort\n</li><li>Sustainable: Ribbed shaft made from recycled polyester</li><li>Certified: Global Recycled Standard, OEKOTEX Standard 100, GOTS</li><li>\nMaterial: 55% organic cotton, 35% recycling polyester, 7% polyamide and 3% elastane. Foot section made from 100% organic cotton\n</li><li>Please note: The embroidery on the left sock is identically duplicated on the right sock.\n</li><li>Brand: Mr. Socks</li></ul>",
+      "brand": "Mr. Socks",
+      "weight": 140,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "4312",
@@ -7423,7 +8187,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Kids tennis socks made of 55% organic cotton, 35% recycled polyester, 7% polyamide and 3% elastane. Brand: Mr. Socks.",
+      "description": "<ul class=\"listMCE\">\r\n  <li>Superior comfort, breathability and durability, whether on the tennis court or for everyday wear</li>\r\n  <li>Sustainable design: Ribbed sock shaft made of recycled polyester</li>\r\n  <li>Certified: Global Recycled Standard, OEKO-TEX® Standard 100, GOTS</li>\r\n  <li>Material: 55% organic cotton, 35% recycled polyester, 7% polyamide and 3% elastane. The sole area is made of 100% organic cotton</li>\r\n  <li>The embroidery on the left sock is identically duplicated on the right sock.</li>\r\n  <li>Brand: Mr. Socks</li>\r\n</ul>",
+      "brand": "Mr. Socks",
+      "weight": 145,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "56",
@@ -7789,7 +8560,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Practical Tote Bag, 100% cotton, Brand: L-Shop",
+      "description": "A bag just in case. This classic tote bag carries your groceries, text books and everything else you can easily strap around your shoulders.\r\n<ul class=\"listMCE\"><li>\r\nHandle length: approx 12” (30cm)\r\n</li><li>\r\nHolding capacity: 10 litres\r\n</li><li>\r\nLight consistency: 140 g/m²\r\n</li><li>\r\nFabrics: 100% cotton\r\n</li></ul>",
+      "brand": "Printwear",
+      "weight": 150,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "4133",
@@ -8078,7 +8856,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Tote bag made of 100% recycled cotton.",
+      "description": "<ul class=\"listMCE\">\r\n  <li>Turned hem at the top edge</li>\r\n  <li>Gusset at the bottom and sides</li>\r\n  <li>Long handles made of the same main material with cross-stitch for reinforcement</li>\r\n  <li>Inner pocket made of the same main material</li>\r\n  <li>Single-needle stitch at the top edge</li>\r\n  <li>Material: Canvas, 100% recycled open-end, pre-washed cotton</li>\r\n  <li>Brand: Stanley/Stella</li>\r\n</ul>",
+      "brand": "Stanley Stella",
+      "weight": 160,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "2973",
@@ -8424,7 +9209,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Lightweight, classic organic tote bag with long handles, made from 100% cotton (from organic production). Brand: Stanley/Stella",
+      "description": "<ul class=\"listMCE\"><li>\r\nClassic, lightweight tote bag with long handles \r\n</li><li>\r\nHandles with reinforced cross-stitching\r\n</li><li>\r\nFolded top edges of fabric for robust and quality finish\r\n</li><li>\r\nLight fabric weight: 160 g/m²\r\n</li><li>\r\nMaterial: 100% cotton (from organic production)\r\n</li><li>\r\nBrand: Stanley/Stella\r\n</li></ul>",
+      "brand": "Stanley Stella",
+      "weight": 620,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "1040",
@@ -8720,7 +9512,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Adjustable retro-style snapback cap, polyester and cotton, brand: Beechfield",
+      "description": "Wherever the road takes you: the trucker cap will be give your look the final touch. Combine it with well-worn jeans and a hoodie to make the snapback cap work its real trucker charm.\r\n<ul class=\"listMCE\"><li>5-panel cap, 4 of them made of mesh </li>\r\n<li>Adjust to your size with snap fastener</li>\r\n<li>Visor with ornamental seams</li>\r\n<li>Material: Front panel and visor: 100% cotton, mesh panels: 100% polyester</li></ul>",
+      "brand": "Beechfield",
+      "weight": 170,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "4562",
@@ -9045,7 +9844,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Kids’ Trucker Cap with 5-panel design and adjustable snapback closure.",
+      "description": "<ul class=\"listMCE\">\r\n<li>5-panel design</li>\r\n<li>Pre-curved peak for a secure fit</li>\r\n<li>Reinforced front for added stability</li>\r\n<li>Retro-style snapback closure, individually adjustable</li>\r\n<li>Material: front + peak: 100% cotton; mesh: 100% polyester</li>\r\n<li>Care instructions: not washable</li>\r\n</ul>",
+      "brand": "Beechfield",
+      "weight": 175,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "15",
@@ -9402,7 +10208,1018 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Baseball cap, 100% cotton, Brand: Beechfield",
+      "description": "Whether you need a hat for sports or times of leisure, and whether you wear the peak in front or on your head’s rear, a baseball cap is a universal accessory to lend a sporty touch to days of sunshine and of rain.\r\n<ul class=\"listMCE\"><li>\r\nAdjustable metal fastener on its back\r\n</li><li>\r\nCentral and seamless front panel\r\n</li><li>\r\nWeight: 80g \r\n</li><li>\r\nFabrics: 100% cotton\r\n</li></ul>",
+      "brand": "Beechfield",
+      "weight": 180,
+      "sizeFitHint": "normal fit"
+    }
+  },
+  {
+    "id": "4180",
+    "name": "Relaxed Unisex Organic Half Zip Sweatshirt – by SPREAD",
+    "price": 75.49,
+    "preview": "/products/4180/1257/1.webp",
+    "appearances": [
+      {
+        "id": "1254",
+        "name": "heather grey",
+        "color": "#BEBEBE",
+        "image": "/products/4180/1254/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4180/1254/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4180/1254/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4180/1254/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4180/1254/4.webp"
+          }
+        ]
+      },
+      {
+        "id": "1257",
+        "name": "black",
+        "color": "#1A1A1A",
+        "image": "/products/4180/1257/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4180/1257/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4180/1257/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4180/1257/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4180/1257/4.webp"
+          }
+        ]
+      },
+      {
+        "id": "1259",
+        "name": "off white",
+        "color": "#ECE7E0",
+        "image": "/products/4180/1259/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4180/1259/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4180/1259/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4180/1259/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4180/1259/4.webp"
+          }
+        ]
+      },
+      {
+        "id": "1269",
+        "name": "navy",
+        "color": "#2E303B",
+        "image": "/products/4180/1269/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4180/1269/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4180/1269/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4180/1269/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4180/1269/4.webp"
+          }
+        ]
+      }
+    ],
+    "views": [
+      {
+        "id": "1",
+        "name": "Front",
+        "canvas": {
+          "width": 860.7737927139226,
+          "height": 860.7737927139226,
+          "unit": "mm"
+        },
+        "dpi": 35.41,
+        "viewMaps": [
+          {
+            "printAreaId": "10039",
+            "offset": {
+              "x": 243.169,
+              "y": 234.561,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 860.7737927139226,
+              "height": 860.7737927139226,
+              "unit": "mm"
+            },
+            "dpi": 35.41
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Back",
+        "canvas": {
+          "width": 860.7737927139226,
+          "height": 860.7737927139226,
+          "unit": "mm"
+        },
+        "dpi": 35.41,
+        "viewMaps": [
+          {
+            "printAreaId": "10040",
+            "offset": {
+              "x": 243.169,
+              "y": 181.48,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 860.7737927139226,
+              "height": 860.7737927139226,
+              "unit": "mm"
+            },
+            "dpi": 35.41
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "name": "Right",
+        "canvas": {
+          "width": 822.6720647773279,
+          "height": 822.6720647773279,
+          "unit": "mm"
+        },
+        "dpi": 37.05,
+        "viewMaps": [
+          {
+            "printAreaId": "10041",
+            "offset": {
+              "x": 370.202,
+              "y": 318.785,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 822.6720647773279,
+              "height": 822.6720647773279,
+              "unit": "mm"
+            },
+            "dpi": 37.05
+          },
+          {
+            "printAreaId": "10043",
+            "offset": {
+              "x": 370.202,
+              "y": 318.785,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 822.6720647773279,
+              "height": 822.6720647773279,
+              "unit": "mm"
+            },
+            "dpi": 37.05
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "name": "Left",
+        "canvas": {
+          "width": 822.6720647773279,
+          "height": 822.6720647773279,
+          "unit": "mm"
+        },
+        "dpi": 37.05,
+        "viewMaps": [
+          {
+            "printAreaId": "10042",
+            "offset": {
+              "x": 380.486,
+              "y": 318.785,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 822.6720647773279,
+              "height": 822.6720647773279,
+              "unit": "mm"
+            },
+            "dpi": 37.05
+          },
+          {
+            "printAreaId": "10044",
+            "offset": {
+              "x": 380.486,
+              "y": 318.785,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 822.6720647773279,
+              "height": 822.6720647773279,
+              "unit": "mm"
+            },
+            "dpi": 37.05
+          }
+        ]
+      }
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+    ],
+    "printAreas": [
+      {
+        "id": "10039",
+        "defaultViewId": "1",
+        "boundary": {
+          "width": 375.1539113244846,
+          "height": 340.00564812199946,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10040",
+        "defaultViewId": "2",
+        "boundary": {
+          "width": 375.1539113244846,
+          "height": 340.00564812199946,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10041",
+        "defaultViewId": "3",
+        "boundary": {
+          "width": 69.92712550607287,
+          "height": 300.27530364372467,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10043",
+        "defaultViewId": "3",
+        "boundary": {
+          "width": 70.61268556005398,
+          "height": 300.27530364372467,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10042",
+        "defaultViewId": "4",
+        "boundary": {
+          "width": 69.92712550607287,
+          "height": 300.27530364372467,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10044",
+        "defaultViewId": "4",
+        "boundary": {
+          "width": 70.61268556005398,
+          "height": 300.27530364372467,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      }
+    ],
+    "details": {
+      "shortDescription": "Relaxed unisex half-zip sweatshirt in 89% organic cotton and 11% recycled polyester. Brand: SPREAD.",
+      "description": "<ul class=\"listMCE\">\r\n<li>Relaxed fit for a modern and laid-back look</li>\r\n<li>Timeless design for versatile styling</li>\r\n<li>Durable quality for everyday comfort</li>\r\n<li>Half-zip neckline as a modern detail</li>\r\n<li>Material: 89% organic cotton, 11% recycled polyester</li>\r\n<li>Made in Portugal</li>\r\n<li>Brand: SPREAD</li>\r\n</ul>",
+      "brand": "SPREAD",
+      "weight": 184,
+      "sizeFitHint": "normal fit"
+    }
+  },
+  {
+    "id": "4181",
+    "name": "Relaxed Women's Organic Sweatshirt – by SPREAD",
+    "price": 60.49,
+    "preview": "/products/4181/1257/1.webp",
+    "appearances": [
+      {
+        "id": "1249",
+        "name": "rose",
+        "color": "#FFCDCF",
+        "image": "/products/4181/1249/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4181/1249/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4181/1249/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4181/1249/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4181/1249/4.webp"
+          }
+        ]
+      },
+      {
+        "id": "1254",
+        "name": "heather grey",
+        "color": "#BEBEBE",
+        "image": "/products/4181/1254/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4181/1254/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4181/1254/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4181/1254/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4181/1254/4.webp"
+          }
+        ]
+      },
+      {
+        "id": "1257",
+        "name": "black",
+        "color": "#1A1A1A",
+        "image": "/products/4181/1257/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4181/1257/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4181/1257/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4181/1257/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4181/1257/4.webp"
+          }
+        ]
+      },
+      {
+        "id": "1259",
+        "name": "off white",
+        "color": "#ECE7E0",
+        "image": "/products/4181/1259/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4181/1259/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4181/1259/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4181/1259/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4181/1259/4.webp"
+          }
+        ]
+      },
+      {
+        "id": "1269",
+        "name": "navy",
+        "color": "#2E303B",
+        "image": "/products/4181/1269/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4181/1269/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4181/1269/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4181/1269/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4181/1269/4.webp"
+          }
+        ]
+      }
+    ],
+    "views": [
+      {
+        "id": "1",
+        "name": "Front",
+        "canvas": {
+          "width": 842.8853891569764,
+          "height": 842.8853891569764,
+          "unit": "mm"
+        },
+        "dpi": 36.1615,
+        "viewMaps": [
+          {
+            "printAreaId": "10026",
+            "offset": {
+              "x": 230.389,
+              "y": 165.767,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 842.8853891569764,
+              "height": 842.8853891569764,
+              "unit": "mm"
+            },
+            "dpi": 36.1615
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Back",
+        "canvas": {
+          "width": 842.8853891569764,
+          "height": 842.8853891569764,
+          "unit": "mm"
+        },
+        "dpi": 36.1615,
+        "viewMaps": [
+          {
+            "printAreaId": "10027",
+            "offset": {
+              "x": 227.579,
+              "y": 160.148,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 842.8853891569764,
+              "height": 842.8853891569764,
+              "unit": "mm"
+            },
+            "dpi": 36.1615
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "name": "Right",
+        "canvas": {
+          "width": 834.3826991513823,
+          "height": 834.3826991513823,
+          "unit": "mm"
+        },
+        "dpi": 36.53,
+        "viewMaps": [
+          {
+            "printAreaId": "10028",
+            "offset": {
+              "x": 384.511,
+              "y": 283.69,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 834.3826991513823,
+              "height": 834.3826991513823,
+              "unit": "mm"
+            },
+            "dpi": 36.53
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "name": "Left",
+        "canvas": {
+          "width": 834.3826991513823,
+          "height": 834.3826991513823,
+          "unit": "mm"
+        },
+        "dpi": 36.53,
+        "viewMaps": [
+          {
+            "printAreaId": "10029",
+            "offset": {
+              "x": 393.551,
+              "y": 283.69,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 834.3826991513823,
+              "height": 834.3826991513823,
+              "unit": "mm"
+            },
+            "dpi": 36.53
+          }
+        ]
+      }
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+    ],
+    "printAreas": [
+      {
+        "id": "10026",
+        "defaultViewId": "1",
+        "boundary": {
+          "width": 380.00082961160354,
+          "height": 339.96377362664714,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10027",
+        "defaultViewId": "2",
+        "boundary": {
+          "width": 380.00082961160354,
+          "height": 339.96377362664714,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10028",
+        "defaultViewId": "3",
+        "boundary": {
+          "width": 70.22721051190801,
+          "height": 369.9096632904462,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10029",
+        "defaultViewId": "4",
+        "boundary": {
+          "width": 70.22721051190801,
+          "height": 369.9096632904462,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      }
+    ],
+    "details": {
+      "shortDescription": "Relaxed women's sweatshirt in 89% organic cotton and 11% recycled polyester. Brand: SPREAD.",
+      "description": "<ul class=\"listMCE\">\r\n<li>Relaxed fit for a modern and laid-back look</li>\r\n<li>Timeless design for versatile styling</li>\r\n<li>Durable quality for everyday comfort</li>\r\n<li>Material: 89% organic cotton, 11% recycled polyester</li>\r\n<li>Made in Portugal</li>\r\n<li>Brand: SPREAD</li>\r\n</ul>",
+      "brand": "SPREAD",
+      "weight": 185,
+      "sizeFitHint": "normal fit"
+    }
+  },
+  {
+    "id": "4182",
+    "name": "Relaxed Women's Half Zip Sweatshirt – by SPREAD",
+    "price": 75.49,
+    "preview": "/products/4182/1257/1.webp",
+    "appearances": [
+      {
+        "id": "1254",
+        "name": "heather grey",
+        "color": "#BEBEBE",
+        "image": "/products/4182/1254/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4182/1254/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4182/1254/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4182/1254/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4182/1254/4.webp"
+          }
+        ]
+      },
+      {
+        "id": "1257",
+        "name": "black",
+        "color": "#1A1A1A",
+        "image": "/products/4182/1257/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4182/1257/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4182/1257/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4182/1257/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4182/1257/4.webp"
+          }
+        ]
+      },
+      {
+        "id": "1259",
+        "name": "off white",
+        "color": "#ECE7E0",
+        "image": "/products/4182/1259/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4182/1259/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4182/1259/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4182/1259/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4182/1259/4.webp"
+          }
+        ]
+      },
+      {
+        "id": "1269",
+        "name": "navy",
+        "color": "#2E303B",
+        "image": "/products/4182/1269/1.webp",
+        "views": [
+          {
+            "id": "1",
+            "image": "/products/4182/1269/1.webp"
+          },
+          {
+            "id": "2",
+            "image": "/products/4182/1269/2.webp"
+          },
+          {
+            "id": "3",
+            "image": "/products/4182/1269/3.webp"
+          },
+          {
+            "id": "4",
+            "image": "/products/4182/1269/4.webp"
+          }
+        ]
+      }
+    ],
+    "views": [
+      {
+        "id": "1",
+        "name": "Front",
+        "canvas": {
+          "width": 733.7506018295618,
+          "height": 733.7506018295618,
+          "unit": "mm"
+        },
+        "dpi": 41.54,
+        "viewMaps": [
+          {
+            "printAreaId": "10045",
+            "offset": {
+              "x": 249.475,
+              "y": 193.221,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 733.7506018295618,
+              "height": 733.7506018295618,
+              "unit": "mm"
+            },
+            "dpi": 41.54
+          }
+        ]
+      },
+      {
+        "id": "2",
+        "name": "Back",
+        "canvas": {
+          "width": 823.5611996757634,
+          "height": 823.5611996757634,
+          "unit": "mm"
+        },
+        "dpi": 37.01,
+        "viewMaps": [
+          {
+            "printAreaId": "10046",
+            "offset": {
+              "x": 220.303,
+              "y": 199.027,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 823.5611996757634,
+              "height": 823.5611996757634,
+              "unit": "mm"
+            },
+            "dpi": 37.01
+          }
+        ]
+      },
+      {
+        "id": "3",
+        "name": "Right",
+        "canvas": {
+          "width": 872.1030042918454,
+          "height": 872.1030042918454,
+          "unit": "mm"
+        },
+        "dpi": 34.95,
+        "viewMaps": [
+          {
+            "printAreaId": "10047",
+            "offset": {
+              "x": 383.725,
+              "y": 366.283,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 872.1030042918454,
+              "height": 872.1030042918454,
+              "unit": "mm"
+            },
+            "dpi": 34.95
+          },
+          {
+            "printAreaId": "10049",
+            "offset": {
+              "x": 383.725,
+              "y": 366.283,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 872.1030042918454,
+              "height": 872.1030042918454,
+              "unit": "mm"
+            },
+            "dpi": 34.95
+          }
+        ]
+      },
+      {
+        "id": "4",
+        "name": "Left",
+        "canvas": {
+          "width": 872.1030042918454,
+          "height": 872.1030042918454,
+          "unit": "mm"
+        },
+        "dpi": 34.95,
+        "viewMaps": [
+          {
+            "printAreaId": "10048",
+            "offset": {
+              "x": 418.609,
+              "y": 366.283,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 872.1030042918454,
+              "height": 872.1030042918454,
+              "unit": "mm"
+            },
+            "dpi": 34.95
+          },
+          {
+            "printAreaId": "10050",
+            "offset": {
+              "x": 418.609,
+              "y": 366.283,
+              "unit": "mm"
+            },
+            "size": {
+              "width": 872.1030042918454,
+              "height": 872.1030042918454,
+              "unit": "mm"
+            },
+            "dpi": 34.95
+          }
+        ]
+      }
+    ],
+    "sizes": [
+      "XS",
+      "S",
+      "M",
+      "L",
+      "XL",
+      "XXL",
+      "3XL"
+    ],
+    "printAreas": [
+      {
+        "id": "10045",
+        "defaultViewId": "1",
+        "boundary": {
+          "width": 230.519980741454,
+          "height": 75.20943668753009,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10046",
+        "defaultViewId": "2",
+        "boundary": {
+          "width": 380.2107538503107,
+          "height": 269.71629289381247,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10047",
+        "defaultViewId": "3",
+        "boundary": {
+          "width": 69.76824034334764,
+          "height": 300.1487839771101,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10049",
+        "defaultViewId": "3",
+        "boundary": {
+          "width": 70.49499284692418,
+          "height": 300.1487839771101,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10048",
+        "defaultViewId": "4",
+        "boundary": {
+          "width": 69.76824034334764,
+          "height": 300.1487839771101,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      },
+      {
+        "id": "10050",
+        "defaultViewId": "4",
+        "boundary": {
+          "width": 70.49499284692418,
+          "height": 300.1487839771101,
+          "unit": "mm"
+        },
+        "restrictions": {
+          "textAllowed": true,
+          "designAllowed": true,
+          "backgroundAllowed": false
+        },
+        "printoutQuantity": 1
+      }
+    ],
+    "details": {
+      "shortDescription": "Relaxed women's half-zip sweatshirt in 89% organic cotton and 11% recycled polyester. Brand: SPREAD.",
+      "description": "<ul class=\"listMCE\">\r\n<li>Relaxed fit for a modern and laid-back look</li>\r\n<li>Timeless design for versatile styling</li>\r\n<li>Durable quality for everyday comfort</li>\r\n<li>Half-zip neckline as a modern detail</li>\r\n<li>Material: 89% organic cotton, 11% recycled polyester</li>\r\n<li>Made in Portugal</li>\r\n<li>Brand: SPREAD</li>\r\n</ul>",
+      "brand": "SPREAD",
+      "weight": 186,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "31",
@@ -9560,7 +11377,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Mug, ceramic, Holding capacity: 325ml",
+      "description": "For a nice cuppa at the ready. Solid, handy and in classic shape: this essential breakfast and office companion will look good when you enjoy your favourite hot beverage.\n<ul class=\"listMCE\"><li>\nDishwasher-resistant \n</li><li>\nScratch-proof and UV-resistant\n</li><li>\nHolding capacity: 325ml\n</li><li>\nMaterial: Ceramics\n</li></ul>\nTip: Hand-washing makes the print last even longer",
+      "brand": "groener",
+      "weight": 190,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "1313",
@@ -9825,7 +11649,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Mug made of metal with enamel coating, Holding capacity: 355 ml",
+      "description": "Have a cup of nostalgia with cream and sugar. This retro mug adds a cosy touch to your Sunday brunch spread and is robust enough to come along on camping adventures. Small irregularities in the enamel coating put the finishing touch on this mug’s vintage look.\n<ul class=\"listMCE\">\n<li> Stainless steel stepped edge </li>\n<li> Diameter ca. 8.5 cm, Height ca. 8 cm, Weight ca. 129 g </li>\n<li> Capacity: 355 ml </li>\n<li> Material: Metal with enamel coating </li>\n<li> Wash by hand. Not microwave-safe </li>\n</ul>",
+      "brand": "Schulze GmbH",
+      "weight": 191,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "1470",
@@ -9983,7 +11814,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Large Mug 440 ml made from 100% ceramic.",
+      "description": "This ceramic mug is ideal for coffee or tea and feels comfortable in the hand – whether at home or in the office.\r\n<ul class=\"listMCE\">\r\n<li>Dishwasher and microwave safe</li>\r\n<li>Free from lead and cadmium</li>\r\n<li>Hand wash recommended</li>\r\n<li>Capacity: 440 ml</li>\r\n<li>Material: 100% ceramic</li>\r\n</ul>",
+      "brand": "Printequipment",
+      "weight": 1265,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "4506",
@@ -10098,7 +11936,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Stickers made of PVC film. Brand: Spreadshirt.",
+      "description": "Stick it to ‘em the way you like it! This sticker is made of durable vinyl. Just stick on surfaces like your laptop, your car, furniture and any kind of smooth surface. The sticker is waterproof and can be removed from most surfaces without leaving any adhesive residue.\n\n<ul class=\"listMCE\">\n<li>Size: 5 x 5 cm</li>\n<li>Vinyl stickers with outline cut, easy to remove</li>\n<li>Durable and waterproof</li>\n<li>Can be removed from most surfaces without residue within three years</li>\n<li>Made in the European Union</li>\n<li>Material: 100 µm PVC film</li>\n</ul>",
+      "brand": "Spreadshirt",
+      "weight": 194,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "1459",
@@ -10190,7 +12035,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Stickers made of PVC film. Brand: Spreadshirt.",
+      "description": "Stick it to ‘em the way you like it! This sticker is made of durable vinyl. Just stick on surfaces like your laptop, your car, furniture and any kind of smooth surface. The sticker is waterproof and can be removed from most surfaces without leaving any adhesive residue.\r\n\r\n<ul class=\"listMCE\">\r\n<li>Vinyl stickers with outline cut, easy to remove</li>\r\n<li>Durable and waterproof</li>\r\n<li>Can be removed from most surfaces without residue within three years</li>\r\n<li>Made in the European Union</li>\r\n<li>Material: 100 µm PVC film</li>\r\n</ul>",
+      "brand": "Spreadshirt",
+      "weight": 195,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "4505",
@@ -10305,7 +12157,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Stickers made of PVC film. Brand: Spreadshirt.",
+      "description": "Stick it to ‘em the way you like it! This sticker is made of durable vinyl. Just stick on surfaces like your laptop, your car, furniture and any kind of smooth surface. The sticker is waterproof and can be removed from most surfaces without leaving any adhesive residue.\n\n<ul class=\"listMCE\">\n<li>Size: 15 x 15 cm</li>\n<li>Vinyl stickers with outline cut, easy to remove</li>\n<li>Durable and waterproof</li>\n<li>Can be removed from most surfaces without residue within three years</li>\n<li>Made in the European Union</li>\n<li>Material: 100 µm PVC film</li>\n</ul>",
+      "brand": "Spreadshirt",
+      "weight": 196,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "943",
@@ -10725,7 +12584,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Top for women made from 99% combed organic cotton, 1% elastane. Brand: SPREAD.",
+      "description": "<ul class=\"listMCE\">\n  <li>Casual fit</li>\n  <li>Overlapping shoulders with fixed sleeve cuffs</li>\n  <li>1x1 ribbed knit</li>\n  <li>Double seams at the hem</li>\n  <li>Color-matched jersey neck tape</li>\n  <li>Satin label sewn in on the side</li>\n  <li>Neutral size label</li>\n  <li>Lightweight fabric quality: 180 g/m²</li>\n  <li>Material: 99% combed organic cotton, 1% elastane (heather grey: 90% organic cotton, 10% viscose)</li><li>Brand: SPREAD</li>\n</ul>",
+      "brand": "SPREAD",
+      "weight": 295,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "916",
@@ -11309,7 +13175,14 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Tank top for men made from 100% combed organic cotton.",
+      "description": "<ul class=\"listMCE\">\r\n  <li>Regular fit</li>\r\n  <li>1x1 ribbed knit at neck and armholes</li>\r\n  <li>Double stitching on hem and sleeves</li>\r\n  <li>Color-matched jersey neck tape</li>\r\n  <li>Satin label sewn in on the side</li>\r\n  <li>Neutral size label</li>\r\n  <li>Medium fabric quality: 200 g/m²</li>\r\n  <li>Material: 100% combed organic cotton</li>\r\n</ul>",
+      "brand": "SPREAD",
+      "weight": 510,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
     "id": "917",
@@ -11624,1010 +13497,30 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Women's tank top made from 99% combed organic cotton, 1% elastane.",
+      "description": "<ul class=\"\"listMCE\"\">\n  <li>Regular fit</li>\n  <li>Color-matched jersey neck tape</li>\n  <li>Double stitching on hem and sleeves</li>\n  <li>Elastic 1x1 rib knit collar</li>\n  <li>Satin label sewn in on the side</li>\n  <li>Neutral size label</li>\n  <li>Lightweight fabric quality: 180g/m²</li>\n  <li>Material: 99% combed organic cotton, 1% elastane (heather grey: 90% organic cotton, 10% viscose)</li>\n</ul>",
+      "brand": "SPREAD",
+      "weight": 520,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
-    "id": "1434",
-    "name": "Kids Premium Organic Sweatshirt",
-    "price": 33.99,
-    "preview": "/products/1434/2/1.webp",
-    "appearances": [
-      {
-        "id": "1249",
-        "name": "rose",
-        "color": "#FFCDCF",
-        "image": "/products/1434/1249/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/1434/1249/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/1434/1249/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/1434/1249/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/1434/1249/4.webp"
-          },
-          {
-            "id": "13",
-            "image": "/products/1434/1249/13.webp"
-          }
-        ]
-      },
-      {
-        "id": "1265",
-        "name": "red",
-        "color": "#BB1E1E",
-        "image": "/products/1434/1265/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/1434/1265/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/1434/1265/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/1434/1265/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/1434/1265/4.webp"
-          },
-          {
-            "id": "13",
-            "image": "/products/1434/1265/13.webp"
-          }
-        ]
-      },
-      {
-        "id": "1269",
-        "name": "navy",
-        "color": "#2E303B",
-        "image": "/products/1434/1269/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/1434/1269/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/1434/1269/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/1434/1269/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/1434/1269/4.webp"
-          },
-          {
-            "id": "13",
-            "image": "/products/1434/1269/13.webp"
-          }
-        ]
-      },
-      {
-        "id": "1278",
-        "name": "royal blue",
-        "color": "#1F2E7F",
-        "image": "/products/1434/1278/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/1434/1278/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/1434/1278/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/1434/1278/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/1434/1278/4.webp"
-          },
-          {
-            "id": "13",
-            "image": "/products/1434/1278/13.webp"
-          }
-        ]
-      },
-      {
-        "id": "1",
-        "name": "white",
-        "color": "#FFFFFF",
-        "image": "/products/1434/1/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/1434/1/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/1434/1/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/1434/1/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/1434/1/4.webp"
-          },
-          {
-            "id": "13",
-            "image": "/products/1434/1/13.webp"
-          }
-        ]
-      },
-      {
-        "id": "2",
-        "name": "black",
-        "color": "#000000",
-        "image": "/products/1434/2/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/1434/2/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/1434/2/2.webp"
-          },
-          {
-            "id": "3",
-            "image": "/products/1434/2/3.webp"
-          },
-          {
-            "id": "4",
-            "image": "/products/1434/2/4.webp"
-          },
-          {
-            "id": "13",
-            "image": "/products/1434/2/13.webp"
-          }
-        ]
-      }
-    ],
-    "views": [
-      {
-        "id": "1",
-        "name": "Front",
-        "canvas": {
-          "width": 574.6606334841629,
-          "height": 574.6606334841629,
-          "unit": "mm"
-        },
-        "dpi": 53.03999999999999,
-        "viewMaps": [
-          {
-            "printAreaId": "4411",
-            "offset": {
-              "x": 171.05,
-              "y": 145.301,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 514.9891383055756,
-              "height": 514.9891383055756,
-              "unit": "mm"
-            },
-            "dpi": 59.18571428571428
-          },
-          {
-            "printAreaId": "9021",
-            "offset": {
-              "x": 163.299,
-              "y": 112.538,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 574.6606334841629,
-              "height": 574.6606334841629,
-              "unit": "mm"
-            },
-            "dpi": 53.03999999999999
-          }
-        ]
-      },
-      {
-        "id": "2",
-        "name": "Back",
-        "canvas": {
-          "width": 534.4555497106785,
-          "height": 534.4555497106785,
-          "unit": "mm"
-        },
-        "dpi": 57.029999999999994,
-        "viewMaps": [
-          {
-            "printAreaId": "4413",
-            "offset": {
-              "x": 171.05,
-              "y": 79.0876,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 514.9891383055756,
-              "height": 514.9891383055756,
-              "unit": "mm"
-            },
-            "dpi": 59.18571428571428
-          },
-          {
-            "printAreaId": "9022",
-            "offset": {
-              "x": 145.639,
-              "y": 129.605,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 534.4555497106785,
-              "height": 534.4555497106785,
-              "unit": "mm"
-            },
-            "dpi": 57.029999999999994
-          }
-        ]
-      },
-      {
-        "id": "3",
-        "name": "Right",
-        "canvas": {
-          "width": 544.1885377611142,
-          "height": 544.1885377611142,
-          "unit": "mm"
-        },
-        "dpi": 56.01,
-        "viewMaps": [
-          {
-            "printAreaId": "4415",
-            "offset": {
-              "x": 193.815,
-              "y": 141.111,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 476.03748326639897,
-              "height": 476.03748326639897,
-              "unit": "mm"
-            },
-            "dpi": 64.02857142857142
-          },
-          {
-            "printAreaId": "9023",
-            "offset": {
-              "x": 239.443,
-              "y": 253.048,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 544.1885377611142,
-              "height": 544.1885377611142,
-              "unit": "mm"
-            },
-            "dpi": 56.01
-          }
-        ]
-      },
-      {
-        "id": "4",
-        "name": "Left",
-        "canvas": {
-          "width": 543.3155080213903,
-          "height": 543.3155080213903,
-          "unit": "mm"
-        },
-        "dpi": 56.1,
-        "viewMaps": [
-          {
-            "printAreaId": "4417",
-            "offset": {
-              "x": 231.218,
-              "y": 141.111,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 476.03748326639897,
-              "height": 476.03748326639897,
-              "unit": "mm"
-            },
-            "dpi": 64.02857142857142
-          },
-          {
-            "printAreaId": "9024",
-            "offset": {
-              "x": 264.414,
-              "y": 252.642,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 543.3155080213903,
-              "height": 543.3155080213903,
-              "unit": "mm"
-            },
-            "dpi": 56.1
-          }
-        ]
-      },
-      {
-        "id": "13",
-        "name": "Neck Label",
-        "canvas": {
-          "width": 304.79999999999995,
-          "height": 304.79999999999995,
-          "unit": "mm"
-        },
-        "dpi": 100,
-        "viewMaps": [
-          {
-            "printAreaId": "9308",
-            "offset": {
-              "x": 104.648,
-              "y": 82.296,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 304.79999999999995,
-              "height": 304.79999999999995,
-              "unit": "mm"
-            },
-            "dpi": 100
-          }
-        ]
-      }
-    ],
-    "sizes": [
-      "98/104 (2 Years)",
-      "110/116 (4 Years)",
-      "122/128 (6 Years)",
-      "134/140 (8 Years)",
-      "146/152 (10 Years)",
-      "158/164 (12 Years)"
-    ],
-    "printAreas": [
-      {
-        "id": "4411",
-        "defaultViewId": "1",
-        "boundary": {
-          "width": 169.2107168484,
-          "height": 194.9601737822,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "9021",
-        "defaultViewId": "1",
-        "boundary": {
-          "width": 250.45625942684765,
-          "height": 230.34313725490193,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "4413",
-        "defaultViewId": "2",
-        "boundary": {
-          "width": 169.2107168484,
-          "height": 194.9601737822,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "9022",
-        "defaultViewId": "2",
-        "boundary": {
-          "width": 250.3033491145011,
-          "height": 230.26126600035064,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "4415",
-        "defaultViewId": "3",
-        "boundary": {
-          "width": 49.3038821896,
-          "height": 244.8192770864,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "9023",
-        "defaultViewId": "3",
-        "boundary": {
-          "width": 49.88394929476879,
-          "height": 199.98928762720942,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "4417",
-        "defaultViewId": "4",
-        "boundary": {
-          "width": 49.3038821896,
-          "height": 244.8192770864,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "9024",
-        "defaultViewId": "4",
-        "boundary": {
-          "width": 49.803921568627445,
-          "height": 199.66844919786095,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "9308",
-        "defaultViewId": "13",
-        "boundary": {
-          "width": 80.00999999999999,
-          "height": 50.038,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      }
-    ]
-  },
-  {
-    "id": "4504",
-    "name": "Unisex Organic Zip Sweatshirt by Stanley/Stella",
-    "price": 50.49,
-    "preview": "/products/4504/2/1.webp",
-    "appearances": [
-      {
-        "id": "718",
-        "name": "bottle green",
-        "color": "#385F44",
-        "image": "/products/4504/718/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/4504/718/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/4504/718/2.webp"
-          }
-        ]
-      },
-      {
-        "id": "741",
-        "name": "burgundy",
-        "color": "#761F32",
-        "image": "/products/4504/741/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/4504/741/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/4504/741/2.webp"
-          }
-        ]
-      },
-      {
-        "id": "938",
-        "name": "navy",
-        "color": "#1F2B3A",
-        "image": "/products/4504/938/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/4504/938/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/4504/938/2.webp"
-          }
-        ]
-      },
-      {
-        "id": "1410",
-        "name": "desert dust",
-        "color": "#CFC2B1",
-        "image": "/products/4504/1410/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/4504/1410/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/4504/1410/2.webp"
-          }
-        ]
-      },
-      {
-        "id": "2",
-        "name": "black",
-        "color": "#000000",
-        "image": "/products/4504/2/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/4504/2/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/4504/2/2.webp"
-          }
-        ]
-      },
-      {
-        "id": "231",
-        "name": "heather grey",
-        "color": "#BEBEBE",
-        "image": "/products/4504/231/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/4504/231/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/4504/231/2.webp"
-          }
-        ]
-      }
-    ],
-    "views": [
-      {
-        "id": "1",
-        "name": "Front",
-        "canvas": {
-          "width": 842.2216081790549,
-          "height": 842.2216081790549,
-          "unit": "mm"
-        },
-        "dpi": 36.19,
-        "viewMaps": [
-          {
-            "printAreaId": "9698",
-            "offset": {
-              "x": 264.598,
-              "y": 199.326,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 842.2216081790549,
-              "height": 842.2216081790549,
-              "unit": "mm"
-            },
-            "dpi": 36.19
-          }
-        ]
-      },
-      {
-        "id": "2",
-        "name": "Back",
-        "canvas": {
-          "width": 842.2216081790549,
-          "height": 842.2216081790549,
-          "unit": "mm"
-        },
-        "dpi": 36.19,
-        "viewMaps": [
-          {
-            "printAreaId": "9699",
-            "offset": {
-              "x": 256.176,
-              "y": 163.531,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 842.2216081790549,
-              "height": 842.2216081790549,
-              "unit": "mm"
-            },
-            "dpi": 36.19
-          }
-        ]
-      }
-    ],
-    "sizes": [
-      "XS",
-      "S",
-      "M",
-      "L",
-      "XL",
-      "XXL",
-      "3XL"
-    ],
-    "printAreas": [
-      {
-        "id": "9698",
-        "defaultViewId": "1",
-        "boundary": {
-          "width": 315.1312517269964,
-          "height": 179.6739430781984,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "9699",
-        "defaultViewId": "2",
-        "boundary": {
-          "width": 329.8701298701299,
-          "height": 400.0552638850511,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      }
-    ]
-  },
-  {
-    "id": "2962",
-    "name": "Women’s Premium Organic Sweatshorts",
-    "price": 21.99,
-    "preview": "/products/2962/1257/1.webp",
-    "appearances": [
-      {
-        "id": "1254",
-        "name": "heather grey",
-        "color": "#BEBEBE",
-        "image": "/products/2962/1254/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/2962/1254/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/2962/1254/2.webp"
-          }
-        ]
-      },
-      {
-        "id": "1257",
-        "name": "black",
-        "color": "#1A1A1A",
-        "image": "/products/2962/1257/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/2962/1257/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/2962/1257/2.webp"
-          }
-        ]
-      },
-      {
-        "id": "1269",
-        "name": "navy",
-        "color": "#2E303B",
-        "image": "/products/2962/1269/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/2962/1269/1.webp"
-          },
-          {
-            "id": "2",
-            "image": "/products/2962/1269/2.webp"
-          }
-        ]
-      }
-    ],
-    "views": [
-      {
-        "id": "1",
-        "name": "Front",
-        "canvas": {
-          "width": 485.8919177427068,
-          "height": 485.8919177427068,
-          "unit": "mm"
-        },
-        "dpi": 62.73,
-        "viewMaps": [
-          {
-            "printAreaId": "9936",
-            "offset": {
-              "x": 70.8592,
-              "y": 231.608,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 485.8919177427068,
-              "height": 485.8919177427068,
-              "unit": "mm"
-            },
-            "dpi": 62.73
-          },
-          {
-            "printAreaId": "9938",
-            "offset": {
-              "x": 70.8592,
-              "y": 231.608,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 485.8919177427068,
-              "height": 485.8919177427068,
-              "unit": "mm"
-            },
-            "dpi": 62.73
-          },
-          {
-            "printAreaId": "10143",
-            "offset": {
-              "x": 282.222,
-              "y": 231.608,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 485.8919177427068,
-              "height": 485.8919177427068,
-              "unit": "mm"
-            },
-            "dpi": 62.73
-          }
-        ]
-      },
-      {
-        "id": "2",
-        "name": "Back",
-        "canvas": {
-          "width": 485.8919177427068,
-          "height": 485.8919177427068,
-          "unit": "mm"
-        },
-        "dpi": 62.73,
-        "viewMaps": [
-          {
-            "printAreaId": "9937",
-            "offset": {
-              "x": 70.0494,
-              "y": 231.608,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 485.8919177427068,
-              "height": 485.8919177427068,
-              "unit": "mm"
-            },
-            "dpi": 62.73
-          },
-          {
-            "printAreaId": "9939",
-            "offset": {
-              "x": 70.0494,
-              "y": 231.608,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 485.8919177427068,
-              "height": 485.8919177427068,
-              "unit": "mm"
-            },
-            "dpi": 62.73
-          },
-          {
-            "printAreaId": "10144",
-            "offset": {
-              "x": 70.0494,
-              "y": 231.608,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 485.8919177427068,
-              "height": 485.8919177427068,
-              "unit": "mm"
-            },
-            "dpi": 62.73
-          }
-        ]
-      }
-    ],
-    "sizes": [
-      "XS",
-      "S",
-      "M",
-      "L",
-      "XL",
-      "XXL",
-      "3XL"
-    ],
-    "printAreas": [
-      {
-        "id": "9936",
-        "defaultViewId": "1",
-        "boundary": {
-          "width": 341.33907221425153,
-          "height": 119.85333970986767,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "9938",
-        "defaultViewId": "1",
-        "boundary": {
-          "width": 341.33907221425153,
-          "height": 120.25824964131994,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "10143",
-        "defaultViewId": "1",
-        "boundary": {
-          "width": 130.38099792762634,
-          "height": 120.25824964131994,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "9937",
-        "defaultViewId": "2",
-        "boundary": {
-          "width": 303.6824485891918,
-          "height": 119.85333970986767,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "9939",
-        "defaultViewId": "2",
-        "boundary": {
-          "width": 303.6824485891918,
-          "height": 120.25824964131994,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "10144",
-        "defaultViewId": "2",
-        "boundary": {
-          "width": 130.38099792762634,
-          "height": 120.25824964131994,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      }
-    ]
-  },
-  {
-    "id": "3928",
-    "name": "Framed poster (27 × 37 cm)",
-    "price": 17.49,
-    "preview": "/products/3928/2/1.webp",
+    "id": "1300",
+    "name": "Poster 24\" x 24\" (60x60 cm)",
+    "price": 14.99,
+    "preview": "/products/1300/1/1.webp",
     "appearances": [
       {
         "id": "1",
         "name": "white",
         "color": "#FFFFFF",
-        "image": "/products/3928/1/1.webp",
+        "image": "/products/1300/1/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/3928/1/1.webp"
-          }
-        ]
-      },
-      {
-        "id": "2",
-        "name": "black",
-        "color": "#000000",
-        "image": "/products/3928/2/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/3928/2/1.webp"
+            "image": "/products/1300/1/1.webp"
           }
         ]
       }
@@ -12637,53 +13530,53 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "1",
         "name": "Front",
         "canvas": {
-          "width": 422.79778946667557,
-          "height": 422.79778946667557,
+          "width": 697.674418604651,
+          "height": 697.674418604651,
           "unit": "mm"
         },
-        "dpi": 72.0912,
+        "dpi": 43.688,
         "viewMaps": [
           {
-            "printAreaId": "8627",
+            "printAreaId": "3211",
             "offset": {
-              "x": 109.575,
-              "y": 58.8394,
+              "x": 46.5116,
+              "y": 46.5116,
               "unit": "mm"
             },
             "size": {
-              "width": 422.79778946667557,
-              "height": 422.79778946667557,
+              "width": 697.674418604651,
+              "height": 697.674418604651,
               "unit": "mm"
             },
-            "dpi": 72.0912
+            "dpi": 43.688
           },
           {
-            "printAreaId": "8628",
+            "printAreaId": "4767",
             "offset": {
-              "x": 91.2539,
-              "y": 41.2228,
+              "x": 11.0465,
+              "y": 11.0465,
               "unit": "mm"
             },
             "size": {
-              "width": 422.79778946667557,
-              "height": 422.79778946667557,
+              "width": 697.674418604651,
+              "height": 697.674418604651,
               "unit": "mm"
             },
-            "dpi": 72.0912
+            "dpi": 43.688
           },
           {
-            "printAreaId": "8629",
+            "printAreaId": "5179",
             "offset": {
-              "x": 91.2539,
-              "y": 41.9274,
+              "x": 48.8372,
+              "y": 48.8372,
               "unit": "mm"
             },
             "size": {
-              "width": 422.79778946667557,
-              "height": 422.79778946667557,
+              "width": 697.674418604651,
+              "height": 697.674418604651,
               "unit": "mm"
             },
-            "dpi": 72.0912
+            "dpi": 43.688
           }
         ]
       }
@@ -12693,11 +13586,11 @@ export const PRODUCTS: StaticProduct[] = [
     ],
     "printAreas": [
       {
-        "id": "8627",
+        "id": "3211",
         "defaultViewId": "1",
         "boundary": {
-          "width": 204.00001831014808,
-          "height": 305.82386164630145,
+          "width": 604.0697674232,
+          "height": 604.0697674232,
           "unit": "mm"
         },
         "restrictions": {
@@ -12708,11 +13601,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "8628",
+        "id": "4767",
         "defaultViewId": "1",
         "boundary": {
-          "width": 239.93774552233833,
-          "height": 339.9998890294516,
+          "width": 140.1162790506,
+          "height": 140.1162790506,
           "unit": "mm"
         },
         "restrictions": {
@@ -12723,11 +13616,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "8629",
+        "id": "5179",
         "defaultViewId": "1",
         "boundary": {
-          "width": 240.29007701356062,
-          "height": 339.9998890294516,
+          "width": 599.9999999999999,
+          "height": 599.9999999999999,
           "unit": "mm"
         },
         "restrictions": {
@@ -12737,35 +13630,30 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Poster 24\" x 24\" (60x60 cm), semi-glossy print, square layout. Brand: Spreadshirt.",
+      "description": "If a picture is worth a thousand words, our posters are worth at least two thousand! Bring any wall to life.\r\n<ul class=\"listMCE\">\r\n<li>\r\nSemi-glossy print\r\n</li>\r\n<li>\r\nFormat: Square\r\n</li>\r\n<li>\r\n240 g/m²\r\n</li>\r\n<li>\r\nHigh-quality, crisp, vibrant prints\r\n</li></ul>\r\n<strong>Please note</strong>: There is no express or premium delivery option for posters.",
+      "brand": "Spreadshirt",
+      "weight": 2690,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
-    "id": "3929",
-    "name": "Framed poster (37 × 27 cm)",
-    "price": 17.49,
-    "preview": "/products/3929/2/1.webp",
+    "id": "1301",
+    "name": "Poster 8\" x 12\" (20x30 cm)",
+    "price": 7.99,
+    "preview": "/products/1301/1/1.webp",
     "appearances": [
       {
         "id": "1",
         "name": "white",
         "color": "#FFFFFF",
-        "image": "/products/3929/1/1.webp",
+        "image": "/products/1301/1/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/3929/1/1.webp"
-          }
-        ]
-      },
-      {
-        "id": "2",
-        "name": "black",
-        "color": "#000000",
-        "image": "/products/3929/2/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/3929/2/1.webp"
+            "image": "/products/1301/1/1.webp"
           }
         ]
       }
@@ -12775,67 +13663,53 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "1",
         "name": "Front",
         "canvas": {
-          "width": 422.79778946667557,
-          "height": 422.79778946667557,
+          "width": 345.4067027938507,
+          "height": 345.4067027938507,
           "unit": "mm"
         },
-        "dpi": 72.0912,
+        "dpi": 88.2438,
         "viewMaps": [
           {
-            "printAreaId": "8626",
+            "printAreaId": "3319",
             "offset": {
-              "x": 58.8394,
-              "y": 108.518,
+              "x": 70.8232,
+              "y": 19.7393,
               "unit": "mm"
             },
             "size": {
-              "width": 422.79778946667557,
-              "height": 422.79778946667557,
+              "width": 345.4067027938507,
+              "height": 345.4067027938507,
               "unit": "mm"
             },
-            "dpi": 72.0912
+            "dpi": 88.2438
           },
           {
-            "printAreaId": "8630",
+            "printAreaId": "5180",
             "offset": {
-              "x": 41.5751,
-              "y": 91.6062,
+              "x": 76.853,
+              "y": 26.769,
               "unit": "mm"
             },
             "size": {
-              "width": 422.79778946667557,
-              "height": 422.79778946667557,
+              "width": 345.4067027938507,
+              "height": 345.4067027938507,
               "unit": "mm"
             },
-            "dpi": 72.0912
+            "dpi": 88.2438
           },
           {
-            "printAreaId": "8941",
+            "printAreaId": "5181",
             "offset": {
-              "x": 58.8394,
-              "y": 108.518,
+              "x": 70.8084,
+              "y": 19.8609,
               "unit": "mm"
             },
             "size": {
-              "width": 422.79778946667557,
-              "height": 422.79778946667557,
+              "width": 345.4067027938507,
+              "height": 345.4067027938507,
               "unit": "mm"
             },
-            "dpi": 72.0912
-          },
-          {
-            "printAreaId": "8948",
-            "offset": {
-              "x": 41.5751,
-              "y": 91.6062,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 422.79778946667557,
-              "height": 422.79778946667557,
-              "unit": "mm"
-            },
-            "dpi": 72.0912
+            "dpi": 88.2438
           }
         ]
       }
@@ -12845,11 +13719,11 @@ export const PRODUCTS: StaticProduct[] = [
     ],
     "printAreas": [
       {
-        "id": "8626",
+        "id": "3319",
         "defaultViewId": "1",
         "boundary": {
-          "width": 305.82386164630145,
-          "height": 204.00001831014808,
+          "width": 204,
+          "height": 306,
           "unit": "mm"
         },
         "restrictions": {
@@ -12860,11 +13734,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "8630",
+        "id": "5180",
         "defaultViewId": "1",
         "boundary": {
-          "width": 339.9998890294516,
-          "height": 240.29007701356062,
+          "width": 191.7007200505871,
+          "height": 291.86866386080385,
           "unit": "mm"
         },
         "restrictions": {
@@ -12875,26 +13749,11 @@ export const PRODUCTS: StaticProduct[] = [
         "printoutQuantity": 1
       },
       {
-        "id": "8941",
+        "id": "5181",
         "defaultViewId": "1",
         "boundary": {
-          "width": 305.8237343808953,
-          "height": 203.99993341767095,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "8948",
-        "defaultViewId": "1",
-        "boundary": {
-          "width": 339.9998890294516,
-          "height": 240.29007701356062,
+          "width": 203.7899546483719,
+          "height": 305.6849319725579,
           "unit": "mm"
         },
         "restrictions": {
@@ -12904,35 +13763,30 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Poster 8\" x 12\" (20x30 cm), semi-glossy print, portrait format. Brand: Spreadshirt.",
+      "description": "If a picture is worth a thousand words, our posters are worth at least two thousand! Bring any wall to life.\r\n<ul class=\"listMCE\">\r\n<li>\r\nSemi-glossy print\r\n</li>\r\n<li>\r\nFormat: Portrait\r\n</li>\r\n<li>\r\n240 g/m²\r\n</li>\r\n<li>\r\nHigh-quality, crisp, vibrant prints\r\n</li>\r\n</ul>\r\n<strong>Please note</strong>: There is no express or premium delivery option for posters.",
+      "brand": "Spreadshirt",
+      "weight": 2700,
+      "sizeFitHint": "normal fit"
+    }
   },
   {
-    "id": "3930",
-    "name": "Framed poster (49 × 69 cm)",
-    "price": 27.49,
-    "preview": "/products/3930/2/1.webp",
+    "id": "1302",
+    "name": "Poster 8\" x 8\" (20x20 cm)",
+    "price": 7.99,
+    "preview": "/products/1302/1/1.webp",
     "appearances": [
       {
         "id": "1",
         "name": "white",
         "color": "#FFFFFF",
-        "image": "/products/3930/1/1.webp",
+        "image": "/products/1302/1/1.webp",
         "views": [
           {
             "id": "1",
-            "image": "/products/3930/1/1.webp"
-          }
-        ]
-      },
-      {
-        "id": "2",
-        "name": "black",
-        "color": "#000000",
-        "image": "/products/3930/2/1.webp",
-        "views": [
-          {
-            "id": "1",
-            "image": "/products/3930/2/1.webp"
+            "image": "/products/1302/1/1.webp"
           }
         ]
       }
@@ -12942,39 +13796,25 @@ export const PRODUCTS: StaticProduct[] = [
         "id": "1",
         "name": "Front",
         "canvas": {
-          "width": 784.4752149070881,
-          "height": 784.4752149070881,
+          "width": 235.06366307541626,
+          "height": 235.06366307541626,
           "unit": "mm"
         },
-        "dpi": 38.854,
+        "dpi": 129.667,
         "viewMaps": [
           {
-            "printAreaId": "8625",
+            "printAreaId": "3321",
             "offset": {
-              "x": 189.582,
-              "y": 89.5609,
+              "x": 16.4133,
+              "y": 15.0421,
               "unit": "mm"
             },
             "size": {
-              "width": 784.4752149070881,
-              "height": 784.4752149070881,
+              "width": 235.06366307541626,
+              "height": 235.06366307541626,
               "unit": "mm"
             },
-            "dpi": 38.854
-          },
-          {
-            "printAreaId": "8631",
-            "offset": {
-              "x": 162.125,
-              "y": 61.4506,
-              "unit": "mm"
-            },
-            "size": {
-              "width": 784.4752149070881,
-              "height": 784.4752149070881,
-              "unit": "mm"
-            },
-            "dpi": 38.854
+            "dpi": 129.667
           }
         ]
       }
@@ -12984,26 +13824,11 @@ export const PRODUCTS: StaticProduct[] = [
     ],
     "printAreas": [
       {
-        "id": "8625",
+        "id": "3321",
         "defaultViewId": "1",
         "boundary": {
-          "width": 404.00473567715034,
-          "height": 606.0071035157256,
-          "unit": "mm"
-        },
-        "restrictions": {
-          "textAllowed": true,
-          "designAllowed": true,
-          "backgroundAllowed": false
-        },
-        "printoutQuantity": 1
-      },
-      {
-        "id": "8631",
-        "defaultViewId": "1",
-        "boundary": {
-          "width": 460.22545941215833,
-          "height": 660.2666392134657,
+          "width": 204,
+          "height": 204,
           "unit": "mm"
         },
         "restrictions": {
@@ -13013,6 +13838,13 @@ export const PRODUCTS: StaticProduct[] = [
         },
         "printoutQuantity": 1
       }
-    ]
+    ],
+    "details": {
+      "shortDescription": "Poster 8\" x 8\" (20x20 cm), semi-glossy print, square layout. Brand: Spreadshirt.",
+      "description": "If a picture is worth a thousand words, our posters are worth at least two thousand! Bring any wall to life.\r\n<ul class=\"listMCE\">\r\n<li>\r\nSemi-glossy print\r\n</li>\r\n<li>\r\nSquare layout\r\n</li>\r\n<li>\r\n240 g/m²\r\n</li>\r\n<li>\r\nHigh-quality, crisp, vibrant prints\r\n</li>\r\n</ul>\r\n<strong>Please note</strong>: There is no express or premium delivery option for posters.",
+      "brand": "Spreadshirt",
+      "weight": 2710,
+      "sizeFitHint": "normal fit"
+    }
   }
 ]
