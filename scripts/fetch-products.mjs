@@ -15,11 +15,57 @@ const SHOP_ID = "205909"
 const FEATURED_ID = "2940" // Unisex Premium Oversized Organic T-Shirt
 const PER_CATEGORY = 3
 const IMG_WIDTH = 600
+// When non-empty, use exactly these product type IDs in this order instead of
+// the auto-categorizer. Pinned so regenerating stays deterministic (the live
+// catalog order drifts, which would otherwise swap the embedded products).
+const PINNED_PRODUCT_IDS = [
+  "2940", "812", "813", "814", "1047", "20", "1505", "3980", "3001", "4312",
+  "56", "4133", "2973", "1040", "4562", "15", "4180", "4181", "4182", "31",
+  "1313", "1470", "4506", "1459", "4505", "943", "916", "917", "1300", "1301",
+  "1302",
+]
 // Always include these product type IDs in addition to the auto-categorized
 // list (or to replace them if the categorizer doesn't pick them).
 const ADDITIONAL_PRODUCT_IDS = []
 // Skip these product IDs even if categorizer would pick them.
 const EXCLUDE_PRODUCT_IDS = []
+// Print type IDs that represent embroidery. Mirrors create-omat's
+// EMBROIDERY_PRINT_TYPE_IDS (src/lib/Constants.ts) so a product counts as
+// embroidery-suitable when any appearance offers one of these print types.
+const EMBROIDERY_PRINT_TYPE_IDS = ["8", "33", "46"]
+// Model-image metadata (which model shots exist per product type) is only
+// available via create-omat's assortment API — there is no public endpoint.
+// Best-effort: if create-omat isn't running, model images are simply omitted.
+const MODEL_META_BASE = process.env.MODEL_META_BASE || "http://localhost:3000"
+const MODEL_META_SHOP = process.env.MODEL_META_SHOP || "1133169"
+const MODEL_IMAGE_SERVER = "https://image.spreadshirtmedia.net/image-server/v1"
+
+// Fetches a product's assortment from create-omat (the real shop) — used for both
+// the real base price and model-image metadata. Returns null when unavailable
+// (create-omat not running, or product not in that shop).
+async function fetchOmatAssortment(productTypeId) {
+  try {
+    const data = await fetchJson(
+      `${MODEL_META_BASE}/api/assortment/${productTypeId}?mediaType=json&shopId=${MODEL_META_SHOP}&locale=en_GB`
+    )
+    return data && !data.error ? data : null
+  } catch {
+    return null
+  }
+}
+
+// Builds the front-view (viewId 1) model-image URL from model metadata, preferring
+// an on-model (non-flatlay) shot. Returns null when none exists.
+function frontModelImageUrl(modelImages, productTypeId, appearanceId) {
+  const front = (modelImages ?? []).filter(m => m.viewId === 1 && m.active !== false)
+  if (front.length === 0) return null
+  const sorted = front.sort((a, b) => (b.priority ?? 0) - (a.priority ?? 0))
+  const chosen = sorted.find(m => !(m.tags ?? []).includes("flatlay")) ?? sorted[0]
+  const ids = (chosen.appearanceIds ?? []).map(String)
+  const appId = ids.includes(String(appearanceId)) ? appearanceId : (ids[0] ?? appearanceId)
+  const crop = (chosen.crops ?? []).includes("detail") ? "detail" : (chosen.crops?.[0] ?? "detail")
+  return `${MODEL_IMAGE_SERVER}/productTypes/${productTypeId}/views/1,modelId=${chosen.modelId},crop=${crop},appearanceId=${appId},backgroundColor=F4F4F4`
+}
 
 function categorize(name) {
   if (/hoodie|hooded/i.test(name)) return "Hoodies"
@@ -59,6 +105,16 @@ async function main() {
     `https://api.spreadshirt.net/api/v1/shops/${SHOP_ID}/productTypes?mediaType=json&limit=1000`
   )
 
+  const byId = id => list.productTypes.find(p => p.id === id)
+
+  // Pinned selection takes precedence: deterministic, exact set in order.
+  let orderedPinned = null
+  if (PINNED_PRODUCT_IDS.length) {
+    orderedPinned = PINNED_PRODUCT_IDS.map(byId).filter(Boolean)
+    const missing = PINNED_PRODUCT_IDS.filter(id => !byId(id))
+    if (missing.length) console.warn(`  ! pinned ids not in catalog: ${missing.join(", ")}`)
+  }
+
   // Bucket up to PER_CATEGORY products per category, always include featured first.
   const buckets = {}
   for (const p of list.productTypes) {
@@ -75,11 +131,13 @@ async function main() {
   const extras = ADDITIONAL_PRODUCT_IDS.filter(id => !idsSoFar.has(id))
     .map(id => list.productTypes.find(p => p.id === id))
     .filter(Boolean)
-  const ordered = [
-    list.productTypes.find(p => p.id === FEATURED_ID),
-    ...Object.values(buckets).flat(),
-    ...extras,
-  ].filter(Boolean)
+  const ordered =
+    orderedPinned ??
+    [
+      list.productTypes.find(p => p.id === FEATURED_ID),
+      ...Object.values(buckets).flat(),
+      ...extras,
+    ].filter(Boolean)
 
   const products = []
   for (const stub of ordered) {
@@ -142,6 +200,7 @@ async function main() {
         name: a.name ?? "",
         color: a.colors?.[0]?.value ?? "#cccccc",
         image: def.image,
+        printTypes: (a.printTypes ?? []).map(pt => ({ id: pt.id, href: pt.href ?? "" })),
         views,
       })
     }
@@ -169,11 +228,40 @@ async function main() {
       appearances.find(a => /\bblack\b/i.test(a.name)) ??
       appearances.find(a => /^#?0{6}$/i.test(a.color.replace("#", ""))) ??
       appearances[0]
+    const embroidery = appearances.some(a =>
+      a.printTypes.some(pt => EMBROIDERY_PRINT_TYPE_IDS.includes(pt.id))
+    )
+
+    // Real-shop assortment from create-omat — for the base price and model images.
+    const omat = await fetchOmatAssortment(id)
+    const omatPrice = omat?.price?.vatIncluded
+    const price = typeof omatPrice === "number" ? omatPrice : (detail.price?.vatIncluded ?? 0)
+    if (typeof omatPrice !== "number") {
+      console.warn(`    no create-omat price for ${id}; keeping public price ${price}`)
+    }
+
+    // Front model image — only for embroidery products (shown in the print-technique
+    // modal). Best-effort; null if unavailable.
+    let modelImageFront = null
+    if (embroidery && omat) {
+      const modelUrl = frontModelImageUrl(omat.modelImages, id, black?.id ?? appearances[0]?.id)
+      if (modelUrl) {
+        const file = join(IMG_ROOT, id, "model-front.webp")
+        try {
+          await downloadImage(`${modelUrl}?width=${IMG_WIDTH}`, file)
+          modelImageFront = `/products/${id}/model-front.webp`
+        } catch (e) {
+          console.warn(`    skip model image ${id}: ${e.message}`)
+        }
+      }
+    }
     products.push({
       id,
       name: detail.name,
-      price: detail.price?.vatIncluded ?? 0,
+      price,
       preview: black?.image ?? "",
+      embroidery,
+      modelImageFront,
       appearances,
       views: productViews,
       sizes: (detail.sizes ?? []).map(s => s.name),
@@ -210,11 +298,17 @@ export type StaticAppearanceView = {
   image: string
 }
 
+export type StaticPrintType = {
+  id: string
+  href: string
+}
+
 export type StaticAppearance = {
   id: string
   name: string
   color: string
   image: string
+  printTypes: StaticPrintType[]
   views: StaticAppearanceView[]
 }
 
@@ -239,6 +333,8 @@ export type StaticProduct = {
   name: string
   price: number
   preview: string
+  embroidery: boolean
+  modelImageFront: string | null
   appearances: StaticAppearance[]
   views: StaticView[]
   sizes: string[]

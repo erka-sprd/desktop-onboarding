@@ -12,8 +12,18 @@ export type BasketDesignText = {
   fontFamily: string
 }
 
+export type BasketDesignGraphic = {
+  id: string
+  src: string
+  x: number
+  y: number
+  width: number
+  height: number
+}
+
 export type BasketDesign = {
   textElements: BasketDesignText[]
+  graphicElements: BasketDesignGraphic[]
   printAreaOverlay: { left: number; top: number; width: number; height: number }
   displayWidth: number
   displayHeight: number
@@ -249,6 +259,7 @@ function DesignThumbnail({ item, size }: { item: BasketItem; size: number }) {
     )
   }
   const { textElements, printAreaOverlay, displayWidth, displayHeight } = design
+  const graphicElements = design.graphicElements ?? []
   const scale = Math.min(size / displayWidth, size / displayHeight)
   return (
     <div
@@ -292,6 +303,22 @@ function DesignThumbnail({ item, size }: { item: BasketItem; size: number }) {
           >
             {el.content}
           </div>
+        ))}
+        {graphicElements.map(el => (
+          <img
+            key={el.id}
+            src={el.src}
+            alt=""
+            className="pointer-events-none select-none"
+            style={{
+              position: "absolute",
+              left: `${el.x}%`,
+              top: `${el.y}%`,
+              width: `${el.width}%`,
+              height: `${el.height}%`,
+              objectFit: "contain",
+            }}
+          />
         ))}
       </div>
     </div>

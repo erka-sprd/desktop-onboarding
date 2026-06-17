@@ -20,6 +20,8 @@ export type ProductTypeData = {
   id: string
   name: string
   price: number
+  embroidery: boolean
+  modelImageFront: string | null
   defaultViewId: string
   defaultAppearanceId: string
   appearances: AppearanceData[]
@@ -39,6 +41,8 @@ export function getProductType(id: string): ProductTypeData | null {
     id: p.id,
     name: p.name,
     price: p.price,
+    embroidery: p.embroidery,
+    modelImageFront: p.modelImageFront,
     defaultViewId,
     defaultAppearanceId: defaultAppearance?.id ?? "",
     appearances: p.appearances,

@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react"
 import { createPortal } from "react-dom"
 import * as Popover from "@radix-ui/react-popover"
 import { Basket, type BasketItem } from "@/components/basket"
+import EmbroideryPreview from "@/components/embroidery-preview"
 import ProductsDrawer, { type SelectedProduct } from "@/components/products-drawer"
 import SiteHeader from "@/components/site-header"
 import { IconsScroller } from "@/components/ui/icons-scroller"
@@ -49,6 +50,22 @@ const isDarkProductColor = (hex?: string): boolean => {
   if ([r, g, b].some(n => Number.isNaN(n))) return false
   const brightness = (r * 299 + g * 587 + b * 114) / 1000
   return brightness < 80
+}
+
+// Embroidery can't stitch arbitrarily large designs. Ported from the dock-change
+// prototype: clamp the design to at most 1/7 of the print area (by area),
+// anchored to its center. Returns the same bbox if it already fits.
+const EMBROIDERY_MAX_AREA_FRACTION = 1 / 7
+type DesignBbox = { x: number; y: number; w: number; h: number }
+function clampEmbroideryBbox(b: DesignBbox): DesignBbox {
+  const area = b.w * b.h
+  if (area <= EMBROIDERY_MAX_AREA_FRACTION) return b
+  const scale = Math.sqrt(EMBROIDERY_MAX_AREA_FRACTION / area)
+  const cx = b.x + b.w / 2
+  const cy = b.y + b.h / 2
+  const w = b.w * scale
+  const h = b.h * scale
+  return { x: cx - w / 2, y: cy - h / 2, w, h }
 }
 
 export default function Designer() {
@@ -109,10 +126,43 @@ export default function Designer() {
     v: false,
   })
   const selectedText = textElements.find(t => t.id === selectedTextId) ?? null
+
+  // Graphic elements placed inside a print area. Position and size are % of that print area.
+  type GraphicElement = {
+    id: string
+    printAreaId: string
+    src: string
+    x: number
+    y: number
+    width: number
+    height: number
+  }
+  const [graphicElements, setGraphicElements] = useState<GraphicElement[]>([])
+  const [selectedGraphicId, setSelectedGraphicId] = useState<string | null>(null)
+  const graphicElementRefs = useRef<Record<string, HTMLElement>>({})
+
+  // Print technique (only relevant for embroidery-suitable products).
+  const [printTechnique, setPrintTechnique] = useState<"standard" | "embroidery">("standard")
+  const [printTechniqueOpen, setPrintTechniqueOpen] = useState(false)
+  const [previewLoading, setPreviewLoading] = useState(false)
+  // Flattened design (text + graphics combined) for the print-technique close-up,
+  // and its embroidery-rendered counterpart.
+  const [designDataUrl, setDesignDataUrl] = useState<string | null>(null)
+  const [embroideryRenderedUrl, setEmbroideryRenderedUrl] = useState<string | null>(null)
+  // Design's content bounding box as fractions (0-1) of the print area — used to
+  // size/position the design accurately on the model image.
+  const [designBbox, setDesignBbox] = useState<{
+    x: number
+    y: number
+    w: number
+    h: number
+  } | null>(null)
+
   const [printAreaPxSize, setPrintAreaPxSize] = useState({ width: 0, height: 0 })
   const printAreaBoxRef = useRef<HTMLDivElement>(null)
   const textElementRefs = useRef<Record<string, HTMLElement>>({})
   const dragStateRef = useRef<{
+    kind: "text" | "graphic"
     id: string
     startX: number
     startY: number
@@ -121,6 +171,7 @@ export default function Designer() {
     moved: boolean
   } | null>(null)
   const resizeStateRef = useRef<{
+    kind: "text" | "graphic"
     id: string
     initialFontSize: number
     initialDist: number
@@ -218,11 +269,63 @@ export default function Designer() {
     setFontPanelOpen(false)
   }
 
+  // Adds a graphic into the current print area, centred and sized to ~40% of the
+  // print-area width while preserving the image's aspect ratio.
+  const addGraphicElement = (src: string) => {
+    if (!currentPrintAreaId) return
+    const printAreaId = currentPrintAreaId
+    const id = `graphic-${Date.now()}`
+    const place = (width: number, height: number) => {
+      setGraphicElements(prev => [
+        ...prev,
+        { id, printAreaId, src, x: (100 - width) / 2, y: (100 - height) / 2, width, height },
+      ])
+      setActivePanel(null)
+      // Defer so the same click's document handler doesn't clear the new selection.
+      setTimeout(() => {
+        setSelectedGraphicId(id)
+        setSelectedTextId(null)
+      }, 0)
+    }
+    const targetWidthPct = 40
+    if (typeof window !== "undefined") {
+      const img = new window.Image()
+      img.onload = () => {
+        const aspect =
+          img.naturalWidth && img.naturalHeight ? img.naturalWidth / img.naturalHeight : 1
+        let width = targetWidthPct
+        let height = targetWidthPct
+        if (printAreaPxSize.width > 0 && printAreaPxSize.height > 0) {
+          const widthPx = (targetWidthPct / 100) * printAreaPxSize.width
+          const heightPx = widthPx / aspect
+          height = (heightPx / printAreaPxSize.height) * 100
+          // Shrink to fit if the natural aspect would overflow the print area.
+          if (height > 80) {
+            const s = 80 / height
+            width *= s
+            height = 80
+          }
+        }
+        place(width, height)
+      }
+      img.onerror = () => place(targetWidthPct, targetWidthPct)
+      img.src = src
+    } else {
+      place(targetWidthPct, targetWidthPct)
+    }
+  }
+
+  const deleteSelectedGraphic = () => {
+    if (!selectedGraphicId) return
+    setGraphicElements(prev => prev.filter(g => g.id !== selectedGraphicId))
+    setSelectedGraphicId(null)
+  }
+
   // Backspace / Delete removes the selected text — only when not actively typing
   // and not inside any input/contenteditable element.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (!selectedTextId || editingTextId) return
+      if ((!selectedTextId && !selectedGraphicId) || editingTextId) return
       if (e.key !== "Backspace" && e.key !== "Delete") return
       const target = e.target as HTMLElement | null
       if (target) {
@@ -230,11 +333,12 @@ export default function Designer() {
         if (tag === "INPUT" || tag === "TEXTAREA" || target.isContentEditable) return
       }
       e.preventDefault()
-      deleteSelectedText()
+      if (selectedGraphicId) deleteSelectedGraphic()
+      else deleteSelectedText()
     }
     document.addEventListener("keydown", onKey)
     return () => document.removeEventListener("keydown", onKey)
-  }, [selectedTextId, editingTextId])
+  }, [selectedTextId, selectedGraphicId, editingTextId])
 
   // Deselect text on clicks anywhere outside the text element / editor bar / color panel.
   useEffect(() => {
@@ -243,6 +347,7 @@ export default function Designer() {
       if (!target) return
       if (
         target.closest("[data-text-element]") ||
+        target.closest("[data-graphic-element]") ||
         target.closest("[data-editor-bar]") ||
         target.closest("[data-text-color-panel]") ||
         target.closest("[data-font-panel]")
@@ -250,6 +355,7 @@ export default function Designer() {
         return
       }
       setSelectedTextId(null)
+      setSelectedGraphicId(null)
       setTextColorPanelOpen(false)
       setFontPanelOpen(false)
     }
@@ -257,10 +363,14 @@ export default function Designer() {
     return () => document.removeEventListener("click", onDocClick)
   }, [])
 
-  // Reset texts when switching products.
+  // Reset texts and graphics when switching products.
   useEffect(() => {
     setTextElements([])
     setEditingTextId(null)
+    setGraphicElements([])
+    setSelectedGraphicId(null)
+    setPrintTechnique("standard")
+    setPrintTechniqueOpen(false)
   }, [productData])
 
   // Document-level mousemove/up so dragging and resizing keep working when cursor leaves the element.
@@ -271,11 +381,16 @@ export default function Designer() {
         if (rs.initialDist > 0) {
           const newDist = Math.hypot(e.clientX - rs.oppX, e.clientY - rs.oppY)
           const scale = newDist / rs.initialDist
-          const nextFontSize = Math.max(
-            MIN_TEXT_FONT_SIZE,
-            rs.initialFontSize * scale
-          )
-          const sizeScale = nextFontSize / rs.initialFontSize
+          // Scale uniformly from the dragged corner, preserving aspect ratio.
+          // Text drives off font size; graphics scale width/height directly.
+          let nextFontSize = rs.initialFontSize
+          let sizeScale: number
+          if (rs.kind === "graphic") {
+            sizeScale = Math.max(MIN_GRAPHIC_WIDTH_PCT / rs.initialWidthPct, scale)
+          } else {
+            nextFontSize = Math.max(MIN_TEXT_FONT_SIZE, rs.initialFontSize * scale)
+            sizeScale = nextFontSize / rs.initialFontSize
+          }
           const newWidthPct = rs.initialWidthPct * sizeScale
           const newHeightPct = rs.initialHeightPct * sizeScale
           let newX = rs.anchorXPct
@@ -298,11 +413,21 @@ export default function Designer() {
               newY = rs.anchorYPct
               break
           }
-          setTextElements(prev =>
-            prev.map(t =>
-              t.id === rs.id ? { ...t, fontSize: nextFontSize, x: newX, y: newY } : t
+          if (rs.kind === "graphic") {
+            setGraphicElements(prev =>
+              prev.map(g =>
+                g.id === rs.id
+                  ? { ...g, width: newWidthPct, height: newHeightPct, x: newX, y: newY }
+                  : g
+              )
             )
-          )
+          } else {
+            setTextElements(prev =>
+              prev.map(t =>
+                t.id === rs.id ? { ...t, fontSize: nextFontSize, x: newX, y: newY } : t
+              )
+            )
+          }
         }
         return
       }
@@ -317,7 +442,9 @@ export default function Designer() {
       const newXPct = ds.elX + (dx / paRect.width) * 100
       const newYPct = ds.elY + (dy / paRect.height) * 100
       const SNAP_THRESHOLD_PX = 8
-      const draggedNode = textElementRefs.current[ds.id]
+      const draggedNode = (
+        ds.kind === "graphic" ? graphicElementRefs : textElementRefs
+      ).current[ds.id]
       const elWidthPct = draggedNode
         ? (draggedNode.getBoundingClientRect().width / paRect.width) * 100
         : 0
@@ -337,12 +464,15 @@ export default function Designer() {
       )
       const snappedX = snapV ? (100 - elWidthPct) / 2 : clampedX
       const snappedY = snapH ? (100 - elHeightPct) / 2 : clampedY
-      setTextElements(prev =>
-        prev.map(t => {
-          if (t.id !== ds.id) return t
-          return { ...t, x: snappedX, y: snappedY }
-        })
-      )
+      if (ds.kind === "graphic") {
+        setGraphicElements(prev =>
+          prev.map(g => (g.id === ds.id ? { ...g, x: snappedX, y: snappedY } : g))
+        )
+      } else {
+        setTextElements(prev =>
+          prev.map(t => (t.id === ds.id ? { ...t, x: snappedX, y: snappedY } : t))
+        )
+      }
     }
     const onUp = () => {
       if (resizeStateRef.current) {
@@ -351,8 +481,14 @@ export default function Designer() {
       }
       const ds = dragStateRef.current
       if (!ds) return
-      // Always select the text on mouseup so dragging it keeps it as the active selection.
-      setSelectedTextId(ds.id)
+      // Always select on mouseup so a drag keeps the element as the active selection.
+      if (ds.kind === "graphic") {
+        setSelectedGraphicId(ds.id)
+        setSelectedTextId(null)
+      } else {
+        setSelectedTextId(ds.id)
+        setSelectedGraphicId(null)
+      }
       setSnapGuides({ h: false, v: false })
       dragStateRef.current = null
     }
@@ -368,6 +504,19 @@ export default function Designer() {
     if (editingTextId === el.id) return
     e.preventDefault()
     dragStateRef.current = {
+      kind: "text",
+      id: el.id,
+      startX: e.clientX,
+      startY: e.clientY,
+      elX: el.x,
+      elY: el.y,
+      moved: false,
+    }
+  }
+  const startGraphicDrag = (e: React.MouseEvent, el: GraphicElement) => {
+    e.preventDefault()
+    dragStateRef.current = {
+      kind: "graphic",
       id: el.id,
       startX: e.clientX,
       startY: e.clientY,
@@ -378,12 +527,13 @@ export default function Designer() {
   }
   const startResize = (
     e: React.MouseEvent,
-    el: TextElement,
-    corner: "nw" | "ne" | "sw" | "se"
+    el: { id: string; x: number; y: number; fontSize?: number },
+    corner: "nw" | "ne" | "sw" | "se",
+    kind: "text" | "graphic" = "text"
   ) => {
     e.preventDefault()
     e.stopPropagation()
-    const node = textElementRefs.current[el.id]
+    const node = (kind === "graphic" ? graphicElementRefs : textElementRefs).current[el.id]
     const pa = printAreaBoxRef.current
     if (!node || !pa) return
     const rect = node.getBoundingClientRect()
@@ -415,8 +565,9 @@ export default function Designer() {
         break
     }
     resizeStateRef.current = {
+      kind,
       id: el.id,
-      initialFontSize: el.fontSize,
+      initialFontSize: el.fontSize ?? 0,
       initialDist,
       oppX,
       oppY,
@@ -517,6 +668,131 @@ export default function Designer() {
   const visibleTextElements = currentPrintAreaId
     ? textElements.filter(t => t.printAreaId === currentPrintAreaId)
     : []
+  const visibleGraphicElements = currentPrintAreaId
+    ? graphicElements.filter(g => g.printAreaId === currentPrintAreaId)
+    : []
+
+  // Embroidery clamps the design to a max area; warn when that shrinks it by >20%.
+  const embroiderySizeWarning = (() => {
+    if (!designBbox || printTechnique !== "embroidery") return false
+    const clamped = clampEmbroideryBbox(designBbox)
+    const s = Math.sqrt((clamped.w * clamped.h) / (designBbox.w * designBbox.h))
+    return s < 0.8
+  })()
+
+  // Flatten the current print area's text + graphics into a single PNG when the
+  // print-technique modal opens (combines text and graphic like dock-change).
+  useEffect(() => {
+    if (!printTechniqueOpen) {
+      setDesignDataUrl(null)
+      setEmbroideryRenderedUrl(null)
+      setDesignBbox(null)
+      setPreviewLoading(false)
+      return
+    }
+    let cancelled = false
+    setEmbroideryRenderedUrl(null)
+    setPreviewLoading(true)
+    const loadingTimer = setTimeout(() => {
+      if (!cancelled) setPreviewLoading(false)
+    }, 900)
+
+    const loadImage = (src: string) =>
+      new Promise<HTMLImageElement>((res, rej) => {
+        const im = new Image()
+        im.crossOrigin = "anonymous"
+        im.onload = () => res(im)
+        im.onerror = rej
+        im.src = src
+      })
+
+    const flatten = async () => {
+      const texts = visibleTextElements
+      const graphics = visibleGraphicElements
+      const baseW = printAreaPxSize.width
+      const baseH = printAreaPxSize.height
+      if ((texts.length === 0 && graphics.length === 0) || baseW <= 1 || baseH <= 1) {
+        if (!cancelled) {
+          setDesignDataUrl(null)
+          setDesignBbox(null)
+        }
+        return
+      }
+      // Render the design at a higher resolution than the on-screen print area so
+      // the close-up preview stays crisp and large (the editor px size is tiny).
+      const RENDER_TARGET = 900
+      const scale = Math.max(1, RENDER_TARGET / Math.max(baseW, baseH))
+      const W = Math.round(baseW * scale)
+      const H = Math.round(baseH * scale)
+      try {
+        await document.fonts.ready
+      } catch {}
+      const canvas = document.createElement("canvas")
+      canvas.width = W
+      canvas.height = H
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return
+      // Text first, graphics on top — matches the editor's layer order.
+      for (const t of texts) {
+        ctx.fillStyle = t.color
+        ctx.textBaseline = "top"
+        const fontSize = t.fontSize * scale
+        ctx.font = `${fontSize}px "${t.fontFamily}"`
+        const x = (t.x / 100) * W
+        let y = (t.y / 100) * H
+        for (const line of t.content.split("\n")) {
+          ctx.fillText(line, x, y)
+          y += fontSize
+        }
+      }
+      for (const g of graphics) {
+        const img = await loadImage(g.src).catch(() => null)
+        if (!img) continue
+        ctx.drawImage(img, (g.x / 100) * W, (g.y / 100) * H, (g.width / 100) * W, (g.height / 100) * H)
+      }
+      // Crop to the design's content bounding box.
+      const { data } = ctx.getImageData(0, 0, W, H)
+      let minX = W,
+        minY = H,
+        maxX = 0,
+        maxY = 0,
+        found = false
+      for (let y = 0; y < H; y++)
+        for (let x = 0; x < W; x++)
+          if (data[(y * W + x) * 4 + 3] > 10) {
+            found = true
+            if (x < minX) minX = x
+            if (x > maxX) maxX = x
+            if (y < minY) minY = y
+            if (y > maxY) maxY = y
+          }
+      if (!found) {
+        if (!cancelled) {
+          setDesignDataUrl(null)
+          setDesignBbox(null)
+        }
+        return
+      }
+      const cw = maxX - minX + 1
+      const ch = maxY - minY + 1
+      const cropped = document.createElement("canvas")
+      cropped.width = cw
+      cropped.height = ch
+      cropped.getContext("2d")!.drawImage(canvas, minX, minY, cw, ch, 0, 0, cw, ch)
+      if (!cancelled) {
+        setDesignDataUrl(cropped.toDataURL("image/png"))
+        // Bounding box as fractions of the print area, for accurate model placement.
+        setDesignBbox({ x: minX / W, y: minY / H, w: cw / W, h: ch / H })
+      }
+    }
+
+    void flatten()
+    return () => {
+      cancelled = true
+      clearTimeout(loadingTimer)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [printTechniqueOpen])
 
   // When switching views (print areas), clear any stale selection / editing
   // that points to an element that doesn't live in the new print area.
@@ -530,6 +806,12 @@ export default function Designer() {
       setFontPanelOpen(false)
     }
   }, [currentPrintAreaId, selectedTextId, textElements])
+
+  useEffect(() => {
+    if (!selectedGraphicId) return
+    const g = graphicElements.find(x => x.id === selectedGraphicId)
+    if (!g || g.printAreaId !== currentPrintAreaId) setSelectedGraphicId(null)
+  }, [currentPrintAreaId, selectedGraphicId, graphicElements])
 
   useEffect(() => {
     const el = printAreaBoxRef.current
@@ -584,6 +866,7 @@ export default function Designer() {
     return { width, height: lines.length * fontSize }
   }
   const MIN_TEXT_FONT_SIZE = 14
+  const MIN_GRAPHIC_WIDTH_PCT = 5
   const maxFontSize = useMemo(
     () =>
       computeMaxFontSize(
@@ -720,7 +1003,18 @@ export default function Designer() {
     return 0 // No discount
   }
 
-  const originalPrice = totalSelected > 0 ? BASE_PRICE * totalSelected : BASE_PRICE
+  // Per-decorated-print-area surcharge (mirrors dock-change's per-side pricing):
+  // each used print area adds a surcharge; embroidery costs +5/area over standard.
+  const SURCHARGE_STANDARD_PER_AREA = 2
+  const SURCHARGE_EMBROIDERY_PER_AREA = 7
+  const decoratedPrintAreaCount = new Set([
+    ...textElements.map(t => t.printAreaId),
+    ...graphicElements.map(g => g.printAreaId),
+  ]).size
+  const perAreaSurcharge =
+    printTechnique === "embroidery" ? SURCHARGE_EMBROIDERY_PER_AREA : SURCHARGE_STANDARD_PER_AREA
+  const unitPrice = BASE_PRICE + decoratedPrintAreaCount * perAreaSurcharge
+  const originalPrice = totalSelected > 0 ? unitPrice * totalSelected : unitPrice
   const discountPercent = getDiscountPercentage(totalSelected)
   const discountedPrice = originalPrice * (1 - discountPercent)
 
@@ -1076,7 +1370,7 @@ export default function Designer() {
                 alt={productImages[activeColorIndex]?.alt || ""}
                 className="h-full w-full object-contain"
               />
-              {printAreaOverlay && (selectedTextId || editingTextId) && (
+              {printAreaOverlay && (selectedTextId || editingTextId || selectedGraphicId) && (
                 <svg
                   className="pointer-events-none absolute"
                   overflow="visible"
@@ -1216,6 +1510,56 @@ export default function Designer() {
                       </div>
                     )
                   )}
+                  {visibleGraphicElements.map(el => (
+                    <div
+                      key={el.id}
+                      data-graphic-element="true"
+                      ref={node => {
+                        if (node) graphicElementRefs.current[el.id] = node
+                        else delete graphicElementRefs.current[el.id]
+                      }}
+                      onMouseDown={e => startGraphicDrag(e, el)}
+                      style={{
+                        position: "absolute",
+                        left: `${el.x}%`,
+                        top: `${el.y}%`,
+                        width: `${el.width}%`,
+                        height: `${el.height}%`,
+                        boxShadow:
+                          selectedGraphicId === el.id ? "0 0 0 1px #6366F1" : undefined,
+                      }}
+                      className="pointer-events-auto select-none cursor-move"
+                    >
+                      <img
+                        src={el.src}
+                        alt=""
+                        draggable={false}
+                        className="pointer-events-none h-full w-full select-none object-contain"
+                      />
+                      {selectedGraphicId === el.id &&
+                        (["nw", "ne", "sw", "se"] as const).map(corner => {
+                          const cursor =
+                            corner === "nw" || corner === "se"
+                              ? "cursor-nwse-resize"
+                              : "cursor-nesw-resize"
+                          const pos =
+                            corner === "nw"
+                              ? "-top-[7.5px] -left-[7.5px]"
+                              : corner === "ne"
+                                ? "-top-[7.5px] -right-[7.5px]"
+                                : corner === "sw"
+                                  ? "-bottom-[7.5px] -left-[7.5px]"
+                                  : "-bottom-[7.5px] -right-[7.5px]"
+                          return (
+                            <span
+                              key={corner}
+                              onMouseDown={e => startResize(e, el, corner, "graphic")}
+                              className={`absolute ${pos} ${cursor} block size-[15px] rounded-full border-2 border-[#6366F1] bg-white`}
+                            />
+                          )
+                        })}
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -1261,6 +1605,190 @@ export default function Designer() {
                 })}
               </div>
             )}
+            {/* Print technique dropdown — only for embroidery-suitable products. */}
+            {productData?.embroidery && (
+              <button
+                type="button"
+                onClick={() => setPrintTechniqueOpen(true)}
+                className="absolute bottom-6 right-6 z-20 flex items-center gap-2 rounded-[8px] bg-white px-3 py-2 text-sm font-medium text-black shadow-xs hover:bg-neutral-50 cursor-pointer"
+              >
+                <span>{printTechnique === "embroidery" ? "Embroidery" : "Standard print"}</span>
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 12 12"
+                  fill="none"
+                  className="text-neutral-500"
+                >
+                  <path
+                    d="M2.5 4.5L6 8L9.5 4.5"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            )}
+
+            {/* Print technique modal — same ScopedDialog infrastructure as product details. */}
+            <ScopedDialog
+              open={printTechniqueOpen}
+              onOpenChange={setPrintTechniqueOpen}
+              container={creatomatContainer}
+              overlayClassName="rounded-[12px]"
+              className="flex max-h-[85%] w-[480px] max-w-[90%] flex-col gap-0 overflow-hidden rounded-2xl bg-white p-0 shadow-xl"
+            >
+              <div className="flex items-start justify-between gap-4 p-[24px] pb-[16px]">
+                <ScopedDialogTitle className="font-display text-[18px] font-[800] leading-tight text-black">
+                  Print technique
+                </ScopedDialogTitle>
+                <ScopedDialogClose
+                  aria-label="Close"
+                  className="shrink-0 cursor-pointer outline-none focus:outline-none focus-visible:outline-none"
+                >
+                  <img src="/icons/icon-close-x.svg" alt="" className="h-6 w-6" />
+                </ScopedDialogClose>
+              </div>
+              <div className="flex flex-col overflow-y-auto px-[24px] pb-[24px]">
+                {/* Pills — sticky at the top of the scrollable body */}
+                <div className="sticky top-0 z-10 -mx-[24px] bg-white px-[24px] pb-4">
+                  <div className="flex w-full gap-1 rounded-full bg-[#f0f0f0] p-1">
+                    {(["standard", "embroidery"] as const).map(technique => (
+                      <button
+                        key={technique}
+                        type="button"
+                        onClick={() => setPrintTechnique(technique)}
+                        className={`flex h-10 flex-1 cursor-pointer items-center justify-center rounded-full text-sm font-medium text-black transition-colors ${
+                          printTechnique === technique ? "bg-white shadow-sm" : "bg-transparent"
+                        }`}
+                      >
+                        {technique === "standard" ? "Standard print" : "Embroidery"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {previewLoading ? (
+                  <>
+                    <div className="mb-4 h-[272px] w-full shrink-0 animate-pulse bg-neutral-200" />
+                    <div className="aspect-square w-full shrink-0 animate-pulse bg-neutral-200" />
+                  </>
+                ) : (
+                  <>
+                    {/* Close-up: zoomed garment + flattened design (embroidery-rendered when selected).
+                        Hidden when there's no design in the current print area. */}
+                    {designDataUrl && printAreaOverlay && (
+                  <div className="relative mb-4 h-[272px] w-full shrink-0 overflow-hidden bg-[#F4F4F4]">
+                    <img
+                      src={currentViewImage || "/placeholder.svg"}
+                      alt=""
+                      className="absolute inset-0 h-full w-full object-cover"
+                      style={{
+                        transform: "scale(6)",
+                        transformOrigin: `${printAreaOverlay.left + printAreaOverlay.width / 2}% ${printAreaOverlay.top + printAreaOverlay.height / 2}%`,
+                      }}
+                    />
+                    {printTechnique === "embroidery" && (
+                      <EmbroideryPreview
+                        src={designDataUrl}
+                        maxSize={500}
+                        onRendered={setEmbroideryRenderedUrl}
+                        style={{
+                          position: "absolute",
+                          opacity: 0,
+                          pointerEvents: "none",
+                          width: 1,
+                          height: 1,
+                        }}
+                      />
+                    )}
+                    {(() => {
+                      const url =
+                        printTechnique === "embroidery" ? embroideryRenderedUrl : designDataUrl
+                      return url ? (
+                        <div className="absolute inset-0 flex items-center justify-center p-10">
+                          <img src={url} alt="" className="max-h-full max-w-full object-contain" />
+                        </div>
+                      ) : (
+                        <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sm text-black">
+                          Processing…
+                        </span>
+                      )
+                    })()}
+                  </div>
+                )}
+
+                {/* Full-width model image. For the Women's Premium Organic Top (943) the
+                    rendered design is composited onto the model's chest; other products
+                    show the plain model image. */}
+                {productData?.modelImageFront && (
+                  <div className="relative w-full shrink-0">
+                    <img
+                      src={productData.modelImageFront}
+                      alt={`${productData.name} model`}
+                      className="block w-full bg-[#F4F4F4]"
+                    />
+                    {productData.id === "943" &&
+                      designDataUrl &&
+                      designBbox &&
+                      (() => {
+                        const url =
+                          printTechnique === "embroidery" ? embroideryRenderedUrl : designDataUrl
+                        if (!url) return null
+                        // The 943 chest print-area footprint on the model image (% of image).
+                        // Height derives from the print-area aspect so the design isn't distorted.
+                        const paAspect =
+                          printAreaPxSize.width > 0 && printAreaPxSize.height > 0
+                            ? printAreaPxSize.height / printAreaPxSize.width
+                            : 1.25
+                        const regionW = 20 // % of image width — restricted chest print zone
+                        const regionH = regionW * paAspect
+                        const regionLeft = 48 - regionW / 2
+                        const regionTop = 51 - regionH / 2
+                        // Embroidery clamps the design to the max stitchable size.
+                        const bbox =
+                          printTechnique === "embroidery"
+                            ? clampEmbroideryBbox(designBbox)
+                            : designBbox
+                        // Place the design at its true position/size within that region.
+                        return (
+                          <img
+                            src={url}
+                            alt=""
+                            className="absolute"
+                            style={{
+                              left: `${regionLeft + bbox.x * regionW}%`,
+                              top: `${regionTop + bbox.y * regionH}%`,
+                              width: `${bbox.w * regionW}%`,
+                              height: `${bbox.h * regionH}%`,
+                              objectFit: "fill",
+                            }}
+                          />
+                        )
+                      })()}
+                    {/* Embroidery size warning — overlaid on top of the model image. */}
+                    {embroiderySizeWarning && (
+                      <div className="pointer-events-none absolute top-2.5 right-2.5 left-2.5 flex flex-col gap-2 border border-[#EA580C] bg-white p-3 text-sm font-medium">
+                        <div className="flex items-center gap-2">
+                          <span className="flex size-[18px] shrink-0 items-center justify-center rounded-full bg-[#EA580C] text-[11px] leading-none font-bold text-white">
+                            !
+                          </span>
+                          <span className="font-semibold text-[#C2410C]">Attention</span>
+                        </div>
+                        <span className="text-black">
+                          We have to stitch your design smaller. This is the maximum size allowed.
+                          Adjust your design if you are not happy with the result.
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </ScopedDialog>
+
             {(["graphics", "uploads", "ai"] as const).map(panel => (
               <div
                 key={panel}
@@ -1282,6 +1810,7 @@ export default function Designer() {
                         <button
                           key={src}
                           type="button"
+                          onClick={() => addGraphicElement(src)}
                           className="aspect-square flex items-center justify-center p-3 cursor-pointer overflow-hidden border-r border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
                         >
                           <img
@@ -1759,6 +2288,7 @@ export default function Designer() {
                       printAreaOverlay && printAreaPxSize.width > 0 && printAreaPxSize.height > 0
                         ? {
                             textElements: visibleTextElements.map(t => ({ ...t })),
+                            graphicElements: visibleGraphicElements.map(g => ({ ...g })),
                             printAreaOverlay,
                             displayWidth:
                               (printAreaPxSize.width * 100) / printAreaOverlay.width,
@@ -1777,7 +2307,7 @@ export default function Designer() {
                           image: currentViewImage || currentApp.image,
                           size,
                           qty,
-                          price: BASE_PRICE,
+                          price: unitPrice,
                           design: designSnapshot,
                         }))
                       setBasketItems(prev => [...prev, ...newItems])
